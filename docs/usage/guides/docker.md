@@ -26,7 +26,7 @@ You can install the latest valiPop image by running the following command
 ```sh
 # In a terminal (Windows/MacOs/Linux)
 
-docker pull ghcr.io/stacs-srg/valipop:master
+docker pull ghcr.io/stacs-srg/valipop:main
 ```
 
 To verify you have installed the image correctly, you can run the following command
@@ -34,7 +34,7 @@ To verify you have installed the image correctly, you can run the following comm
 ```shell
 # In a terminal (Windows/MacOs/Linux)
 
-docker run ghcr.io/stacs-srg/valipop:master
+docker run ghcr.io/stacs-srg/valipop:main
 ```
 
 which should print the following message
@@ -68,15 +68,16 @@ In our case, we will want to link the following directories to the container:
   - To access the config file and input distributions
 - `./results` to `/app/results`
   - To receive the results
+  - Note `./results` must be created prior to execution
 
 Therefore we can run the container with the following command to bind the directories
 
 ```sh
 # For Windows
-docker run -v .\src:/app/src -v .\results:/app/results ghcr.io/stacs-srg/valipop:master /app/src/main/resources/valipop/config/scot/config.txt
+docker run -v .\src:/app/src -v .\results:/app/results ghcr.io/stacs-srg/valipop:main /app/src/main/resources/valipop/config/scot/config.txt
 
 # For MacOs/Linux
-docker run -v ./src:/app/src -v ./results:/app/results ghcr.io/stacs-srg/valipop:master /app/src/main/resources/valipop/config/scot/config.txt
+docker run -v ./src:/app/src -v ./results:/app/results ghcr.io/stacs-srg/valipop:main /app/src/main/resources/valipop/config/scot/config.txt
 ```
 By default, this will run ValiPop will a starting population size of 1000 between the years 1855 to 1973. This will usually take under 5 minutes to run, and should eventually print something like the following:
 
@@ -97,7 +98,7 @@ In value[[3L]](cond) : Population size too small for partnering analysis
 Validation score: 0.0 (good)
 ```
 
-In the same directory as the ValiPop directory, there should also now exist a `results/` directory with the generated population records. This specific run should be located in a directory like
+The generated population records will now exist in the specified results directory. This specific run should be located in a directory like:
 
 ```
 results/example/2025-03-24T10-50-39-702/
@@ -140,9 +141,11 @@ You can make the following changes to the configuration file to alter ValiPop's 
 You may then save the changes and rerun the following command for different results.
 
 ```sh
-# In a terminal (Windows/MacOs/Linux)
+# For Windows
+docker run -v .\src:/app/src -v .\results:/app/results ghcr.io/stacs-srg/valipop:main /app/src/main/resources/valipop/config/scot/config.txt
 
-java -jar valipop.jar src/main/resources/valipop/config/scot/config.txt
+# For MacOs/Linux
+docker run -v ./src:/app/src -v ./results:/app/results ghcr.io/stacs-srg/valipop:main /app/src/main/resources/valipop/config/scot/config.txt
 ```
 
 [Read more about the configuration options.](../configuration/config-reference.md)
