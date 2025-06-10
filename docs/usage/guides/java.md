@@ -29,9 +29,25 @@ R -e "install.packages('geepack', repos = c(CRAN = 'https://cloud.r-project.org'
 
 To run ValiPop with Java, you only need the ValiPop JAR file. However we will be running ValiPop with some sample configuration which needs to be installed separately.
 
-### 2.1. Installing the JAR file
+### 2.1. Installing the configuration
+
+We will use the config and input files from the [ValiPop repository](https://github.com/stacs-srg/population-model). To install the repository, run the following command
+
+```shell
+# In a terminal (Windows/macOS/Linux)
+
+git clone https://github.com/stacs-srg/population-model.git
+```
+
+Within the repository, we will use the following config file
+
+`src/main/resources/valipop/config/scot/config.txt`
+
+### 2.2. Installing the JAR file
 
 You can install the latest ValiPop JAR file from [the releases page](https://github.com/stacs-srg/population-model/releases).
+
+For the following steps, the JAR file should be installed in the root of the ValiPop repository.
 
 To verify that the JAR file is working, navigate to the directory it is in and run the following command
 
@@ -47,20 +63,6 @@ which should print the following message
 No config file given as 1st arg
 Incorrect arguments given
 ```
-
-### 2.2. Installing the configuration
-
-We will use the config and input files from the [ValiPop repository](https://github.com/stacs-srg/population-model). To install the repository in the same directory as the valiPop JAR file, run the following command
-
-```shell
-# In a terminal (Windows/macOS/Linux)
-
-git clone https://github.com/stacs-srg/population-model.git
-```
-
-Within the repository, we will use the following config file
-
-`src/main/resources/valipop/config/scot/config.txt`
 
 ### 3. Execution
 
