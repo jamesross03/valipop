@@ -139,7 +139,9 @@ public class BirthSourceRecord extends IndividualSourceRecord {
                 registration_district_suffix, entry, birth_date.getYear(), mothers_maiden_surname, surname_changed,
                 forename_changed, birth_date.getDayOfMonth(), birth_date.getMonth(), birth_address, fathers_forename,
                 fathers_surname, fathers_occupation, mothers_forename, mothers_surname, mothers_maiden_surname_changed,
-                parents_marriage_date.getDayOfMonth(), parents_marriage_date.getMonth(), parents_marriage_date.getYear(),
+                parents_marriage_date == null ? "" : parents_marriage_date.getDayOfMonth(),
+                parents_marriage_date == null ? "" : parents_marriage_date.getMonth(),
+                parents_marriage_date == null ? "" : parents_marriage_date.getYear(),
                 parents_place_of_marriage, illegitimate_indicator, informant, informant_did_not_sign, entry_corrected,
                 adoption, image_quality);
 
