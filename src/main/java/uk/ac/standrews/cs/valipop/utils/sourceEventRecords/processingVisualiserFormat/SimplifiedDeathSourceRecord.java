@@ -57,7 +57,6 @@ public class SimplifiedDeathSourceRecord extends IndividualSourceRecord {
         setSex(String.valueOf(person.getSex()));
         setForename(person.getFirstName());
         setSurname(person.getSurname());
-        setOccupation(person.getOccupation(death_date));
         setDeathCauseA(person.getDeathCause());
 
         List<IPartnership> partnerships = person.getPartnerships();
@@ -69,10 +68,12 @@ public class SimplifiedDeathSourceRecord extends IndividualSourceRecord {
         }
 
         LocalDate birth_date = person.getBirthDate();
-        death_date = person.getDeathDate();
+        LocalDate death_date = person.getDeathDate();
 
         if (death_date != null && !death_date.isBefore(LocalDate.of( FIRST_YEAR_DOB_PRESENT,1,1))) {
             setBirthDate(birth_date.format( DOB_DATE_FORMAT));
+            setDeathDate(death_date);
+            setOccupation(person.getOccupation(death_date));
         }
 
         final IPartnership parents_partnership = person.getParents();
@@ -92,6 +93,14 @@ public class SimplifiedDeathSourceRecord extends IndividualSourceRecord {
 
     private void setBirthDate(final String birth_date) {
         this.birth_date = birth_date;
+    }
+
+    public LocalDate getDeathDate() {
+        return death_date;
+    }
+
+    private void setDeathDate(final LocalDate death_date) {
+        this.death_date = death_date;
     }
 
     public String getOccupation() {
