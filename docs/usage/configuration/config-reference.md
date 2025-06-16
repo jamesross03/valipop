@@ -15,7 +15,7 @@ These are all the configuration options supported by ValiPop. Options suffixed w
     - [`results_save_location`](#results_save_location)
     - [`summary_results_save_location`](#summary_results_save_location)
     - [`var_data_files`*](#var_data_files)
-    - [`project_location`*](#project_location)
+    - [`project_location`](#project_location)
 - [Dates and Periods](#dates-and-periods)
     - [`tS`*](#tS)
     - [`t0`*](#t0)

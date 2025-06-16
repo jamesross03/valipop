@@ -53,10 +53,11 @@ Then you can follow these steps to build the JAR:
 git clone https://github.com/stacs-srg/population-model
 
 # Navigate to the project repository
-cd valipop
+cd population-model
 
 # Installing dependencies, compiling, and packaging into JARs
 mvn clean package -Dmaven.test.skip -Dmaven.repo.local=repository
 
 # The build should be in `target/`, including the runnable JARs
+# "population-model-x.0-SNAPSHOT-jar-with-dependencies.jar" is the main executable JAR
 ```

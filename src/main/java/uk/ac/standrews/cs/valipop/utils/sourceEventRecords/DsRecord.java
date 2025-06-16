@@ -10,8 +10,8 @@ import uk.ac.standrews.cs.valipop.utils.sourceEventRecords.oldDSformat.SourceRec
 
 public class DsRecord extends Record {
 
-    DsRecord(Iterable<IPerson> people, Iterable<IPartnership> partneships) {
-      super(people, partneships);
+    DsRecord(Iterable<IPerson> people, Iterable<IPartnership> partnerships) {
+      super(people, partnerships);
     }
 
     @Override

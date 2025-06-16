@@ -1,16 +1,13 @@
 #Properties File
 
-adfksjadfkajs
+var_data_files = src/main/resources/valipop/inputs/synthetic-scotland
+tS = 1687-01-01
+t0 = 1855-01-01
+tE = 1973-01-01
+t0_pop_size = 1000
 
-#var_data_files = src/main/resources/valipop/inputs/synthetic-scotland
-#tS = 1687-01-01
-#t0 = 1855-01-01
-#tE = 1973-01-01
-#t0_pop_size = 1000
+output_record_format = TD
+output_tables = true
 
-#output_record_format = TD
-#output_graph_format = GEOJSON
-#output_tables = true
-
-#results_save_location = results
-#run_purpose = example
+results_save_location = results
+run_purpose = example
