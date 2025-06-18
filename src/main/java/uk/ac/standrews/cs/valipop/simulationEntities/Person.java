@@ -34,41 +34,33 @@ public class Person implements IPerson {
 
     private static int nextId = 0;
 
-    private int id;
-    private SexOption sex;
-    private LocalDate birthDate;
+    private final int id;
+    private final SexOption sex;
+    private final LocalDate birthDate;
     private LocalDate deathDate = null;
-    private List<IPartnership> partnerships = new ArrayList<>();
+    private final List<IPartnership> partnerships = new ArrayList<>();
     private IPartnership parents;
 
     private final String firstName;
-    private Surname surname;
+    private String surname;
     private final String representation;
     private boolean adulterousBirth;
 
     private String deathCause = "";
 
-    private TreeMap<LocalDate, Address> addressHistory = new TreeMap<>();
-    private LocalDate emigrationDate = null;
-    private LocalDate immigrationDate = null;
+    private final TreeMap<LocalDate, Address> addressHistory = new TreeMap<>();
+    private final TreeMap<LocalDate, String> occupationHistory = new TreeMap<>();
 
-    public Person(SexOption sex, LocalDate birthDate, IPartnership parents, PopulationStatistics statistics, boolean adulterousBirth) {
+    private LocalDate emigrationDate;
+    private LocalDate immigrationDate;
+
+    public Person(final SexOption sex, final LocalDate birthDate, final IPartnership parents, final PopulationStatistics statistics, final boolean adulterousBirth) {
         this(sex, birthDate, parents, statistics, adulterousBirth, false);
     }
 
-    public Person(SexOption sex, LocalDate birthDate, IPartnership parents, PopulationStatistics statistics, boolean adulterousBirth, boolean immigrant) {
+    public Person(final SexOption sex, final LocalDate birthDate, final IPartnership parents, final PopulationStatistics statistics, final boolean adulterousBirth, final boolean immigrant) {
 
         id = getNewId();
-
-        if (parents != null) {
-            IPerson f = parents.getFemalePartner();
-            IPerson m = parents.getMalePartner();
-
-            if ((f.hasEmigrated() && f.getEmigrationDate().isBefore(birthDate)) || (m.hasEmigrated() && m.getEmigrationDate().isBefore(birthDate))) {
-                // TODO ???
-                System.out.print("");
-            }
-        }
 
         this.sex = sex;
         this.birthDate = birthDate;
@@ -88,7 +80,7 @@ public class Person implements IPerson {
     }
 
     public void setSurname(final String surname) {
-        this.surname = new Surname(surname);
+        this.surname = surname;
     }
 
     @Override
@@ -127,7 +119,7 @@ public class Person implements IPerson {
     }
 
     @Override
-    public void setParents(IPartnership parents) {
+    public void setParents(final IPartnership parents) {
         if(this.parents == null) {
             this.parents = parents;
         }
@@ -145,35 +137,28 @@ public class Person implements IPerson {
 
     @Override
     public String getSurname() {
-        return surname.getName();
-    }
-
-    @Override
-    public Surname getSurnameRef() {
         return surname;
     }
 
     @Override
     public String getBirthPlace() {
-        Address a =  getAddress(birthDate);
+        final Address a =  getAddress(birthDate);
         return a == null ? "" : a.toString();
     }
 
     @Override
     public String getDeathPlace() {
-        Address a =  getAddress(deathDate);
+        final Address a =  getAddress(deathDate);
         return a == null ? "" : a.toString();
     }
 
-    private TreeMap<LocalDate, String> occupationHistory = new TreeMap<>();
-
     @Override
-    public String getOccupation(LocalDate onDate) {
+    public String getOccupation(final LocalDate onDate) {
         return occupationHistory.floorEntry(onDate).getValue();
     }
 
     @Override
-    public void setOccupation(LocalDate onDate, String occupation) {
+    public void setOccupation(final LocalDate onDate, String occupation) {
         if (occupation.isBlank()) occupation = "";
         occupationHistory.put(onDate, occupation);
     }
@@ -184,14 +169,14 @@ public class Person implements IPerson {
     }
 
     @Override
-    public void setAdulterousBirth(boolean adulterousBirth) {
+    public void setAdulterousBirth(final boolean adulterousBirth) {
         this.adulterousBirth = adulterousBirth;
     }
 
     private boolean phantom = false;
 
     @Override
-    public void setPhantom(boolean isPhantom) {
+    public void setPhantom(final boolean isPhantom) {
         this.phantom = isPhantom;
     }
 
@@ -212,21 +197,15 @@ public class Person implements IPerson {
     }
 
     @Override
-    public int compareTo(IPerson other) {
-        int oID = other.getId();
-        return (id < oID) ? -1 : ((id == oID) ? 0 : 1);
+    public int compareTo(final IPerson other) {
+
+        return Integer.compare(id, other.getId());
     }
 
     @Override
-    public boolean equals(Object other) {
-        // fast way
-        return other != null && id == ((IPerson) other).getId();
+    public boolean equals(final Object other) {
 
-        // safe way - but too expensive
-//        if (this == other) return true;
-//        if (other == null || getClass() != other.getClass()) return false;
-//        Person person = (Person) other;
-//        return id == person.id;
+        return other instanceof IPerson && id == ((IPerson) other).getId();
     }
 
     @Override
@@ -235,24 +214,24 @@ public class Person implements IPerson {
     }
 
     @Override
-    public void recordPartnership(IPartnership partnership) {
+    public void recordPartnership(final IPartnership partnership) {
         partnerships.add(partnership);
     }
 
     @Override
-    public Address getAddress(LocalDate onDate) {
-        if(onDate == null)
+    public Address getAddress(final LocalDate onDate) {
+        if (onDate == null)
             return null;
 
-        Map.Entry<LocalDate, Address> entry = addressHistory.floorEntry(onDate);
-        if(entry != null)
+        final Map.Entry<LocalDate, Address> entry = addressHistory.floorEntry(onDate);
+        if (entry != null)
             return entry.getValue();
 
         return null;
     }
 
     @Override
-    public void setAddress(LocalDate onDate, Address address) {
+    public void setAddress(final LocalDate onDate, final Address address) {
 
         if (address != null) {
             if (!addressHistory.isEmpty()) { // Pass this bit if no previous address
@@ -264,7 +243,6 @@ public class Person implements IPerson {
 
                 // if children get shuttled around before birth then remove old addresses
                 if (addressHistory.get(onDate) != null) { // this is different to the above if as it looks for values at the exact key rather than taking the value at the floor of the key!
-//                removed = addressHistory.get(onDate).removeInhabitant(this);
                     addressHistory.remove(onDate);
                 }
 
@@ -287,7 +265,7 @@ public class Person implements IPerson {
     }
 
     @Override
-    public void setEmigrationDate(LocalDate leavingDate) {
+    public void setEmigrationDate(final LocalDate leavingDate) {
         emigrationDate = leavingDate;
     }
 
@@ -297,7 +275,7 @@ public class Person implements IPerson {
     }
 
     @Override
-    public void setImmigrationDate(LocalDate arrivalDate) {
+    public void setImmigrationDate(final LocalDate arrivalDate) {
         immigrationDate = arrivalDate;
     }
 
@@ -305,7 +283,7 @@ public class Person implements IPerson {
     public LocalDate getLastMoveDate() {
         try {
             return addressHistory.lastKey();
-        } catch(NoSuchElementException e) {
+        } catch(final NoSuchElementException e) {
             return null;
         }
     }
@@ -316,19 +294,19 @@ public class Person implements IPerson {
     }
 
     @Override
-    public void rollbackLastMove(Geography geography) {
+    public void rollbackLastMove(final Geography geography) {
 
-        Address cancelledAddress = addressHistory.lastEntry().getValue();
-        Set<IPerson> family = getChildrenOfAtAddress(this, cancelledAddress);
+        final Address cancelledAddress = addressHistory.lastEntry().getValue();
+        final Set<IPerson> family = getChildrenOfAtAddress(this, cancelledAddress);
         family.add(this);
 
         // remove from curent abode and remove from address history
-        for(IPerson person : family)
+        for (final IPerson person : family)
             person.cancelLastMove(geography);
 
-        if(addressHistory.size() != 0) {
+        if (!addressHistory.isEmpty()) {
             // check previous abode
-            Address previousAddress = addressHistory.lastEntry().getValue();
+            final Address previousAddress = addressHistory.lastEntry().getValue();
 
             if (!previousAddress.isCountry() && previousAddress.isInhabited()) {
                 // if by family
@@ -340,7 +318,7 @@ public class Person implements IPerson {
                     previousAddress.displaceInhabitants();
                     returnFamilyToHouse(family, previousAddress);
                 }
-            } else if(previousAddress.isCountry()) {
+            } else if (previousAddress.isCountry()) {
                 // if cancelling last move results in the 'new last address' being forign country then we need to give the
                 // person (who is a  migrant) an address to live in from there emmigration date
                 setAddress(immigrationDate, geography.getRandomEmptyAddress());
@@ -351,29 +329,28 @@ public class Person implements IPerson {
         }
     }
 
-    private void returnFamilyToHouse(Collection<IPerson> family, Address previousAddress) {
+    private void returnFamilyToHouse(final Collection<IPerson> family, final Address previousAddress) {
 
         LocalDate parentsMoveInDate = null;
 
-        for(Map.Entry<LocalDate, Address> entry : addressHistory.entrySet()) {
-            if(entry.getValue().equals(previousAddress)) {
+        for (final Map.Entry<LocalDate, Address> entry : addressHistory.entrySet()) {
+            if (entry.getValue().equals(previousAddress)) {
                 parentsMoveInDate = entry.getKey();
                 break;
             }
         }
 
-        if(parentsMoveInDate == null) {
+        if (parentsMoveInDate == null)
             throw new Error("Address unexpectedly not found");
-        }
 
         // for each person
-        for(IPerson p : family) {
+        for (final IPerson p : family) {
             // check if place is in history of person (checking in case of child address overwrites followed by cancelations)
-            if(!p.getAllAddresses().contains(previousAddress)) {
+            if (!p.getAllAddresses().contains(previousAddress)) {
                 // work out move in date
-                LocalDate moveDate = parentsMoveInDate.isBefore(p.getBirthDate()) ? p.getBirthDate() : parentsMoveInDate;
+                final LocalDate moveDate = parentsMoveInDate.isBefore(p.getBirthDate()) ? p.getBirthDate() : parentsMoveInDate;
 
-                if(p.getAddressHistory().ceilingEntry(moveDate) != null)
+                if (p.getAddressHistory().ceilingEntry(moveDate) != null)
                     throw new Error("Unexpected addresss ordering");
 
                 p.getAddressHistory().put(moveDate, previousAddress);
@@ -384,35 +361,25 @@ public class Person implements IPerson {
         }
     }
 
-    private Set<IPerson> getChildrenOfAtAddress(IPerson parent, Address address) {
+    private static Set<IPerson> getChildrenOfAtAddress(final IPerson parent, final Address address) {
 
-        HashSet<IPerson> childrenAtAddress = new HashSet<>();
+        final HashSet<IPerson> childrenAtAddress = new HashSet<>();
 
-        for(IPerson person : address.getInhabitants()) {
-            if(PopulationNavigation.childOf(parent, person)) {
+        for (final IPerson person : address.getInhabitants())
+            if (PopulationNavigation.childOf(parent, person))
                 childrenAtAddress.add(person);
-            }
-        }
 
         return childrenAtAddress;
     }
 
     @Override
-    public LocalDate cancelLastMove(Geography geography) {
+    public LocalDate cancelLastMove(final Geography geography) {
 
-        Map.Entry<LocalDate, Address> lastMove = addressHistory.lastEntry();
-        LocalDate moveDate = lastMove.getKey();
+        final Map.Entry<LocalDate, Address> lastMove = addressHistory.lastEntry();
+        final LocalDate moveDate = lastMove.getKey();
 
         lastMove.getValue().removeInhabitant(this);
         addressHistory.remove(addressHistory.lastKey());
-
-//        if(addressHistory.lastEntry() != null && addressHistory.lastEntry().getValue().isCountry()) {
-//             if cancelling last move results in the 'new last address' being forign country then we need to give the
-//             person (who is a  migrant) an address to live in from there emmigration date
-//
-//            setAddress(immigrationDate, geography.getNearestEmptyAddress(lastMove.getValue().getArea().getCentriod()));
-//
-//        }
 
         return moveDate;
     }
@@ -424,8 +391,8 @@ public class Person implements IPerson {
 
     @Override
     public IPartnership getLastPartnership() {
-        if(partnerships.size() != 0) {
-            return partnerships.get(partnerships.size() - 1);
+        if (!partnerships.isEmpty()) {
+            return partnerships.getLast();
         }
         return null;
     }
@@ -435,12 +402,12 @@ public class Person implements IPerson {
         return getOccupation(LocalDate.MAX);
     }
 
-    private boolean containsFamily(Address address, Person person) {
+    private static boolean containsFamily(final Address address, final Person person) {
 
-        Collection<IPerson> family = PopulationNavigation.imidiateFamilyOf(person);
+        final Collection<IPerson> family = PopulationNavigation.imidiateFamilyOf(person);
 
-        for(IPerson inhabitant : address.getInhabitants()) {
-            if(family.contains(inhabitant)) {
+        for (final IPerson inhabitant : address.getInhabitants()) {
+            if (family.contains(inhabitant)) {
                 return true;
             }
         }
@@ -456,7 +423,7 @@ public class Person implements IPerson {
         nextId = 0;
     }
 
-    private String getForename(PopulationStatistics statistics, boolean immigrant) {
+    private String getForename(final PopulationStatistics statistics, final boolean immigrant) {
 
         if(immigrant) {
             return statistics.getMigrantForenameDistribution(Year.of(birthDate.getYear()), getSex()).getSample();
@@ -465,16 +432,16 @@ public class Person implements IPerson {
         }
     }
 
-    private Surname getSurname(PopulationStatistics statistics, boolean immigrant) {
+    private String getSurname(final PopulationStatistics statistics, final boolean immigrant) {
 
         if (parents != null) {
-            return parents.getMalePartner().getSurnameRef();
+            return parents.getMalePartner().getSurname();
         }
         else {
             if (immigrant) {
-                return new Surname(statistics.getMigrantSurnameDistribution(Year.of(birthDate.getYear())).getSample());
+                return statistics.getMigrantSurnameDistribution(Year.of(birthDate.getYear())).getSample();
             } else {
-                return new Surname(statistics.getSurnameDistribution(Year.of(birthDate.getYear())).getSample());
+                return statistics.getSurnameDistribution(Year.of(birthDate.getYear())).getSample();
             }
         }
     }

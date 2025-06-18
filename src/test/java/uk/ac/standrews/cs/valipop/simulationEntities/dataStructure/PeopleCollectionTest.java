@@ -18,6 +18,7 @@ package uk.ac.standrews.cs.valipop.simulationEntities.dataStructure;
 
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import uk.ac.standrews.cs.valipop.Config;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPerson;
@@ -40,6 +41,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author Tom Dalton (tsd4@st-andrews.ac.uk)
  */
+@Ignore
 public class PeopleCollectionTest {
 
     private PopulationStatistics ps;

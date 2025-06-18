@@ -3,19 +3,17 @@ package uk.ac.standrews.cs.valipop.utils.sourceEventRecords.tdFormat;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPartnership;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPerson;
 import uk.ac.standrews.cs.valipop.statistics.analysis.validation.contingencyTables.TableStructure.PersonCharacteristicsIdentifier;
+import uk.ac.standrews.cs.valipop.statistics.populationStatistics.PopulationStatistics;
 import uk.ac.standrews.cs.valipop.utils.sourceEventRecords.oldDSformat.BirthSourceRecord;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Random;
 
 /**
  * @author Tom Dalton (tsd4@st-andrews.ac.uk)
  */
 public class TDBirthSourceRecord extends BirthSourceRecord {
-
-    private static Random rng = new Random();
 
     protected int familyID = -1;
     protected LocalDate birthDate;
@@ -65,7 +63,7 @@ public class TDBirthSourceRecord extends BirthSourceRecord {
 
         }
 
-        int registrationDay = rng.nextInt(43);
+        int registrationDay = PopulationStatistics.randomGenerator.nextInt(43);
         registrationDate = birthDate.plus(registrationDay, ChronoUnit.DAYS);
 
         illegitimate = person.isAdulterousBirth() || (person.getParents() != null && person.getParents().getMarriageDate() == null) ? "illegitimate" : "";

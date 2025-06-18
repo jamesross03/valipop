@@ -1,17 +1,15 @@
 package uk.ac.standrews.cs.valipop.utils.sourceEventRecords.tdFormat;
 
-import org.apache.commons.math3.random.JDKRandomGenerator;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPartnership;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPerson;
 import uk.ac.standrews.cs.valipop.simulationEntities.PopulationNavigation;
 import uk.ac.standrews.cs.valipop.statistics.analysis.validation.contingencyTables.TableStructure.PersonCharacteristicsIdentifier;
 import uk.ac.standrews.cs.valipop.statistics.analysis.validation.contingencyTables.TreeStructure.SexOption;
+import uk.ac.standrews.cs.valipop.statistics.populationStatistics.PopulationStatistics;
 import uk.ac.standrews.cs.valipop.utils.sourceEventRecords.oldDSformat.DeathSourceRecord;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Random;
 
 import static uk.ac.standrews.cs.valipop.simulationEntities.PopulationNavigation.getLastPartnership;
 
@@ -20,8 +18,7 @@ import static uk.ac.standrews.cs.valipop.simulationEntities.PopulationNavigation
  */
 public class TDDeathSourceRecord extends DeathSourceRecord {
 
-    private static Random rng = new Random();
-    private String IMMIGRATION_GENERATION;
+    private final String IMMIGRATION_GENERATION;
 
     protected LocalDate deathDate;
     protected LocalDate registrationDate;
@@ -40,30 +37,30 @@ public class TDDeathSourceRecord extends DeathSourceRecord {
     private String SPOUSE_MARRIAGE_RECORD_IDENTITY = "";
     private String SPOUSE_BIRTH_RECORD_IDENTITY = "";
 
-    public TDDeathSourceRecord(IPerson person) {
+    public TDDeathSourceRecord(final IPerson person) {
 
         super(person);
 
         deathDate = person.getDeathDate();
         deathAddress = person.getAddress(deathDate).toString();
 
-        String[] deathCauses = person.getDeathCause().split(" ");
+        final String[] deathCauses = person.getDeathCause().split(" ");
 
-        if(deathCauses.length >= 1)
+        if (deathCauses.length >= 1)
             setDeathCauseA(deathCauses[0]);
 
-        if(deathCauses.length >= 2)
+        if (deathCauses.length >= 2)
             setDeathCauseB(deathCauses[1]);
 
-        if(deathCauses.length >= 3)
+        if (deathCauses.length >= 3)
             setDeathCauseC(deathCauses[2]);
 
         if (person.getParents() != null) {
 
-            IPerson mother = person.getParents().getFemalePartner();
+            final IPerson mother = person.getParents().getFemalePartner();
             mothersOccupation = mother.getOccupation(deathDate);
 
-            IPerson father = person.getParents().getMalePartner();
+            final IPerson father = person.getParents().getMalePartner();
             if (!PopulationNavigation.aliveOnDate(father, person.getDeathDate())) {
                 // father is dead
                 setFatherDeceased("D"); // deceased
@@ -76,7 +73,7 @@ public class TDDeathSourceRecord extends DeathSourceRecord {
                 setMotherDeceased("D"); // deceased
             }
 
-            if(person.getParents().getMarriageDate() != null)
+            if (person.getParents().getMarriageDate() != null)
                 PARENT_MARRIAGE_RECORD_IDENTITY = String.valueOf(person.getParents().getId());
 
             MOTHER_IDENTITY = String.valueOf(mother.getId());
@@ -85,64 +82,60 @@ public class TDDeathSourceRecord extends DeathSourceRecord {
             MOTHER_BIRTH_RECORD_IDENTITY = String.valueOf(mother.getId());;
         }
 
-        int registrationDay = rng.nextInt(9);
-        registrationDate = deathDate.plus(registrationDay, ChronoUnit.DAYS);
+        final int registrationDay = PopulationStatistics.randomGenerator.nextInt(9);
+        registrationDate = deathDate.plusDays(registrationDay);
 
         setMaritalStatus(identifyMaritalStatus(person));
 
         DECEASED_IDENTITY = uid;
         BIRTH_RECORD_IDENTITY = uid;
 
-        LocalDate lastMarriageDate = LocalDate.MIN;
+        final LocalDate lastMarriageDate = LocalDate.MIN;
 
-        for (IPartnership partnership : person.getPartnerships()) {
+        for (final IPartnership partnership : person.getPartnerships()) {
 
-            LocalDate marriageDate = partnership.getMarriageDate();
+            final LocalDate marriageDate = partnership.getMarriageDate();
 
             if(marriageDate != null && marriageDate.isAfter(lastMarriageDate)) {
 
-                IPerson spouse = partnership.getPartnerOf(person);
+                final IPerson spouse = partnership.getPartnerOf(person);
                 SPOUSE_IDENTITY = String.valueOf(spouse.getId());
                 SPOUSE_BIRTH_RECORD_IDENTITY = String.valueOf(spouse.getId());
 
-                String spousesName = spouse.getFirstName() + " " + spouse.getSurname();
-                String spousesOccupation = spouse.getOccupation(person.getDeathDate());
+                final String spousesName = spouse.getFirstName() + " " + spouse.getSurname();
+                final String spousesOccupation = spouse.getOccupation(person.getDeathDate());
 
                 setSpousesNames(spousesName);
                 setSpousesOccupations(spousesOccupation);
                 marriageIDs = String.valueOf(partnership.getId());
 
                 SPOUSE_MARRIAGE_RECORD_IDENTITY = String.valueOf(partnership.getId());
-
             }
         }
 
-        int immigantGen = PersonCharacteristicsIdentifier.getImmigrantGeneration(person);
+        final int immigantGen = PersonCharacteristicsIdentifier.getImmigrantGeneration(person);
 
-        if(immigantGen == -1)
+        if (immigantGen == -1)
             IMMIGRATION_GENERATION = "NA";
         else
             IMMIGRATION_GENERATION = String.valueOf(immigantGen);
-
     }
 
+    public static String identifyMaritalStatus(final IPerson deceased) {
 
+        final List<IPartnership> partnerships = deceased.getPartnerships();
 
-    public String identifyMaritalStatus(IPerson deceased) {
-
-        List<IPartnership> partnerships = deceased.getPartnerships();
-
-        if (partnerships.size() == 0) {
+        if (partnerships.isEmpty()) {
             if (deceased.getSex() == SexOption.MALE) {
                 return "B"; // bachelor
             } else {
                 return "S"; // single/spinster
             }
         } else {
-            if (getLastPartnership(deceased).getSeparationDate(new JDKRandomGenerator()) == null) {
+            if (getLastPartnership(deceased).getSeparationDate(PopulationStatistics.randomGenerator) == null) {
                 // not separated from last partner
 
-                IPerson lastPartner = getLastPartnership(deceased).getPartnerOf(deceased);
+                final IPerson lastPartner = getLastPartnership(deceased).getPartnerOf(deceased);
                 if (PopulationNavigation.aliveOnDate(lastPartner, deceased.getDeathDate())) {
 
                     // last spouse alive on death date of deceased
@@ -158,7 +151,6 @@ public class TDDeathSourceRecord extends DeathSourceRecord {
             }
         }
     }
-
 
     @Override
     public String toString() {

@@ -18,10 +18,10 @@ package uk.ac.standrews.cs.valipop.utils.sourceEventRecords.processingVisualiser
 
 import uk.ac.standrews.cs.valipop.simulationEntities.IPartnership;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPerson;
+import uk.ac.standrews.cs.valipop.statistics.populationStatistics.PopulationStatistics;
 import uk.ac.standrews.cs.valipop.utils.sourceEventRecords.oldDSformat.SourceRecord;
 
 import java.time.LocalDate;
-import java.util.Random;
 
 /**
  * A representation of a Marriage Record in the form used by the Digitising Scotland Project.
@@ -184,7 +184,7 @@ public class SimplifiedMarriageSourceRecord extends SourceRecord {
         final StringBuilder builder = new StringBuilder();
 
         if (groom_id != null && bride_id != null) {
-            int rnd = new Random().nextInt(101);
+            int rnd = PopulationStatistics.randomGenerator.nextInt(101);
             RelationshipsTable.relationshipsMarriage.add(new String[]{"Marriage", String.valueOf(groom_id), String.valueOf(bride_id), String.valueOf(rnd), marriage_date.getDayOfMonth() + "." + marriage_date.getMonth() + "." + marriage_date.getYear()});
         }
         append(builder,

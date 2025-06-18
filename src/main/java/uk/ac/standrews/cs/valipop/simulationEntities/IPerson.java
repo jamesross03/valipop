@@ -52,12 +52,6 @@ public interface IPerson extends Comparable<IPerson> {
     String getSurname();
 
     /**
-     * Gets the person's surname (family name).
-     * @return the person's surname
-     */
-    Surname getSurnameRef();
-
-    /**
      * Gets the person's sex.
      * @return the person's sex
      */

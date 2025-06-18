@@ -32,27 +32,28 @@ public class DateSelector {
 
     final RandomGenerator random;
 
-    public DateSelector(RandomGenerator random) {
+    public DateSelector(final RandomGenerator random) {
 
         this.random = random;
     }
 
-    public LocalDate selectRandomDate(LocalDate earliestDate, LocalDate latestDate) {
+    public LocalDate selectRandomDate(final LocalDate earliestDate, final LocalDate latestDate) {
 
-        int daysInWindow = (int)DAYS.between(earliestDate, latestDate);
+        final int daysInWindow = (int)DAYS.between(earliestDate, latestDate);
 
         return selectRandomDate(earliestDate, daysInWindow);
     }
 
-    public LocalDate selectRandomDate(LocalDate earliestDate, Period timePeriod) {
+    public LocalDate selectRandomDate(final LocalDate earliestDate, final Period timePeriod) {
 
         return selectRandomDate(earliestDate, earliestDate.plus(timePeriod));
     }
 
-    private LocalDate selectRandomDate(LocalDate earliestDate, int daysInWindow) {
+    private LocalDate selectRandomDate(final LocalDate earliestDate, int daysInWindow) {
 
+        // TODO clean up.
         daysInWindow = daysInWindow == 0 ? 1 : Math.abs(daysInWindow);
 
-        return earliestDate.plus(random.nextInt(daysInWindow), DAYS);
+        return earliestDate.plusDays(random.nextInt(daysInWindow));
     }
 }

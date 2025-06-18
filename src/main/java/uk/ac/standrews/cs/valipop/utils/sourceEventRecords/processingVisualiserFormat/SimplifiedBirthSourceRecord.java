@@ -18,10 +18,10 @@ package uk.ac.standrews.cs.valipop.utils.sourceEventRecords.processingVisualiser
 
 import uk.ac.standrews.cs.valipop.simulationEntities.IPartnership;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPerson;
+import uk.ac.standrews.cs.valipop.statistics.populationStatistics.PopulationStatistics;
 import uk.ac.standrews.cs.valipop.utils.sourceEventRecords.IndividualSourceRecord;
 
 import java.time.LocalDate;
-import java.util.Random;
 
 /**
  * A representation of a BirthFamilyGT Record in the form used by the Digitising Scotland Project.
@@ -79,17 +79,17 @@ public class SimplifiedBirthSourceRecord extends IndividualSourceRecord {
         int rnd;
 
         if (fathers_id != null) {
-            rnd = new Random().nextInt(101);
+            rnd = PopulationStatistics.randomGenerator.nextInt(101);
             RelationshipsTable.relationshipsFather.add(new String[]{"Father", String.valueOf(uid), String.valueOf(fathers_id), String.valueOf(rnd), birth_date.getDayOfMonth() + "." + birth_date.getMonth() + "." + birth_date.getYear()});
         }
 
         if (mothers_id != null) {
-            rnd = new Random().nextInt(101);
+            rnd = PopulationStatistics.randomGenerator.nextInt(101);
             RelationshipsTable.relationshipsMother.add(new String[]{"Mother", String.valueOf(uid), String.valueOf(mothers_id), String.valueOf(rnd), birth_date.getDayOfMonth() + "." + birth_date.getMonth() + "." + birth_date.getYear()});
         }
 
         if (fathers_id != null && mothers_id != null) {
-            rnd = new Random().nextInt(101);
+            rnd = PopulationStatistics.randomGenerator.nextInt(101);
             RelationshipsTable.relationshipsMarriage.add(new String[]{"Marriage", String.valueOf(fathers_id), String.valueOf(mothers_id), String.valueOf(rnd), birth_date.getDayOfMonth() + "." + birth_date.getMonth() + "." + birth_date.getYear()});
         }
 

@@ -36,10 +36,10 @@ import static uk.ac.standrews.cs.valipop.simulationEntities.PopulationNavigation
 public class Partnership implements IPartnership {
 
     private static int nextId = 0;
-    private int id;
-    private IPerson male;
-    private IPerson female;
-    private List<IPerson> children = new ArrayList<>();
+    private final int id;
+    private final IPerson male;
+    private final IPerson female;
+    private final List<IPerson> children = new ArrayList<>();
 
     private LocalDate partnershipDate;
     private LocalDate marriageDate = null;
@@ -63,12 +63,11 @@ public class Partnership implements IPartnership {
 
         this.male = male;
         this.female = female;
-
     }
 
     public String toString() {
 
-        StringBuilder s = new StringBuilder();
+        final StringBuilder s = new StringBuilder();
 
         s.append("--Partnership: ");
         s.append(id).append("--\n");
@@ -78,7 +77,7 @@ public class Partnership implements IPartnership {
 
         s.append("----Children----\n");
 
-        for (IPerson c : children) {
+        for (final IPerson c : children) {
             appendPerson(s, c);
         }
 
@@ -88,10 +87,8 @@ public class Partnership implements IPartnership {
         return s.toString();
     }
 
-    private void appendPerson(StringBuilder s, IPerson person) {
+    private static void appendPerson(final StringBuilder s, final IPerson person) {
 
-        //s.append(person.getId()).append(" | ");
-        //s.append(person.getFirstName()).append(" ");
         s.append(person.getSurname()).append(" | ");
         s.append(person.getSex()).append(" | ");
         s.append(person.getBirthDate()).append(" | ");
@@ -117,12 +114,12 @@ public class Partnership implements IPartnership {
     }
 
     @Override
-    public void setFinalised(boolean finalised) {
+    public void setFinalised(final boolean finalised) {
         this.finalised = finalised;
     }
 
     @Override
-    public void setMarriagePlace(String place) {
+    public void setMarriagePlace(final String place) {
         marriageLocation = place;
     }
 
@@ -201,7 +198,7 @@ public class Partnership implements IPartnership {
             } else {
 
                 // pick a date in the next 30 years
-                earliestMovedOnDate = earliestPossibleSeparationDate.plus(30, ChronoUnit.YEARS);
+                earliestMovedOnDate = earliestPossibleSeparationDate.plusYears(30);
             }
         }
 
@@ -214,18 +211,17 @@ public class Partnership implements IPartnership {
     }
 
     @Override
-    public void setEarliestPossibleSeparationDate(LocalDate date) {
+    public void setEarliestPossibleSeparationDate(final LocalDate date) {
         earliestPossibleSeparationDate = date;
     }
 
     @Override
-    public int compareTo(IPartnership o) {
+    public int compareTo(final IPartnership o) {
         return Integer.compare(id, o.getId());
     }
 
     @Override
-    public void addChildren(Collection<IPerson> children) {
+    public void addChildren(final Collection<IPerson> children) {
         this.children.addAll(children);
     }
-
 }

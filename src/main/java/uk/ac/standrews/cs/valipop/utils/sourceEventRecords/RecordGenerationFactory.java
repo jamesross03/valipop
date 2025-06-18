@@ -17,9 +17,9 @@ public class RecordGenerationFactory {
 
     public static final Logger log = Logger.getLogger(RecordGenerationFactory.class.getName());
 
-    public static void outputRecords(RecordFormat recordFormat, Path recordsOutputDir,  Iterable<IPerson> people, Iterable<IPartnership> partneships, LocalDate startDate) {
+    public static void outputRecords(RecordFormat recordFormat, Path recordsOutputDir,  Iterable<IPerson> people, Iterable<IPartnership> partnerships, LocalDate startDate) {
         Iterable<IPerson> filteredPeople = filterPeople(people, startDate);
-        Iterable<IPartnership> filteredPartnerships = filterPartnerships(partneships, startDate);
+        Iterable<IPartnership> filteredPartnerships = filterPartnerships(partnerships, startDate);
 
         Record record = null;
 

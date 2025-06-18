@@ -17,12 +17,12 @@
 package uk.ac.standrews.cs.valipop.utils.sourceEventRecords.processingVisualiserFormat;
 
 import uk.ac.standrews.cs.valipop.Config;
+import uk.ac.standrews.cs.valipop.statistics.populationStatistics.PopulationStatistics;
 
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Random;
 
 /**
  * @author Tom Dalton (tsd4@st-andrews.ac.uk)
@@ -80,12 +80,10 @@ public class RelationshipsTable {
 
     private static void swapPrimaryValues(ArrayList<String[]> relations, int position) {
 
-        Random rng = new Random();
-
         ArrayList<String[]> used = new ArrayList<>();
 
         for (int i = 0; i < relations.size() - 1; i++) {
-            int r = rng.nextInt(relations.size());
+            int r = PopulationStatistics.randomGenerator.nextInt(relations.size());
 
             String[] swap = relations.remove(r);
 
@@ -95,8 +93,8 @@ public class RelationshipsTable {
             line[position] = swap[position];
             swap[position] = principle;
 
-            swap[3] = String.valueOf(rng.nextInt(81));
-            line[3] = String.valueOf(rng.nextInt(81));
+            swap[3] = String.valueOf(PopulationStatistics.randomGenerator.nextInt(81));
+            line[3] = String.valueOf(PopulationStatistics.randomGenerator.nextInt(81));
 
             used.add(swap);
         }

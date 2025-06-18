@@ -32,43 +32,43 @@ import java.time.Period;
  */
 public class DeathDateSelector extends DateSelector {
 
-    public DeathDateSelector(RandomGenerator random) {
+    public DeathDateSelector(final RandomGenerator random) {
 
         super(random);
     }
 
-    public LocalDate selectDate(IPerson person, PopulationStatistics statistics, LocalDate currentDate, Period consideredTimePeriod) {
+    public LocalDate selectDate(final IPerson person, final PopulationStatistics statistics, final LocalDate currentDate, final Period consideredTimePeriod) {
 
-        IPerson child = PopulationNavigation.getLastChild(person);
+        final IPerson child = PopulationNavigation.getLastChild(person);
 
         if (child != null) {
 
-            LocalDate birthDateOfLastChild = child.getBirthDate();
+            final LocalDate birthDateOfLastChild = child.getBirthDate();
 
             if (person.getSex() == SexOption.MALE) {
 
                 // If a male with a child then the man cannot die more than the minimum gestation period before the birth date
-                LocalDate lastConceptionDate = birthDateOfLastChild.minus(statistics.getMinGestationPeriod());
-                LocalDate lastMoveDate = person.getLastMoveDate() == null ? LocalDate.MIN : person.getLastMoveDate();
+                final LocalDate lastConceptionDate = birthDateOfLastChild.minus(statistics.getMinGestationPeriod());
+                final LocalDate lastMoveDate = person.getLastMoveDate() == null ? LocalDate.MIN : person.getLastMoveDate();
 
-                LocalDate earliestPossibleDate = lastMoveDate.isBefore(lastConceptionDate) ? lastConceptionDate : lastMoveDate;
+                final LocalDate earliestPossibleDate = lastMoveDate.isBefore(lastConceptionDate) ? lastConceptionDate : lastMoveDate;
                 return selectDateRestrictedByEarliestPossibleDate(currentDate, consideredTimePeriod, earliestPossibleDate);
 
             } else {
                 // If a female with a child then they cannot die before birth of child
-                LocalDate lastMoveDate = person.getLastMoveDate() == null ? LocalDate.MIN : person.getLastMoveDate();
+                final LocalDate lastMoveDate = person.getLastMoveDate() == null ? LocalDate.MIN : person.getLastMoveDate();
 
-                LocalDate earliestPossibleDate = lastMoveDate.isBefore(birthDateOfLastChild) ? birthDateOfLastChild : lastMoveDate;
+                final LocalDate earliestPossibleDate = lastMoveDate.isBefore(birthDateOfLastChild) ? birthDateOfLastChild : lastMoveDate;
                 return selectDateRestrictedByEarliestPossibleDate(currentDate, consideredTimePeriod, earliestPossibleDate);
             }
 
         } else {
-            LocalDate lastMoveDate = person.getLastMoveDate() == null ? person.getBirthDate() : person.getLastMoveDate();
+            final LocalDate lastMoveDate = person.getLastMoveDate() == null ? person.getBirthDate() : person.getLastMoveDate();
             return selectDateRestrictedByEarliestPossibleDate(currentDate, consideredTimePeriod, lastMoveDate);
         }
     }
 
-    private LocalDate selectDateRestrictedByEarliestPossibleDate(LocalDate currentDate, Period consideredTimePeriod, LocalDate earliestPossibleDate) {
+    private LocalDate selectDateRestrictedByEarliestPossibleDate(final LocalDate currentDate, final Period consideredTimePeriod, final LocalDate earliestPossibleDate) {
 
         if (!currentDate.isAfter(earliestPossibleDate)) {
 

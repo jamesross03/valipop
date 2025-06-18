@@ -1,16 +1,15 @@
 package uk.ac.standrews.cs.valipop.utils.sourceEventRecords.egSkyeFormat;
 
-import org.apache.commons.math3.random.JDKRandomGenerator;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPartnership;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPerson;
 import uk.ac.standrews.cs.valipop.simulationEntities.PopulationNavigation;
 import uk.ac.standrews.cs.valipop.statistics.analysis.validation.contingencyTables.TreeStructure.SexOption;
+import uk.ac.standrews.cs.valipop.statistics.populationStatistics.PopulationStatistics;
 import uk.ac.standrews.cs.valipop.utils.sourceEventRecords.oldDSformat.DeathSourceRecord;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Random;
 
 import static uk.ac.standrews.cs.valipop.simulationEntities.PopulationNavigation.getLastPartnership;
 
@@ -18,8 +17,6 @@ import static uk.ac.standrews.cs.valipop.simulationEntities.PopulationNavigation
  * @author Tom Dalton (tsd4@st-andrews.ac.uk)
  */
 public class EGSkyeDeathSourceRecord extends DeathSourceRecord {
-
-    private static Random rng = new Random();
 
     protected LocalDate deathDate;
     protected LocalDate registrationDate;
@@ -53,7 +50,7 @@ public class EGSkyeDeathSourceRecord extends DeathSourceRecord {
             }
         }
 
-        int registrationDay = rng.nextInt(9);
+        int registrationDay = PopulationStatistics.randomGenerator.nextInt(9);
         registrationDate = deathDate.plus(registrationDay, ChronoUnit.DAYS);
 
         setMaritalStatus(identifyMaritalStatus(person));
@@ -74,7 +71,7 @@ public class EGSkyeDeathSourceRecord extends DeathSourceRecord {
                 return "S"; // single/spinster
             }
         } else {
-            if (getLastPartnership(deceased).getSeparationDate(new JDKRandomGenerator()) == null) {
+            if (getLastPartnership(deceased).getSeparationDate(PopulationStatistics.randomGenerator) == null) {
                 // not separated from last partner
 
                 IPerson lastPartner = getLastPartnership(deceased).getPartnerOf(deceased);

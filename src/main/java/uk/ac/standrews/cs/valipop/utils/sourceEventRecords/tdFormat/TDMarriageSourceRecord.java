@@ -1,11 +1,11 @@
 package uk.ac.standrews.cs.valipop.utils.sourceEventRecords.tdFormat;
 
-import org.apache.commons.math3.random.JDKRandomGenerator;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPartnership;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPerson;
 import uk.ac.standrews.cs.valipop.simulationEntities.PopulationNavigation;
 import uk.ac.standrews.cs.valipop.statistics.analysis.validation.contingencyTables.TableStructure.PersonCharacteristicsIdentifier;
 import uk.ac.standrews.cs.valipop.statistics.analysis.validation.contingencyTables.TreeStructure.SexOption;
+import uk.ac.standrews.cs.valipop.statistics.populationStatistics.PopulationStatistics;
 import uk.ac.standrews.cs.valipop.utils.sourceEventRecords.oldDSformat.MarriageSourceRecord;
 
 import java.time.LocalDate;
@@ -16,8 +16,8 @@ import java.util.List;
  */
 public class TDMarriageSourceRecord extends MarriageSourceRecord {
 
-    private String BRIDE_IMMIGRATION_GENERATION;
-    private String GROOM_IMMIGRATION_GENERATION;
+    private final String BRIDE_IMMIGRATION_GENERATION;
+    private final String GROOM_IMMIGRATION_GENERATION;
 
     protected LocalDate marriageDate;
     protected int groomID;
@@ -37,7 +37,7 @@ public class TDMarriageSourceRecord extends MarriageSourceRecord {
     private String BRIDE_FATHER_BIRTH_RECORD_IDENTITY = "";
     private String BRIDE_MOTHER_BIRTH_RECORD_IDENTITY = "";
 
-    public TDMarriageSourceRecord(IPartnership partnership) {
+    public TDMarriageSourceRecord(final IPartnership partnership) {
         super(partnership);
 
         marriageDate = partnership.getPartnershipDate();
@@ -49,8 +49,8 @@ public class TDMarriageSourceRecord extends MarriageSourceRecord {
 
         marriageLocation = partnership.getMarriagePlace();
 
-        if(partnership.getFemalePartner().getParents() != null) {
-            IPartnership bParents = partnership.getFemalePartner().getParents();
+        if (partnership.getFemalePartner().getParents() != null) {
+            final IPartnership bParents = partnership.getFemalePartner().getParents();
             setBrideFathersSurname(bParents.getMalePartner().getSurname());
 
             BRIDE_MOTHER_IDENTITY = String.valueOf(bParents.getFemalePartner().getId());
@@ -60,8 +60,8 @@ public class TDMarriageSourceRecord extends MarriageSourceRecord {
             BRIDE_FATHER_BIRTH_RECORD_IDENTITY = BRIDE_FATHER_IDENTITY ;
         }
 
-        if(partnership.getMalePartner().getParents() != null) {
-            IPartnership gParents = partnership.getMalePartner().getParents();
+        if (partnership.getMalePartner().getParents() != null) {
+            final IPartnership gParents = partnership.getMalePartner().getParents();
             setGroomFathersSurname(gParents.getMalePartner().getSurname());
 
             GROOM_MOTHER_IDENTITY = String.valueOf(gParents.getFemalePartner().getId());
@@ -69,8 +69,6 @@ public class TDMarriageSourceRecord extends MarriageSourceRecord {
 
             GROOM_FATHER_IDENTITY = String.valueOf(gParents.getMalePartner().getId());
             GROOM_FATHER_BIRTH_RECORD_IDENTITY = GROOM_FATHER_IDENTITY;
-
-
         }
 
         GROOM_IDENTITY = String.valueOf(groomID);
@@ -78,44 +76,43 @@ public class TDMarriageSourceRecord extends MarriageSourceRecord {
         GROOM_BIRTH_RECORD_IDENTITY = String.valueOf(groomID);
         BRIDE_BIRTH_RECORD_IDENTITY = String.valueOf(brideID);
 
-        int brideImmigantGen = PersonCharacteristicsIdentifier.getImmigrantGeneration(partnership.getFemalePartner());
+        final int brideImmigrantGen = PersonCharacteristicsIdentifier.getImmigrantGeneration(partnership.getFemalePartner());
 
-        if(brideImmigantGen == -1)
+        if(brideImmigrantGen == -1)
             BRIDE_IMMIGRATION_GENERATION = "NA";
         else
-            BRIDE_IMMIGRATION_GENERATION = String.valueOf(brideImmigantGen);
+            BRIDE_IMMIGRATION_GENERATION = String.valueOf(brideImmigrantGen);
 
-        int groomImmigantGen = PersonCharacteristicsIdentifier.getImmigrantGeneration(partnership.getMalePartner());
+        final int groomImmigrantGen = PersonCharacteristicsIdentifier.getImmigrantGeneration(partnership.getMalePartner());
 
-        if(groomImmigantGen == -1)
+        if (groomImmigrantGen == -1)
             GROOM_IMMIGRATION_GENERATION = "NA";
         else
-            GROOM_IMMIGRATION_GENERATION = String.valueOf(brideImmigantGen);
-
+            GROOM_IMMIGRATION_GENERATION = String.valueOf(brideImmigrantGen);
     }
 
-    public String identifyMaritalStatus(IPerson deceased) {
+    public String identifyMaritalStatus(final IPerson deceased) {
 
-        List<IPartnership> partnerships = deceased.getPartnerships();
+        final List<IPartnership> partnerships = deceased.getPartnerships();
 
-        if (partnerships.size() == 0) {
+        if (partnerships.isEmpty()) {
             if (deceased.getSex() == SexOption.MALE) {
                 return "B"; // bachelor
             } else {
                 return "S"; // single/spinster
             }
         } else {
-            IPartnership lastPartnership = PopulationNavigation.getLastPartnershipBeforeDate(deceased, marriageDate);
+            final IPartnership lastPartnership = PopulationNavigation.getLastPartnershipBeforeDate(deceased, marriageDate);
             if (lastPartnership == null) {
                 if (deceased.getSex() == SexOption.MALE) {
                     return "B"; // bachelor
                 } else {
                     return "S"; // single/spinster
                 }
-            } else if(lastPartnership.getSeparationDate(new JDKRandomGenerator()) == null) {
+            } else if(lastPartnership.getSeparationDate(PopulationStatistics.randomGenerator) == null) {
                 // not separated from last partner
 
-                IPerson lastPartner = PopulationNavigation.getLastPartnershipBeforeDate(deceased, marriageDate).getPartnerOf(deceased);
+                final IPerson lastPartner = PopulationNavigation.getLastPartnershipBeforeDate(deceased, marriageDate).getPartnerOf(deceased);
                 if (PopulationNavigation.aliveOnDate(lastPartner, marriageDate)) {
 
                     // last spouse alive on death date of deceased

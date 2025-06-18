@@ -34,20 +34,21 @@ import uk.ac.standrews.cs.valipop.Config;
  * @author Daniel Brathagen (dbrathagen@gmail.com)
  */
 @RunWith(Parameterized.class)
-public class ConfigTest {
-    private Path configPath;
-    private String errorOption;
+public class InvalidConfigurationTest {
+
+    private final Path configPath;
+    private final String errorOption;
 
     private static final Path TEST_RESOURCE_DIR = Path.of("src/test/resources/valipop/config/error");
 
-    public ConfigTest(Path configPath, String errorOption) {
+    public InvalidConfigurationTest(Path configPath, String errorOption) {
         this.configPath = configPath;
         this.errorOption = errorOption;
     }
     
     @Parameterized.Parameters
     public static Collection<Object[]> getTestCases() {
-        return Arrays.asList(new Object[][] {
+        return Arrays.asList(
             new Object[] { TEST_RESOURCE_DIR.resolve("config-1.txt"), "t0" },
             new Object[] { TEST_RESOURCE_DIR.resolve("config-2.txt"), "tE" },
             new Object[] { TEST_RESOURCE_DIR.resolve("config-3.txt"), "tS" },
@@ -63,8 +64,7 @@ public class ConfigTest {
             new Object[] { TEST_RESOURCE_DIR.resolve("config-13.txt"), "tE" },
             new Object[] { TEST_RESOURCE_DIR.resolve("config-14.txt"), "t0_pop_size" },
             new Object[] { TEST_RESOURCE_DIR.resolve("config-15.txt"), "var_data_files" },
-            new Object[] { TEST_RESOURCE_DIR.resolve("config-16.txt"), "Illegal line" },
-        });
+            new Object[] { TEST_RESOURCE_DIR.resolve("config-16.txt"), "Illegal line" });
     } 
 
     @Rule
@@ -72,7 +72,6 @@ public class ConfigTest {
 
     @Test
     public void test() {
-        System.out.println("Testing with " + configPath.toString());
 
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage(errorOption);

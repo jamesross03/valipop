@@ -8,7 +8,7 @@ import java.util.ListIterator;
 import java.util.RandomAccess;
 
 /**
- * Utiliity functions on Java Collections.
+ * Utility functions on Java Collections.
  * 
  * @author Tom Dalton (tsd4@st-andrews.ac.uk)
  */

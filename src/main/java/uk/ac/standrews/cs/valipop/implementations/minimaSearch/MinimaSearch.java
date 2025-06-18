@@ -2,6 +2,7 @@ package uk.ac.standrews.cs.valipop.implementations.minimaSearch;
 
 import uk.ac.standrews.cs.valipop.Config;
 import uk.ac.standrews.cs.valipop.implementations.*;
+import uk.ac.standrews.cs.valipop.statistics.populationStatistics.PopulationStatistics;
 import uk.ac.standrews.cs.valipop.utils.DoubleComparer;
 import uk.ac.standrews.cs.valipop.utils.ProcessArgs;
 import uk.ac.standrews.cs.valipop.utils.RCaller;
@@ -15,7 +16,6 @@ import java.time.Year;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 
 /**
  * @author Tom Dalton (tsd4@st-andrews.ac.uk)
@@ -39,8 +39,6 @@ public class MinimaSearch {
     private static double minimumMeaningfulStep = 0.04;
     private static double minimaSize = 5;
     private static double intervalBoundV = 0.02;
-
-    private static Random rand = new Random();
 
     private static LocalDate tS = LocalDate.of(1691,1,1);
     private static LocalDate t0 = LocalDate.of(1855,1,1);
@@ -233,7 +231,7 @@ public class MinimaSearch {
             System.out.println(bottomSearchBoundFactor);
             System.out.println(initStep);
             System.out.println(options);
-            int chosen = rand.nextInt(options);
+            int chosen = PopulationStatistics.randomGenerator.nextInt(options);
 
             chosenFactor = chosen * (initStep / 2) + bottomSearchBoundFactor;
 

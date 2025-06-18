@@ -33,7 +33,7 @@ class PopulationTestCases {
 
     synchronized static List<Object[]> getTestCases()  {
 
-        List<Object[]> testCases = new ArrayList<>();
+        final List<Object[]> testCases = new ArrayList<>();
 
         testCases.add(new Object[]{fullPopulation(200, 841584), 200});
         testCases.add(new Object[]{fullPopulation(350, 56854687), 350});
@@ -44,20 +44,20 @@ class PopulationTestCases {
 
     private static IPersonCollection fullPopulation(final int t0PopulationSize, final int seed)  {
 
-        LocalDate tS = LocalDate.of(1599, 1, 1);
-        LocalDate t0 = LocalDate.of(1855, 1, 1);
-        LocalDate tE = LocalDate.of(2016, 1, 1);
+        final LocalDate tS = LocalDate.of(1599, 1, 1);
+        final LocalDate t0 = LocalDate.of(1855, 1, 1);
+        final LocalDate tE = LocalDate.of(2016, 1, 1);
 
-        Path varPath = Paths.get("src/test/resources/valipop/test-pop");
-        String runPurpose = "general-structure-testing";
+        final Path varPath = Paths.get("src/test/resources/valipop/test-pop");
+        final String runPurpose = "general-structure-testing";
 
-        Config config = new Config(tS, t0, tE, t0PopulationSize, varPath, Config.DEFAULT_RESULTS_SAVE_PATH, runPurpose,
+        final Config config = new Config(tS, t0, tE, t0PopulationSize, varPath, Config.DEFAULT_RESULTS_SAVE_PATH, runPurpose,
                 Config.DEFAULT_RESULTS_SAVE_PATH).setDeterministic(true).setSeed(seed);
 
-        OBDModel model = new OBDModel(config);
+        final OBDModel model = new OBDModel(config);
         model.runSimulation();
 
-        PeopleCollection population = model.getPopulation().getPeople();
+        final PeopleCollection population = model.getPopulation().getPeople();
         population.setDescription("initial size=" + t0PopulationSize + ", seed=" + seed);
         return population;
     }

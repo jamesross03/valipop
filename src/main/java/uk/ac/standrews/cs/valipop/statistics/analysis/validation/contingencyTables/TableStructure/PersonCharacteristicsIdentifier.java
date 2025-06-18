@@ -16,10 +16,10 @@
  */
 package uk.ac.standrews.cs.valipop.statistics.analysis.validation.contingencyTables.TableStructure;
 
-import org.apache.commons.math3.random.JDKRandomGenerator;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPartnership;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPerson;
 import uk.ac.standrews.cs.valipop.statistics.analysis.validation.contingencyTables.TreeStructure.SeparationOption;
+import uk.ac.standrews.cs.valipop.statistics.populationStatistics.PopulationStatistics;
 
 import java.time.LocalDate;
 import java.time.Year;
@@ -34,15 +34,7 @@ import static uk.ac.standrews.cs.valipop.simulationEntities.PopulationNavigation
  */
 public class PersonCharacteristicsIdentifier {
 
-    private static final JDKRandomGenerator RANDOM_GENERATOR;
-    private static final int DETERMINISTIC_SEED = 458457824;
-
-    static {
-        RANDOM_GENERATOR = new JDKRandomGenerator();
-        RANDOM_GENERATOR.setSeed(DETERMINISTIC_SEED);
-    }
-
-    public static int getImmigrantGeneration(IPerson person) {
+    public static int getImmigrantGeneration(final IPerson person) {
 
         if(person.getImmigrationDate() != null) {
             return 1;
@@ -52,38 +44,36 @@ public class PersonCharacteristicsIdentifier {
                 return -1;
             } else {
 
-                int fathersIG = getImmigrantGeneration(person.getParents().getMalePartner());
-                int mothersIG = getImmigrantGeneration(person.getParents().getFemalePartner());
+                final int fathersIG = getImmigrantGeneration(person.getParents().getMalePartner());
+                final int mothersIG = getImmigrantGeneration(person.getParents().getFemalePartner());
 
-                if(fathersIG == -1 && mothersIG == -1)
+                if (fathersIG == -1 && mothersIG == -1)
                     return -1;
 
-                if(fathersIG == -1)
+                if (fathersIG == -1)
                     return mothersIG + 1;
 
-                if(mothersIG == -1)
+                if (mothersIG == -1)
                     return fathersIG + 1;
 
-                if(fathersIG < mothersIG)
+                if (fathersIG < mothersIG)
                     return fathersIG + 1;
                 else
                     return mothersIG + 1;
-
             }
         }
-
     }
 
     public static IPartnership getActivePartnership(final IPerson person, final LocalDate currentDate) {
 
-        List<IPartnership> partnershipsInYear = new ArrayList<>(getPartnershipsActiveInYear(person, Year.of(currentDate.getYear())));
+        final List<IPartnership> partnershipsInYear = new ArrayList<>(getPartnershipsActiveInYear(person, Year.of(currentDate.getYear())));
 
         if (partnershipsInYear.size() > 1) {
             throw new RuntimeException("Lots of partners in year - likely for a female to get this error");
-        } else if (partnershipsInYear.size() == 0) {
+        } else if (partnershipsInYear.isEmpty()) {
             return null;
         } else {
-            return partnershipsInYear.get(0);
+            return partnershipsInYear.getFirst();
         }
     }
 
@@ -91,7 +81,7 @@ public class PersonCharacteristicsIdentifier {
 
         int count = 0;
 
-        for (IPerson child : activePartnership.getChildren()) {
+        for (final IPerson child : activePartnership.getChildren()) {
             if (bornInYear(child, year)) {
                 count++;
             }
@@ -104,7 +94,7 @@ public class PersonCharacteristicsIdentifier {
 
         int count = 0;
 
-        for (IPerson child : activePartnership.getChildren()) {
+        for (final IPerson child : activePartnership.getChildren()) {
             if (child.getBirthDate().isBefore( year)) {
                 count++;
             }
@@ -120,11 +110,11 @@ public class PersonCharacteristicsIdentifier {
         }
 
         final List<IPerson> children = activePartnership.getChildren();
-        final IPerson lastChild = children.get(children.size() - 1);
+        final IPerson lastChild = children.getLast();
 
         if (!bornInYear(lastChild, year)) {
             return SeparationOption.NO;
-        } else if (activePartnership.getSeparationDate(RANDOM_GENERATOR) != null) { // TODO Would this be better to use earliest possible sep date?
+        } else if (activePartnership.getSeparationDate(PopulationStatistics.randomGenerator) != null) { // TODO Would this be better to use earliest possible sep date?
             return SeparationOption.YES;
         } else {
             return SeparationOption.NO;

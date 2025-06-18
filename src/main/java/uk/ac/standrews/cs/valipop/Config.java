@@ -218,12 +218,12 @@ public class Config implements Serializable {
 
     private Map<String, Processor> processors;
 
-    public static String formatTimeStamp(LocalDateTime startTime) {
+    public static String formatTimeStamp(final LocalDateTime startTime) {
         return startTime.format(FORMATTER);
     }
 
     // Initialise configuration programmatically
-    public Config(LocalDate tS, LocalDate t0, LocalDate tE, int t0PopulationSize, Path varPath, Path resultsDir, String runPurpose, Path summaryResultsDir) {
+    public Config(final LocalDate tS, final LocalDate t0, final LocalDate tE, final int t0PopulationSize, final Path varPath, final Path resultsDir, final String runPurpose, final Path summaryResultsDir) {
         this.tS = tS;
         this.t0 = t0;
         this.tE = tE;
@@ -241,7 +241,7 @@ public class Config implements Serializable {
     }
 
     // Initialise configuration from file
-    public Config(Path pathToConfigFile) {
+    public Config(final Path pathToConfigFile) {
         configureFileProcessors();
         readConfigFile(pathToConfigFile);
 
@@ -253,7 +253,7 @@ public class Config implements Serializable {
     }
 
     private void setGeographyPath() {
-        Iterator<Path> it = getVarGeographyPaths().iterator();
+        final Iterator<Path> it = getVarGeographyPaths().iterator();
         setGeographyFilePath(it.next());
 
         if(it.hasNext())
@@ -292,7 +292,7 @@ public class Config implements Serializable {
         return projectPath;
     }
 
-    private Path pathToLogDir(String runPurpose, LocalDateTime startTime, Path resultPath) {
+    private Path pathToLogDir(final String runPurpose, final LocalDateTime startTime, final Path resultPath) {
         return resultPath.resolve(runPurpose).resolve(formatTimeStamp(startTime)).resolve("log").resolve("trace.txt");
     }
 
@@ -436,7 +436,7 @@ public class Config implements Serializable {
         return runPurpose;
     }
 
-    public Config setRunPurpose(String runPurpose) {
+    public Config setRunPurpose(final String runPurpose) {
 
         this.runPurpose = runPurpose;
         return this;
@@ -486,94 +486,94 @@ public class Config implements Serializable {
         return deterministic;
     }
 
-    public Config setDeterministic(boolean deterministic) {
+    public Config setDeterministic(final boolean deterministic) {
 
         this.deterministic = deterministic;
         return this;
     }
 
-    public Config setSetupBirthRate(double setUpBR) {
+    public Config setSetupBirthRate(final double setUpBR) {
 
         this.setUpBR = setUpBR;
         return this;
     }
 
-    public Config setSetupDeathRate(double setUpDR) {
+    public Config setSetupDeathRate(final double setUpDR) {
 
         this.setUpDR = setUpDR;
         return this;
     }
 
-    public Config setRecoveryFactor(double recoveryFactor) {
+    public Config setRecoveryFactor(final double recoveryFactor) {
 
         this.recoveryFactor = recoveryFactor;
         return this;
     }
 
-    public Config setProportionalRecoveryFactor(double proportionalRecoveryFactor) {
+    public Config setProportionalRecoveryFactor(final double proportionalRecoveryFactor) {
 
         this.proportionalRecoveryFactor = proportionalRecoveryFactor;
         return this;
     }
 
-    public Config setInputWidth(Period inputWidth) {
+    public Config setInputWidth(final Period inputWidth) {
 
         this.inputWidth = inputWidth;
         return this;
     }
 
-    public Config setMinBirthSpacing(Period minBirthSpacing) {
+    public Config setMinBirthSpacing(final Period minBirthSpacing) {
 
         this.minBirthSpacing = minBirthSpacing;
         return this;
     }
 
-    public Config setMinGestationPeriod(Period minGestationPeriod) {
+    public Config setMinGestationPeriod(final Period minGestationPeriod) {
 
         this.minGestationPeriod = minGestationPeriod;
         return this;
     }
 
-    public Config setResultsSavePath(Path resultsSavePath) {
+    public Config setResultsSavePath(final Path resultsSavePath) {
 
         this.resultsSavePath = resultsSavePath;
         return this;
     }
 
-    public Config setProjectPath(Path projectPath) {
+    public Config setProjectPath(final Path projectPath) {
         this.projectPath = projectPath;
         return this;
     }
 
-    private DirectoryStream<Path> getDirectories(Path path) {
+    private DirectoryStream<Path> getDirectories(final Path path) {
 
         try {
             return Files.newDirectoryStream(path, filter);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     private void initialiseVarPaths() {
 
-        Path birthPath = varPath.resolve(birthSubFile);
+        final Path birthPath = varPath.resolve(birthSubFile);
         varOrderedBirthPaths = birthPath.resolve(orderedBirthSubFile);
         varMultipleBirthPaths = birthPath.resolve(multipleBirthSubFile);
         varAdulterousBirthPaths = birthPath.resolve(adulterousBirthSubFile);
         varBirthRatioPaths = birthPath.resolve(birthRatioSubFile);
 
-        Path deathPath = varPath.resolve(deathSubFile);
+        final Path deathPath = varPath.resolve(deathSubFile);
         varMaleLifetablePaths = deathPath.resolve(maleDeathSubFile).resolve(lifetableSubFile);
         varMaleDeathCausesPaths = deathPath.resolve(maleDeathSubFile).resolve(deathCauseSubFile);
         varFemaleLifetablePaths = deathPath.resolve(femaleDeathSubFile).resolve(lifetableSubFile);
         varFemaleDeathCausesPaths = deathPath.resolve(femaleDeathSubFile).resolve(deathCauseSubFile);
 
-        Path relationshipsPath = varPath.resolve(relationshipsSubFile);
+        final Path relationshipsPath = varPath.resolve(relationshipsSubFile);
         varPartneringPaths = relationshipsPath.resolve(partneringSubFile);
         varSeparationPaths = relationshipsPath.resolve(separationSubFile);
         varMarriagePaths = relationshipsPath.resolve(marriageSubFile);
 
-        Path annotationsPath = varPath.resolve(annotationsSubFile);
+        final Path annotationsPath = varPath.resolve(annotationsSubFile);
         varMaleForenamePaths = annotationsPath.resolve(maleForenameSubFile);
         varFemaleForenamePaths = annotationsPath.resolve(femaleForenameSubFile);
 
@@ -595,18 +595,18 @@ public class Config implements Serializable {
 
     }
 
-    public static void mkBlankFile(Path blankFilePath) {
+    public static void mkBlankFile(final Path blankFilePath) {
 
         try {
             FileManipulation.createFileIfDoesNotExist(blankFilePath);
-        } catch (FileAlreadyExistsException e){
+        } catch (final FileAlreadyExistsException e){
 
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static void mkSummaryFile(Path summaryFilePath) {
+    private static void mkSummaryFile(final Path summaryFilePath) {
 
         if(summaryFilePath.toFile().exists()) {
             return;
@@ -614,16 +614,16 @@ public class Config implements Serializable {
 
         try {
             mkBlankFile(summaryFilePath);
-            PrintWriter write = new PrintWriter(summaryFilePath.toFile());
+            final PrintWriter write = new PrintWriter(summaryFilePath.toFile());
             write.println(SummaryRow.getSeparatedHeadings());
             write.close();
 
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void mkDirs(Path path) {
+    private void mkDirs(final Path path) {
 
         if (!Files.exists(path)) {
             new File(path.toString()).mkdirs();
@@ -670,21 +670,21 @@ public class Config implements Serializable {
         processors.put("proportional_recovery_factor", value -> proportionalRecoveryFactor = parseDouble(value, "recovery_factor"));
         processors.put("over_sized_geography_factor", value -> overSizedGeographyFactor = parseOversizedGeographyFactor(value, "over_sized_geography_factor"));
 
-        processors.put("binomial_sampling", value -> binomialSampling = value.toLowerCase().equals("true"));
-        processors.put("output_tables", value -> outputTables = value.toLowerCase().equals("true"));
-        processors.put("deterministic", value -> deterministic = value.toLowerCase().equals("true"));
+        processors.put("binomial_sampling", value -> binomialSampling = value.equalsIgnoreCase("true"));
+        processors.put("output_tables", value -> outputTables = value.equalsIgnoreCase("true"));
+        processors.put("deterministic", value -> deterministic = value.equalsIgnoreCase("true"));
 
         processors.put("output_record_format", value -> {
             try {
                 outputRecordFormat = RecordFormat.valueOf(value);
-            } catch (IllegalArgumentException e) {
+            } catch (final IllegalArgumentException e) {
                 throw new IllegalArgumentException("'" + value + "' not a valid option for `output_record_format`");
             }
         });
         processors.put("output_graph_format", value -> {
             try {
                 outputGraphFormat = ExportFormat.valueOf(value);
-            } catch (IllegalArgumentException e) {
+            } catch (final IllegalArgumentException e) {
                 throw new IllegalArgumentException("'" + value + "' not a valid option for `output_graph_format`");
             }
         });
@@ -692,50 +692,48 @@ public class Config implements Serializable {
         processors.put("run_purpose", value -> runPurpose = value);
     }
 
-    private LocalDate parseDate(String value, String option) {
+    private LocalDate parseDate(final String value, final String option) {
         try {
             return LocalDate.parse(value);
-        } catch (DateTimeParseException e) {
+        } catch (final DateTimeParseException e) {
             throw new IllegalArgumentException("`" + option + "` must a parseable date, not '" + value + "'");
         }
     }
 
-    private Period parsePeriod(String value, String option) {
+    private Period parsePeriod(final String value, final String option) {
         try {
             return Period.parse(value);
-        } catch (DateTimeParseException e) {
+        } catch (final DateTimeParseException e) {
             throw new IllegalArgumentException("`" + option + "` must be a period of the format 'P<years>Y<months>M<days>D', not '" + value + "'");
         }
     }
 
-    private int parseInteger(String value, String option) {
+    private int parseInteger(final String value, final String option) {
         try {
             return Integer.parseInt(value);
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             throw new IllegalArgumentException("`" + option + "` must be an integer, not '" + value + "'");
         }
-
     }
 
-    private int parsePositiveInteger(String value, String option) {
-        int val = parseInteger(value, option);
+    private int parsePositiveInteger(final String value, final String option) {
+        final int val = parseInteger(value, option);
         if (val < 0) {
             throw new IllegalArgumentException("`" + option + "` cannot be a negative number");
         }
         return val;
     }
 
-    private double parseDouble(String value, String option) {
+    private double parseDouble(final String value, final String option) {
         try {
             return Double.parseDouble(value);
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             throw new IllegalArgumentException("`" + option + "` must be a floating point number, not '" + value + "'");
         }
-
     }
 
-    public double parseOversizedGeographyFactor(String value, String option) {
-        double v = parseDouble(value, option);
+    public double parseOversizedGeographyFactor(final String value, final String option) {
+        final double v = parseDouble(value, option);
 
         if(v < 1) {
             throw new IllegalArgumentException("`" + option + "` cannot be less than 1");
@@ -744,16 +742,16 @@ public class Config implements Serializable {
         return v;
     }
 
-    public void setOverSizedGeographyFactor(String value) {
+    public void setOverSizedGeographyFactor(final String value) {
         overSizedGeographyFactor = parseOversizedGeographyFactor(value, "over_sized_geography_factor");
     }
 
-    private void readConfigFile(Path pathToConfigFile) {
+    private void readConfigFile(final Path pathToConfigFile) {
 
         try {
-            for (String line : InputFileReader.getAllLines(pathToConfigFile)) {
+            for (final String line : InputFileReader.getAllLines(pathToConfigFile)) {
 
-                String[] split = line.split("=");
+                final String[] split = line.split("=");
 
                 if (split.length < 2) {
                     throw new IllegalArgumentException("Illegal line '" + line + "' read in config file. Each line should be of the format '<option> = <value>'");
@@ -764,13 +762,13 @@ public class Config implements Serializable {
                 // Join remaining equals together if any, in case they were part of the value
                 final String value = String.join("=", Arrays.copyOfRange(split, 1, split.length)).trim();
 
-                Processor processor = processors.get(key);
+                final Processor processor = processors.get(key);
                 if (processor == null) {
                     throw new RuntimeException("No configuration processor defined for key: " + key);
                 }
                 processor.set(value);
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             log.severe("error reading config: " + e.getMessage());
             throw new RuntimeException(e);
         }
@@ -811,17 +809,17 @@ public class Config implements Serializable {
     private void setUpFileStructure() {
 
         globalSummaryPath = summaryResultsDirPath.resolve( "global-results-summary.csv");
-        Path purpose = resultsSavePath.resolve(runPurpose);
+        final Path purpose = resultsSavePath.resolve(runPurpose);
         resultsSummaryPath = summaryResultsDirPath.resolve(runPurpose).resolve( runPurpose + "-results-summary.csv");
         runPath = purpose.resolve(formatTimeStamp(startTime));
         detailedResultsPath = runPath.resolve("detailed-results-" + formatTimeStamp(startTime) + ".txt");
-        Path dumpPath = runPath.resolve("dump");
+        final Path dumpPath = runPath.resolve("dump");
         birthOrdersPath = dumpPath.resolve("order.csv");
         recordsPath = runPath.resolve("records");
         graphsPath = runPath.resolve("graphs");
         contingencyTablesPath = runPath.resolve("tables");
-        Path log = runPath.resolve("log");
-        Path tracePath = log.resolve("trace.txt");
+        final Path log = runPath.resolve("log");
+        final Path tracePath = log.resolve("trace.txt");
 
         mkDirs(resultsSavePath);
         mkDirs(purpose);
@@ -844,21 +842,20 @@ public class Config implements Serializable {
 
         try {
 
-            Logger globalLogger = Logger.getLogger("");
+            final Logger globalLogger = Logger.getLogger("");
 
             // When running sims back to back we need to first stop writing to the old log file
-            for(Handler h : globalLogger.getHandlers()) {
+            for(final Handler h : globalLogger.getHandlers()) {
                 globalLogger.removeHandler(h);
             }
 
-            Handler handler = new FileHandler(pathToLogDir(runPurpose, startTime, resultsSavePath).toString());
+            final Handler handler = new FileHandler(pathToLogDir(runPurpose, startTime, resultsSavePath).toString());
             handler.setFormatter(new SimpleFormatter());
-
 
             globalLogger.addHandler(handler);
             globalLogger.setLevel(logLevel);
 
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -867,28 +864,28 @@ public class Config implements Serializable {
         return geographyFilePath;
     }
 
-    public void setGeographyFilePath(Path geographyFilePath) {
+    public void setGeographyFilePath(final Path geographyFilePath) {
         this.geographyFilePath = geographyFilePath;
     }
 
-    public void setOutputRecordFormat(RecordFormat output_record_format) {
+    public void setOutputRecordFormat(final RecordFormat output_record_format) {
         this.outputRecordFormat = output_record_format;
     }
 
-    public Config setSeed(int seed) {
+    public Config setSeed(final int seed) {
         this.seed = seed;
         return this;
     }
 
-    public void setTimestep(Period timestep) {
+    public void setTimestep(final Period timestep) {
         this.simulationTimeStep = timestep;
     }
 
-    public void setBinomialSampling(boolean binomial_sampling) {
+    public void setBinomialSampling(final boolean binomial_sampling) {
         this.binomialSampling = binomial_sampling;
     }
 
-    public void setCTtreeStepBack(int ct_tree_stepback) {
+    public void setCTtreeStepBack(final int ct_tree_stepback) {
         this.ctTreeStepback = ct_tree_stepback;
     }
 
@@ -896,7 +893,7 @@ public class Config implements Serializable {
         return ctTreePrecision;
     }
 
-    public void setCTtreePrecision(double precision) {
+    public void setCTtreePrecision(final double precision) {
         this.ctTreePrecision = precision;
     }
 
@@ -973,7 +970,7 @@ public class Config implements Serializable {
         );
     }
 
-    public Config(SerializableConfig config) {
+    public Config(final SerializableConfig config) {
         this.varPath                          =Path.of(config.varPath);
         this.varOrderedBirthPaths             =Path.of(config.varOrderedBirthPaths);
         this.varMaleLifetablePaths            =Path.of(config.varMaleLifetablePaths);

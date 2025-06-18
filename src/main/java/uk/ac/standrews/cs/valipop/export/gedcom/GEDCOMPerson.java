@@ -67,11 +67,6 @@ public class GEDCOMPerson implements IPerson {
     }
 
     @Override
-    public Surname getSurnameRef() {
-        return surname;
-    }
-
-    @Override
     public SexOption getSex() {
         return sex;
     }

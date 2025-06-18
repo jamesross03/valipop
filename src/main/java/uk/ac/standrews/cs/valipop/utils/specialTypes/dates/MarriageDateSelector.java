@@ -20,18 +20,18 @@ public class MarriageDateSelector extends DateSelector {
     private static final double averageYearsFromMarriageToChild = 3.0;
     private static final int daysInYear = 365;
 
-    public MarriageDateSelector(RandomGenerator random) {
+    public MarriageDateSelector(final RandomGenerator random) {
 
         super(random);
         distribution = new PoissonDistribution(random, poissonM - 0.5, PoissonDistribution.DEFAULT_EPSILON, PoissonDistribution.DEFAULT_MAX_ITERATIONS);
     }
 
-    public LocalDate selectRandomDate(LocalDate earliestDate, LocalDate latestDate) {
+    public LocalDate selectRandomDate(final LocalDate earliestDate, final LocalDate latestDate) {
 
-        int daysInWindow = (int) DAYS.between(earliestDate, latestDate);
+        final int daysInWindow = (int) DAYS.between(earliestDate, latestDate);
 
-        double chosenYear = distribution.sample() * averageYearsFromMarriageToChild / poissonM;
-        double dayAdjust = random.nextInt((int) (Math.floor(daysInYear * (averageYearsFromMarriageToChild / poissonM))));
+        final double chosenYear = distribution.sample() * averageYearsFromMarriageToChild / poissonM;
+        final double dayAdjust = random.nextInt((int) (Math.floor(daysInYear * (averageYearsFromMarriageToChild / poissonM))));
 
         int chosenDay = Math.toIntExact(Math.round(chosenYear * daysInYear + dayAdjust));
 
@@ -41,6 +41,6 @@ public class MarriageDateSelector extends DateSelector {
             chosenDay = random.nextInt(daysInWindow);
         }
 
-        return latestDate.minus(chosenDay, DAYS);
+        return latestDate.minusDays(chosenDay);
     }
 }

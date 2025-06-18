@@ -1,18 +1,16 @@
 package uk.ac.standrews.cs.valipop.utils.sourceEventRecords.egSkyeFormat;
 
 import uk.ac.standrews.cs.valipop.simulationEntities.IPerson;
+import uk.ac.standrews.cs.valipop.statistics.populationStatistics.PopulationStatistics;
 import uk.ac.standrews.cs.valipop.utils.sourceEventRecords.oldDSformat.BirthSourceRecord;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.Random;
 
 /**
  * @author Tom Dalton (tsd4@st-andrews.ac.uk)
  */
 public class EGSkyeBirthSourceRecord extends BirthSourceRecord {
-
-    private static Random rng = new Random();
 
     protected int familyID = -1;
     protected LocalDate birthDate;
@@ -34,7 +32,7 @@ public class EGSkyeBirthSourceRecord extends BirthSourceRecord {
             fathers_surname = person.getParents().getMalePartner().getSurname();
         }
 
-        int registrationDay = rng.nextInt(43);
+        int registrationDay = PopulationStatistics.randomGenerator.nextInt(43);
         registrationDate = birthDate.plus(registrationDay, ChronoUnit.DAYS);
 
         illegitimate = person.isAdulterousBirth() ? "illegitimate" : "";

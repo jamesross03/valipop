@@ -420,7 +420,7 @@ public abstract class GeneralPopulationStructureTest {
         }
     }
 
-    private void assertBirthBeforeMarriages(final IPerson person) {
+    private static void assertBirthBeforeMarriages(final IPerson person) {
 
         if (person.getBirthDate() != null) {
 
@@ -436,7 +436,7 @@ public abstract class GeneralPopulationStructureTest {
         }
     }
 
-    private void assertMarriagesBeforeDeath(final IPerson person) {
+    private static void assertMarriagesBeforeDeath(final IPerson person) {
 
         if (person.getDeathDate() != null) {
 

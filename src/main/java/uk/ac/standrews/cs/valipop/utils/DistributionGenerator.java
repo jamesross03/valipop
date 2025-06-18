@@ -1,8 +1,8 @@
 package uk.ac.standrews.cs.valipop.utils;
 
-import org.apache.commons.math3.random.JDKRandomGenerator;
 import uk.ac.standrews.cs.nds.util.FileUtil;
 import uk.ac.standrews.cs.valipop.statistics.distributions.InconsistentWeightException;
+import uk.ac.standrews.cs.valipop.statistics.populationStatistics.PopulationStatistics;
 import uk.ac.standrews.cs.valipop.utils.specialTypes.labeledValueSets.IntegerRange;
 import uk.ac.standrews.cs.valipop.utils.specialTypes.labeledValueSets.LabelledValueSet;
 
@@ -19,10 +19,10 @@ import java.util.*;
  */
 public class DistributionGenerator {
 
-
+    // TODO document.
     public static void main(String[] args) throws IOException, InvalidInputFileException, InconsistentWeightException {
 
-        for(String s: args)
+        for (String s: args)
             System.out.println(s);
 
         int forYear;
@@ -50,9 +50,7 @@ public class DistributionGenerator {
                 "src/main/resources/valipop/inputs/icem-scot-1861/icem-scot-1861-counties-E-K.csv",
                 "src/main/resources/valipop/inputs/icem-scot-1861/icem-scot-1861-counties-L-P.csv"};
 
-//        String[] files = {"src/main/resources/valipop/inputs/icem-scot-1861/test.csv"};
-
-        for(String file : files) {
+        for (String file : files) {
             ArrayList<String> fileLines = new ArrayList<>(InputFileReader.getAllLines(Paths.get(file)));
 
             if (lines.isEmpty()) {
@@ -67,61 +65,43 @@ public class DistributionGenerator {
 
         DataRowSet dataset = new DataRowSet(labels, lines, filterOn, filterValue);
 
-        if(dataset.hasLabel(filterOn) && dataset.hasLabel(groupY) && dataset.hasLabel(groupX)) {
+        if (dataset.hasLabel(filterOn) && dataset.hasLabel(groupY) && dataset.hasLabel(groupX)) {
 
-//            Map<String, DataRowSet> tables = dataset.splitOn(filterOn);
+            // TODO handle random generator consistently with main simulation.
+            TreeMap<IntegerRange, LabelledValueSet<String, Double>> dist = dataset.to2DTableOfProportions(groupX, groupY, PopulationStatistics.randomGenerator);
 
-//            for(String splitOn : tables.keySet()) {
+            PrintStream ps = FileUtil.createPrintStreamToFile(Paths.get(outToDir.toString(), filterValue + ".txt").toString());
 
-//                DataRowSet table = tables.get(splitOn);
+            boolean first = true;
 
-                TreeMap<IntegerRange, LabelledValueSet<String, Double>> dist = dataset.to2DTableOfProportions(groupX, groupY, new JDKRandomGenerator());
+            ps.println("YEAR\t" + forYear);
+            ps.println("POPULATION\t" + sourcePopulation);
+            ps.println("SOURCE\t" + sourceOrganisation);
+            ps.println("VAR\tOCCUPATION");
+            ps.println("FORM\tPROPORTION");
+            ps.println("SEX\t" + filterValue);
 
-                PrintStream ps = FileUtil.createPrintStreamToFile(Paths.get(outToDir.toString(), filterValue + ".txt").toString());
+            for (IntegerRange iR: dist.keySet()) {
 
-                boolean first = true;
+                LabelledValueSet<String, Double> row = dist.get(iR);
 
-                ps.println("YEAR\t" + forYear);
-                ps.println("POPULATION\t" + sourcePopulation);
-                ps.println("SOURCE\t" + sourceOrganisation);
-                ps.println("VAR\tOCCUPATION");
-                ps.println("FORM\tPROPORTION");
-                ps.println("SEX\t" + filterValue);
-
-                for(IntegerRange iR: dist.keySet()) {
-
-                    LabelledValueSet<String, Double> row = dist.get(iR);
-
-                    if(first) {
-                        ps.print("LABELS\t");
-                        for(String s : row.getLabels())
-                            ps.print(s + "\t");
-                        ps.println();
-                        ps.println("DATA");
-                        first = false;
-                    }
-                    ps.print(iR + " \t");
-
-                    for(String s : row.getLabels())
-                        ps.print(row.getValue(s) + "\t");
-
+                if (first) {
+                    ps.print("LABELS\t");
+                    for (String s : row.getLabels())
+                        ps.print(s + "\t");
                     ps.println();
+                    ps.println("DATA");
+                    first = false;
                 }
+                ps.print(iR + " \t");
 
-                ps.close();
+                for (String s : row.getLabels())
+                    ps.print(row.getValue(s) + "\t");
 
-
+                ps.println();
             }
 
-
-//        } else {
-//            throw new InvalidInputFileException("group or/and filter variables do not appear in file labels");
-//        }
-
-
-
-
+            ps.close();
+        }
     }
-
-
 }
