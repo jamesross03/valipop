@@ -44,14 +44,27 @@ public class PersonFactory {
         return new Person(sex, birthDate, parents, desired, adulterous, immigrant);
     }
 
-    public IPerson makePerson(final LocalDate birthDate, final IPartnership parents, final boolean adulterous, final boolean immigrant, SexOption sex) {
+    public IPerson makePerson(final LocalDate birthDate, final IPartnership parents, final boolean adulterous, final boolean immigrant, final SexOption sex) {
 
-        if(sex == SexOption.MALE)
+        if (sex == SexOption.MALE)
             population.getPopulationCounts().newMale();
         else
             population.getPopulationCounts().newFemale();
 
-        return new Person(sex, birthDate, parents, desired, adulterous, immigrant);
+        Person person = new Person(sex, birthDate, parents, desired, adulterous, immigrant);
+        return person;
+    }
+
+    public IPerson makePerson(final LocalDate birthDate, final IPartnership parents, final boolean adulterous, final boolean immigrant, final SexOption sex, final String surname) {
+
+        if (sex == SexOption.MALE)
+            population.getPopulationCounts().newMale();
+        else
+            population.getPopulationCounts().newFemale();
+
+        Person person = new Person(sex, birthDate, parents, desired, adulterous, immigrant);
+        if (surname != null) person.setSurname(surname);
+        return person;
     }
 
     public IPerson makePersonWithRandomBirthDate(final LocalDate currentDate, final IPartnership parents, final boolean adulterous) {

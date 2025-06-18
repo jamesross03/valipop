@@ -29,7 +29,7 @@ public class RCaller {
     private static final Path R_SCRIPT_LOCATION = Path.of("analysis.R");
     private static final Path R_SCRIPT_OUTPUT_LOCATION = Path.of("analysis.out");
 
-    private static final String[] R_SCRIPT_PATHS = new String[]{
+    private static final String[] R_SCRIPT_PATHS = {
         "valipop/analysis-r/geeglm/process-data-functions.R",
         "valipop/analysis-r/geeglm/id-funtions.R",
         "valipop/analysis-r/geeglm/geeglm-functions.R",
@@ -45,19 +45,20 @@ public class RCaller {
      * 
      * @return the parameter {@code rScriptPath}
      */
-    public static Path extractRScript(Path rScriptPath) throws IOException {
+    public static Path extractRScript(final Path rScriptPath) throws IOException {
+
         // The file the R is written to
-        File rScriptFile = new File(rScriptPath.toString());
+        final File rScriptFile = new File(rScriptPath.toString());
 
         // This overwrites any existing file of the same name
-        FileWriter rScriptFileWriter = new FileWriter(rScriptFile, false);
+        final FileWriter rScriptFileWriter = new FileWriter(rScriptFile, false);
         rScriptFileWriter.close();
 
-        for (String script : R_SCRIPT_PATHS) {
+        for (final String script : R_SCRIPT_PATHS) {
             try (
                 // Retrieving the R files as streams in case they are in a jar
-                InputStream stream = RCaller.class.getClassLoader().getResourceAsStream(script);
-                OutputStream output = new FileOutputStream(rScriptFile, true)
+                final InputStream stream = RCaller.class.getClassLoader().getResourceAsStream(script);
+                final OutputStream output = new FileOutputStream(rScriptFile, true)
             ) {
                 IOUtils.copy(stream, output);
             }
@@ -75,10 +76,10 @@ public class RCaller {
      * 
      * @return the executing process
      */
-    public static Process runRScript(Path runDirPath, Path rScriptPath, int maxBirthingAge) throws IOException {
+    public static Process runRScript(final Path runDirPath, final Path rScriptPath, final int maxBirthingAge) throws IOException {
 
-        String[] params = {runDirPath.toAbsolutePath().toString(), String.valueOf(maxBirthingAge)};
-        String[] commands = joinArrays(new String[]{ "Rscript", rScriptPath.toString()}, params);
+        final String[] params = {runDirPath.toAbsolutePath().toString(), String.valueOf(maxBirthingAge)};
+        final String[] commands = joinArrays(new String[]{ "Rscript", rScriptPath.toString()}, params);
 
         return new ProcessBuilder(commands).start();
     }
@@ -89,25 +90,26 @@ public class RCaller {
      * @param process the executing R analysis process
      * @param outputPath the path of the process output and error streams
      */
-    public static double getRScriptResult(Process process, Path outputPath) throws IOException {
+    public static double getRScriptResult(final Process process, final Path outputPath) throws IOException {
+
         // Extracting stdout and stderr
-        BufferedReader stdout = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        BufferedReader stderr = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+        final BufferedReader stdout = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        final BufferedReader stderr = new BufferedReader(new InputStreamReader(process.getErrorStream()));
 
         // The file the output of the R script is written to
-        File outputFile = new File(outputPath.toString());
-        FileWriter outputFileWriter = new FileWriter(outputFile, false);
+        final File outputFile = new File(outputPath.toString());
+        final FileWriter outputFileWriter = new FileWriter(outputFile, false);
         outputFile.createNewFile();
 
         // Filter relevant lines, calculate v per line and sum together
-        int v = stdout.lines()
+        final int v = stdout.lines()
             // Writing lines to file
             .peek((l) -> {
                 try {
                     outputFileWriter.write(l);
                     outputFileWriter.append("\n");
-                } catch (IOException e) {
-                    System.err.println("Unable to write results of analysis to file " + outputPath.toString());
+                } catch (final IOException e) {
+                    System.err.println("Unable to write results of analysis to file " + outputPath);
                 }
             })
             .filter(RCaller::filterAnalysis)
@@ -133,10 +135,11 @@ public class RCaller {
      * @param runDirPath the path of the run directory 
      * @param maxBirthingAge the maximum birthing age of the population model
      */
-    public static double getGeeglmV(Path runDirPath, int maxBirthingAge) throws IOException, StatsException {
-        Path rScriptPath = extractRScript(runDirPath.resolve(R_SCRIPT_LOCATION));
-        Process process = runRScript(runDirPath, rScriptPath, maxBirthingAge);
-        double v = getRScriptResult(process, runDirPath.resolve(R_SCRIPT_OUTPUT_LOCATION));
+    public static double getGeeglmV(final Path runDirPath, final int maxBirthingAge) throws IOException {
+
+        final Path rScriptPath = extractRScript(runDirPath.resolve(R_SCRIPT_LOCATION));
+        final Process process = runRScript(runDirPath, rScriptPath, maxBirthingAge);
+        final double v = getRScriptResult(process, runDirPath.resolve(R_SCRIPT_OUTPUT_LOCATION));
 
         process.destroy();
 
@@ -145,18 +148,18 @@ public class RCaller {
 
     // Private methods
 
-    private static boolean filterAnalysis(String line) {
-        // Only STATS interactions are signficant; 
+    private static boolean filterAnalysis(final String line) {
+        // Only STATS interactions are significant;
         return line.contains("STAT");
     }
 
-    private static double countV(String line) {
-        int MAX_STARS = 3;
-        double[] STAR_VALUES = new double[]{ 2, 3, 4 };
+    private static double countV(final String line) {
+        final int MAX_STARS = 3;
+        final double[] STAR_VALUES = new double[]{ 2, 3, 4 };
 
         // Scan for sequences stars
         // Start from max star count to prevent lower star counts from identifying first
-        int[] starCounts = new int[MAX_STARS];
+        final int[] starCounts = new int[MAX_STARS];
         for (int starNumber = MAX_STARS; starNumber > 0; starNumber--) {
             starCounts[starNumber - 1] = 0;
 
@@ -167,7 +170,7 @@ public class RCaller {
         }
 
         // Clever way to count dots in line
-        double dotCount = (line.length() - line.replace(".  ", "").length()) / 3;
+        final double dotCount = (line.length() - line.replace(".  ", "").length()) / 3;
         double value = dotCount / 3;
         for (int i = 0; i < MAX_STARS; i++) {
             value += starCounts[i] * STAR_VALUES[i];
@@ -176,8 +179,8 @@ public class RCaller {
         return value;
     }
 
-    private static String[] joinArrays(String[] first, String[] second) {
-        List<String> both = new ArrayList<String>(first.length + second.length);
+    private static String[] joinArrays(final String[] first, final String[] second) {
+        final List<String> both = new ArrayList<String>(first.length + second.length);
         Collections.addAll(both, first);
         Collections.addAll(both, second);
         return both.toArray(new String[0]);

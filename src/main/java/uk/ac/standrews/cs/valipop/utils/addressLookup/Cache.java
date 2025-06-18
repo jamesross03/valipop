@@ -74,12 +74,12 @@ public class Cache implements Serializable {
 
         areaIndex.remove(area.getPlaceID(), area);
 
-        Map<Double, Area> index = lookupHistory.get(round(area.getCentriod().lat));
+        Map<Double, Area> index = lookupHistory.get(round(area.getCentroid().lat));
         if(index != null) {
-            index.remove(round(area.getCentriod().lon), area);
+            index.remove(round(area.getCentroid().lon), area);
 
             if (index.size() == 0) {
-                lookupHistory.remove(round(area.getCentriod().lat), index);
+                lookupHistory.remove(round(area.getCentroid().lat), index);
             }
         }
 

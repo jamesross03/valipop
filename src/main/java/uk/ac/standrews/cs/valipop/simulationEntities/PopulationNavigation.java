@@ -17,7 +17,7 @@ public class PopulationNavigation {
 
     private static final int NUMBER_OF_GENERATIONS_TO_EXCLUDE = 3;
 
-    public static Collection<IPerson> siblingsOf(IPerson person) {
+    public static Collection<IPerson> siblingsOf(final IPerson person) {
 
         // Include half-siblings.
 
@@ -33,9 +33,9 @@ public class PopulationNavigation {
         return siblings;
     }
 
-    public static Collection<IPerson> imidiateFamilyOf(IPerson root) {
+    public static Collection<IPerson> imidiateFamilyOf(final IPerson root) {
 
-        Collection<IPerson> family = new ArrayList<>();
+        final Collection<IPerson> family = new ArrayList<>();
 
         family.addAll(siblingsOf(root));
         family.addAll(siblingsOf(root));
@@ -43,112 +43,111 @@ public class PopulationNavigation {
         family.addAll(ancestorsOf(root, 1));
 
         return family;
-
     }
 
-    private static Collection<IPerson> siblingsOf(IPerson person, SexOption sex) {
+    private static Collection<IPerson> siblingsOf(final IPerson person, final SexOption sex) {
 
-        Collection<IPerson> siblings = siblingsOf(person);
+        final Collection<IPerson> siblings = siblingsOf(person);
         siblings.removeIf(p -> p.getSex() != sex);
         return siblings;
     }
 
-    public static Collection<IPerson> sistersOf(IPerson person) {
+    public static Collection<IPerson> sistersOf(final IPerson person) {
 
         return siblingsOf(person, SexOption.FEMALE);
     }
 
-    public static Collection<IPerson> brothersOf(IPerson person) {
+    public static Collection<IPerson> brothersOf(final IPerson person) {
 
         return siblingsOf(person, SexOption.MALE);
     }
 
-    public static Collection<IPerson> partnersOf(IPerson person) {
+    public static Collection<IPerson> partnersOf(final IPerson person) {
 
-        Collection<IPerson> partners = new TreeSet<>();
+        final Collection<IPerson> partners = new TreeSet<>();
 
-        for (IPartnership partnership : person.getPartnerships()) {
+        for (final IPartnership partnership : person.getPartnerships()) {
             partners.add(partnership.getPartnerOf(person));
         }
         return partners;
     }
 
-    private static Collection<IPerson> descendantsOf(Collection<IPerson> people) {
+    private static Collection<IPerson> descendantsOf(final Collection<IPerson> people) {
 
-        Collection<IPerson> descendants = new TreeSet<>();
-        for (IPerson person : people) {
+        final Collection<IPerson> descendants = new TreeSet<>();
+        for (final IPerson person : people) {
             descendants.addAll(descendantsOf(person));
         }
         return descendants;
     }
 
-    public static Collection<IPerson> descendantsOf(IPerson person) {
+    public static Collection<IPerson> descendantsOf(final IPerson person) {
 
         return descendantsOf(person, NUMBER_OF_GENERATIONS_TO_EXCLUDE);
     }
 
-    public static Collection<IPerson> femaleDescendantsOf(Collection<IPerson> people) {
+    public static Collection<IPerson> femaleDescendantsOf(final Collection<IPerson> people) {
 
-        Collection<IPerson> descendants = descendantsOf(people);
+        final Collection<IPerson> descendants = descendantsOf(people);
         descendants.removeIf(p -> p.getSex() != SexOption.FEMALE);
         return descendants;
     }
 
-    public static Collection<IPerson> femaleDescendantsOf(IPerson person) {
+    public static Collection<IPerson> femaleDescendantsOf(final IPerson person) {
 
         return descendantsOf(person, SexOption.FEMALE);
     }
 
-    public static Collection<IPerson> maleDescendantsOf(IPerson person) {
+    public static Collection<IPerson> maleDescendantsOf(final IPerson person) {
 
         return descendantsOf(person, SexOption.MALE);
     }
 
-    private static Collection<IPerson> descendantsOf(IPerson person, SexOption sex) {
+    private static Collection<IPerson> descendantsOf(final IPerson person, final SexOption sex) {
 
-        Collection<IPerson> descendants = descendantsOf(person);
+        final Collection<IPerson> descendants = descendantsOf(person);
         descendants.removeIf(p -> p.getSex() != sex);
         return descendants;
     }
 
-    public static Collection<IPerson> ancestorsOf(IPerson person) {
+    public static Collection<IPerson> ancestorsOf(final IPerson person) {
 
         return ancestorsOf(person, NUMBER_OF_GENERATIONS_TO_EXCLUDE);
     }
 
-    public static Collection<IPerson> femaleAncestorsOf(Collection<IPerson> people) {
+    public static Collection<IPerson> femaleAncestorsOf(final Collection<IPerson> people) {
 
-        Collection<IPerson> ancestors = new ArrayList<>();
-        for (IPerson person : people) {
+        final Collection<IPerson> ancestors = new ArrayList<>();
+        for (final IPerson person : people) {
             ancestors.addAll(femaleAncestorsOf(person));
         }
         return ancestors;
     }
 
-    public static Collection<IPerson> femaleAncestorsOf(IPerson person) {
+    public static Collection<IPerson> femaleAncestorsOf(final IPerson person) {
 
         return ancestorsOf(person, SexOption.FEMALE);
     }
 
-    public static Collection<IPerson> maleAncestorsOf(IPerson person) {
+    public static Collection<IPerson> maleAncestorsOf(final IPerson person) {
 
         return ancestorsOf(person, SexOption.MALE);
     }
 
-    private static Collection<IPerson> ancestorsOf(IPerson person, SexOption sex) {
+    private static Collection<IPerson> ancestorsOf(final IPerson person, final SexOption sex) {
 
-        Collection<IPerson> ancestors = ancestorsOf(person);
+        final Collection<IPerson> ancestors = ancestorsOf(person);
         ancestors.removeIf(p -> p.getSex() != sex);
         return ancestors;
     }
 
-    private static Collection<IPerson> descendantsOf(IPerson person, int generations) {
+    private static Collection<IPerson> descendantsOf(final IPerson person, final int generations) {
 
-        Collection<IPerson> descendants = new TreeSet<>();
+        final Collection<IPerson> descendants = new TreeSet<>();
 
         if (generations > 0) {
 
-            for (IPerson child : getAllChildren(person)) {
+            for (final IPerson child : getAllChildren(person)) {
 
                 descendants.add(child);
                 descendants.addAll(descendantsOf(child, generations - 1));
@@ -158,28 +157,28 @@ public class PopulationNavigation {
         return descendants;
     }
 
-    public static Collection<IPerson> getAllChildren(IPerson person) {
+    public static Collection<IPerson> getAllChildren(final IPerson person) {
 
-        Collection<IPerson> children = new ArrayList<>();
+        final Collection<IPerson> children = new ArrayList<>();
 
-        for (IPartnership partnership : person.getPartnerships()) {
+        for (final IPartnership partnership : person.getPartnerships()) {
             children.addAll(partnership.getChildren());
         }
 
         return children;
     }
 
-    private static Collection<IPerson> ancestorsOf(IPerson person, int generations) {
+    private static Collection<IPerson> ancestorsOf(final IPerson person, final int generations) {
 
-        Collection<IPerson> ancestors = new TreeSet<>();
+        final Collection<IPerson> ancestors = new TreeSet<>();
 
         if (generations > 0) {
 
-            IPartnership parentsPartnership = person.getParents();
+            final IPartnership parentsPartnership = person.getParents();
 
             if (parentsPartnership != null) {
-                IPerson mother = parentsPartnership.getFemalePartner();
-                IPerson father = parentsPartnership.getMalePartner();
+                final IPerson mother = parentsPartnership.getFemalePartner();
+                final IPerson father = parentsPartnership.getMalePartner();
 
                 ancestors.add(mother);
                 ancestors.add(father);
@@ -192,33 +191,33 @@ public class PopulationNavigation {
         return ancestors;
     }
 
-    public static Collection<IPerson> partnersOf(Collection<IPerson> people) {
+    public static Collection<IPerson> partnersOf(final Collection<IPerson> people) {
 
-        List<IPerson> partners = new ArrayList<>();
+        final List<IPerson> partners = new ArrayList<>();
 
-        for (IPerson person : people) {
+        for (final IPerson person : people) {
             partners.addAll(partnersOf(person));
         }
         return partners;
     }
 
-    public static boolean aliveOnDate(IPerson person, LocalDate date) {
+    public static boolean aliveOnDate(final IPerson person, final LocalDate date) {
 
         if (!person.getBirthDate().isAfter(date)) {
 
-            LocalDate deathDate = person.getDeathDate();
+            final LocalDate deathDate = person.getDeathDate();
             return deathDate == null || date.isBefore(deathDate);
         }
         return false;
     }
 
-    public static IPerson getLastChild(IPerson person) {
+    public static IPerson getLastChild(final IPerson person) {
 
         LocalDate latestChildBirthDate = LocalDate.MIN;
         IPerson child = null;
 
-        for (IPartnership p : person.getPartnerships()) {
-            for (IPerson c : p.getChildren()) {
+        for (final IPartnership p : person.getPartnerships()) {
+            for (final IPerson c : p.getChildren()) {
 
                 if (!latestChildBirthDate.isAfter(c.getBirthDate())) {
                     latestChildBirthDate = c.getBirthDate();
@@ -230,65 +229,67 @@ public class PopulationNavigation {
         return child;
     }
 
-    public static boolean lastPartnerDied(IPerson person, LocalDate currentDate) {
+    public static boolean lastPartnerDied(final IPerson person, final LocalDate currentDate) {
 
         try {
-            IPerson lastPartner = getLastChild(person).getParents().getPartnerOf(person);
+            final IPerson lastPartner = getLastChild(person).getParents().getPartnerOf(person);
             return !aliveOnDate(lastPartner, currentDate);
 
-        } catch (NullPointerException e) {
+        } catch (final NullPointerException e) {
             return true;
         }
     }
 
-    public static int ageOnDate(IPerson person, LocalDate currentDate) {
+    public static int ageOnDate(final IPerson person, final LocalDate queryDate) {
 
-        LocalDate birthDate = person.getBirthDate();
-
-        if (birthDate.getDayOfMonth() == 1 && birthDate.getMonthValue() == 1 && currentDate.getDayOfMonth() == 1 && currentDate.getMonthValue() == 1) {
-            int age = Period.between(person.getBirthDate(), currentDate).getYears() - 1;
-            return age == -1 ? 0 : age;
-        } else {
-            return Period.between(person.getBirthDate(), currentDate).getYears();
-        }
-
+        return ageOnDate(person.getBirthDate(), queryDate);
     }
 
-    public static int numberOfChildrenInLatestPartnership(IPerson person) {
+    public static int ageOnDate(final LocalDate birthDate, final LocalDate queryDate) {
+
+//        if (birthDate.getDayOfMonth() == 1 && birthDate.getMonthValue() == 1 && queryDate.getDayOfMonth() == 1 && queryDate.getMonthValue() == 1) {
+//            final int age = Period.between(birthDate, queryDate).getYears() - 1;
+//            return age == -1 ? 0 : age;
+//        } else {
+            return Math.max(0, Period.between(birthDate, queryDate).getYears());
+//        }
+    }
+
+    public static int numberOfChildrenInLatestPartnership(final IPerson person) {
 
         return getLastChild(person).getParents().getChildren().size();
     }
 
-    public static boolean bornInYear(IPerson person, Year year) {
+    public static boolean bornInYear(final IPerson person, final Year year) {
 
-        LocalDate birthDate = person.getBirthDate();
+        final LocalDate birthDate = person.getBirthDate();
         return birthDate != null && birthDate.getYear() == year.getValue();
     }
 
-    public static boolean diedInYear(IPerson person, Year year) {
+    public static boolean diedInYear(final IPerson person, final Year year) {
 
-        LocalDate deathDate = person.getDeathDate();
+        final LocalDate deathDate = person.getDeathDate();
         return deathDate != null && deathDate.getYear() == year.getValue();
     }
 
-    public static boolean diedAfter(IPerson person, LocalDate date) {
+    public static boolean diedAfter(final IPerson person, final LocalDate date) {
 
-        LocalDate deathDate = person.getDeathDate();
+        final LocalDate deathDate = person.getDeathDate();
         return deathDate == null || deathDate.isAfter(date);
     }
 
-    public static Collection<IPartnership> getPartnershipsActiveInYear(IPerson person, Year year) {
+    public static Collection<IPartnership> getPartnershipsActiveInYear(final IPerson person, final Year year) {
 
-        Collection<IPartnership> activePartnerships = new ArrayList<>();
+        final Collection<IPartnership> activePartnerships = new ArrayList<>();
 
-        for (IPartnership partnership : person.getPartnerships()) {
+        for (final IPartnership partnership : person.getPartnerships()) {
 
-            LocalDate startDate = partnership.getPartnershipDate();
+            final LocalDate startDate = partnership.getPartnershipDate();
 
             if (startDate.getYear() == year.getValue()) {
                 activePartnerships.add(partnership);
             } else {
-                for (IPerson p : partnership.getChildren()) {
+                for (final IPerson p : partnership.getChildren()) {
                     if (p.getBirthDate().getYear() == year.getValue()) {
                         activePartnerships.add(partnership);
                         break;
@@ -300,12 +301,12 @@ public class PopulationNavigation {
         return activePartnerships;
     }
 
-    public static IPartnership getLastPartnership(IPerson person) {
+    public static IPartnership getLastPartnership(final IPerson person) {
 
         LocalDate latestPartnershipDate = LocalDate.MIN;
         IPartnership partnership = null;
 
-        for (IPartnership p : person.getPartnerships()) {
+        for (final IPartnership p : person.getPartnerships()) {
             if (latestPartnershipDate.isBefore(p.getPartnershipDate())) {
                 latestPartnershipDate = p.getPartnershipDate();
                 partnership = p;
@@ -314,12 +315,12 @@ public class PopulationNavigation {
         return partnership;
     }
 
-    public static IPartnership getLastPartnershipBeforeDate(IPerson person, LocalDate date) {
+    public static IPartnership getLastPartnershipBeforeDate(final IPerson person, final LocalDate date) {
 
         LocalDate latestPartnershipDate = LocalDate.MIN;
         IPartnership partnership = null;
 
-        for (IPartnership p : person.getPartnerships()) {
+        for (final IPartnership p : person.getPartnerships()) {
             if (p.getPartnershipDate().isBefore(date) && latestPartnershipDate.isBefore(p.getPartnershipDate())) {
                 latestPartnershipDate = p.getPartnershipDate();
                 partnership = p;
@@ -328,12 +329,12 @@ public class PopulationNavigation {
         return partnership;
     }
 
-    public static Integer numberOfChildrenBirthedBeforeDate(IPerson person, LocalDate y) {
+    public static Integer numberOfChildrenBirthedBeforeDate(final IPerson person, final LocalDate y) {
 
         int count = 0;
 
-        for (IPartnership p : person.getPartnerships()) {
-            for (IPerson c : p.getChildren()) {
+        for (final IPartnership p : person.getPartnerships()) {
+            for (final IPerson c : p.getChildren()) {
                 if (c.getBirthDate().isBefore(y)) {
                     count++;
                 }
@@ -343,11 +344,11 @@ public class PopulationNavigation {
         return count;
     }
 
-    public static LocalDate getDateOfNextPostSeparationEvent(IPerson person, LocalDate separationDate) {
+    public static LocalDate getDateOfNextPostSeparationEvent(final IPerson person, final LocalDate separationDate) {
 
         LocalDate earliestDate = null;
 
-        for (IPartnership partnership : person.getPartnerships()) {
+        for (final IPartnership partnership : person.getPartnerships()) {
             LocalDate date = partnership.getPartnershipDate();
             if (separationDate.isBefore(date)) {
 
@@ -376,10 +377,10 @@ public class PopulationNavigation {
     }
 
     // Ensures a person is present in country at the given date
-    public static boolean presentOnDate(IPerson person, LocalDate date) {
+    public static boolean presentOnDate(final IPerson person, final LocalDate date) {
 
-        LocalDate immigrationDate = person.getImmigrationDate();
-        LocalDate emigrationDate = person.getEmigrationDate();
+        final LocalDate immigrationDate = person.getImmigrationDate();
+        final LocalDate emigrationDate = person.getEmigrationDate();
 
         if(immigrationDate != null && immigrationDate.isAfter(date)) {
             // date is before person arrived in country
@@ -398,7 +399,7 @@ public class PopulationNavigation {
         }
     }
 
-    public static boolean childOf(IPerson parent, IPerson person) {
+    public static boolean childOf(final IPerson parent, final IPerson person) {
 
         if(person.getParents() == null) return false;
         if(person.getParents().getMalePartner() == parent) return true;

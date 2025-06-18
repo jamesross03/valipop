@@ -25,7 +25,8 @@ public class ValidationTest {
 
     private static final Path TEST_RESOURCE_DIR = Path.of("src/test/resources/valipop/validation");
 
-    public ValidationTest(Path tableDirectory, double expectedV) {
+    public ValidationTest(final Path tableDirectory, final double expectedV) {
+
         this.tableDirectory = tableDirectory;
         this.expectedV = expectedV;
     }
@@ -51,10 +52,11 @@ public class ValidationTest {
 
     // Given model results, the R program should always generate the same V value
     @Test
-    public void test() throws IOException, StatsException {
-        int maxBirthingAge = 55;
+    public void runValidation() throws IOException, StatsException {
 
-        double v = RCaller.getGeeglmV(
+        final int maxBirthingAge = 55;
+
+        final double v = RCaller.getGeeglmV(
             tableDirectory,
             maxBirthingAge
         );

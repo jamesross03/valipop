@@ -36,7 +36,7 @@ import java.util.*;
  */
 public class FemaleCollection extends PersonCollection {
 
-    private final TreeMap<LocalDate, TreeMap<Integer, TreeSet<IPerson>>> byBirthYearAndNumberOfChildren = new TreeMap<>();
+    private final Map<LocalDate, Map<Integer, Set<IPerson>>> byBirthYearAndNumberOfChildren = new TreeMap<>();
 
     /**
      * Instantiates a new FemaleCollection. The dates specify the earliest and latest expected birth dates of
@@ -61,7 +61,7 @@ public class FemaleCollection extends PersonCollection {
 
         final Collection<IPerson> people = new ArrayList<>();
 
-        for (TreeMap<Integer, TreeSet<IPerson>> map : byBirthYearAndNumberOfChildren.values()) {
+        for (Map<Integer, Set<IPerson>> map : byBirthYearAndNumberOfChildren.values()) {
             for (Collection<IPerson> collection : map.values()) {
                 people.addAll(collection);
             }
@@ -91,7 +91,7 @@ public class FemaleCollection extends PersonCollection {
 
         if (byBirthYearAndNumberOfChildren.containsKey(divisionDate)) {
 
-            final TreeMap<Integer, TreeSet<IPerson>> map = byBirthYearAndNumberOfChildren.get(divisionDate);
+            final Map<Integer, Set<IPerson>> map = byBirthYearAndNumberOfChildren.get(divisionDate);
 
             if (map.containsKey(numberOfChildren)) {
                 map.get(numberOfChildren).add(person);
@@ -101,7 +101,7 @@ public class FemaleCollection extends PersonCollection {
             }
         } else {
 
-            TreeMap<Integer, TreeSet<IPerson>> newMap = new TreeMap<>();
+            Map<Integer, Set<IPerson>> newMap = new TreeMap<>();
             newMap.put(numberOfChildren, newList);
             byBirthYearAndNumberOfChildren.put(divisionDate, newMap);
         }
@@ -113,8 +113,9 @@ public class FemaleCollection extends PersonCollection {
     public void remove(final IPerson person) {
 
         final LocalDate divisionDate = resolveDateToCorrectDivisionDate(person.getBirthDate());
-        final TreeMap<Integer, TreeSet<IPerson>> familySizeMap = byBirthYearAndNumberOfChildren.get(divisionDate);
-        final Collection<IPerson> people = familySizeMap.get(countChildren(person));
+        final Map<Integer, Set<IPerson>> familySizeMap = byBirthYearAndNumberOfChildren.get(divisionDate);
+        int numberOfChildren = countChildren(person);
+        final Collection<IPerson> people = familySizeMap.get(numberOfChildren);
 
         if (people == null || !people.remove(person)) {
             throw new PersonNotFoundException("Specified person not found in data structure");
@@ -171,7 +172,7 @@ public class FemaleCollection extends PersonCollection {
 
         for (int i = 0; i < divisionsInPeriod; i++) {
 
-            final TreeMap<Integer, TreeSet<IPerson>> temp = byBirthYearAndNumberOfChildren.get(divisionDate);
+            final Map<Integer, Set<IPerson>> temp = byBirthYearAndNumberOfChildren.get(divisionDate);
 
             if (temp != null && MapUtils.getMax(temp.keySet()) > highestBirthOrder) {
                 highestBirthOrder = MapUtils.getMax(temp.keySet());
@@ -220,7 +221,7 @@ public class FemaleCollection extends PersonCollection {
         return people;
     }
 
-    private TreeMap<Integer, TreeSet<IPerson>> getAllPeopleFromDivision(final LocalDate divisionDate) {
+    private Map<Integer, Set<IPerson>> getAllPeopleFromDivision(final LocalDate divisionDate) {
 
         if (byBirthYearAndNumberOfChildren.containsKey(divisionDate)) {
             return byBirthYearAndNumberOfChildren.get(divisionDate);

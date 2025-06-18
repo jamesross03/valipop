@@ -130,7 +130,7 @@ public class Address {
         if(!area.isFull()) {
             moveTo = area.getFreeAddress(geography);
         } else {
-            moveTo = geography.getNearestEmptyAddress(area.getCentriod());
+            moveTo = geography.getNearestEmptyAddress(area.getCentroid());
         }
 
         while(inhabitants.size() > 0) {

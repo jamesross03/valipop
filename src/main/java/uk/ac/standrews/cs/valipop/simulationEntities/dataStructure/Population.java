@@ -30,7 +30,7 @@ import java.time.Period;
  */
 public class Population {
 
-    // TODO rationalise Population, PersonCollection, PeopleCollection, IPersonCollection.
+    // TODO rationalise OBDModel, Population, PersonCollection, PeopleCollection, IPersonCollection.
 
     private PeopleCollection livingPeople;
     private PeopleCollection deadPeople;

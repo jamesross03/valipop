@@ -166,7 +166,6 @@ public class Area implements Serializable {
 
     public String toString() {
         StringBuilder s = new StringBuilder();
-//        s.append("\"");
 
         if(!isErroneous()) {
 
@@ -194,7 +193,6 @@ public class Area implements Serializable {
             s.append("ERRONEOUS AREA - " + error);
         }
 
-//        s.append("\"");
         return s.toString();
     }
 
@@ -210,15 +208,12 @@ public class Area implements Serializable {
         return (state == null ? "" : state);
     }
 
-    public Coords getCentriod() {
-//        if(details == null) {
-//            return null;
-//        }
+    public Coords getCentroid() {
         return details.getCentroid();
     }
 
     public double getDistanceTo(double lat, double lon) {
-        return Math.sqrt(Math.pow(lat - getCentriod().lat, 2) + Math.pow(lon - getCentriod().lon, 2));
+        return Math.sqrt(Math.pow(lat - getCentroid().lat, 2) + Math.pow(lon - getCentroid().lon, 2));
     }
 
     public double getDistanceTo(Coords coords) {

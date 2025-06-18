@@ -127,6 +127,7 @@ public class PeopleCollection extends PersonCollection implements Cloneable, IPe
     @Override
     public Collection<IPerson> getPeopleAliveInTimePeriod(final LocalDate firstDate, final Period timePeriod, final Period maxAge) {
 
+        // TODO try to reduce amount of copying.
         Collection<IPerson> people = females.getPeopleAliveInTimePeriod(firstDate, timePeriod, maxAge);
         people.addAll(males.getPeopleAliveInTimePeriod(firstDate, timePeriod, maxAge));
 
@@ -269,7 +270,7 @@ public class PeopleCollection extends PersonCollection implements Cloneable, IPe
                                 newAddress = geography.getNearestEmptyAddressAtDistance(
                                         adulterousBirth.getParents().getMalePartner().getAddressHistory()
                                                 .ceilingEntry(adulterousBirth.getBirthDate().minus(config.getMinGestationPeriod())).getValue()
-                                                .getArea().getCentriod()
+                                                .getArea().getCentroid()
                                         , moveDistanceSelector.selectRandomDistance());
                             } else {
                                 // in this case the father is where he is supposed to be!
@@ -277,7 +278,7 @@ public class PeopleCollection extends PersonCollection implements Cloneable, IPe
                                 newAddress = geography.getNearestEmptyAddressAtDistance(
                                         adulterousBirth.getParents().getMalePartner()
                                                 .getAddress(adulterousBirth.getBirthDate().minus(config.getMinGestationPeriod()))
-                                                .getArea().getCentriod(),
+                                                .getArea().getCentroid(),
                                         moveDistanceSelector.selectRandomDistance());
                             }
                             parents.getFemalePartner().setAddress(adulterousBirth.getBirthDate(), newAddress);

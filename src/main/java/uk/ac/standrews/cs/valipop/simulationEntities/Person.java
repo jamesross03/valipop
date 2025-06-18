@@ -42,7 +42,7 @@ public class Person implements IPerson {
     private IPartnership parents;
 
     private final String firstName;
-    private final Surname surname;
+    private Surname surname;
     private final String representation;
     private boolean adulterousBirth;
 
@@ -60,7 +60,7 @@ public class Person implements IPerson {
 
         id = getNewId();
 
-        if(parents != null) {
+        if (parents != null) {
             IPerson f = parents.getFemalePartner();
             IPerson m = parents.getMalePartner();
 
@@ -85,6 +85,10 @@ public class Person implements IPerson {
 
     public String toString() {
         return representation;
+    }
+
+    public void setSurname(final String surname) {
+        this.surname = new Surname(surname);
     }
 
     @Override
@@ -250,29 +254,31 @@ public class Person implements IPerson {
     @Override
     public void setAddress(LocalDate onDate, Address address) {
 
-        if(addressHistory.size() != 0) { // Pass this bit if no previous address
+        if (address != null) {
+            if (!addressHistory.isEmpty()) { // Pass this bit if no previous address
 
-            boolean removed = false;
+                boolean removed = false;
 
-            if(getAddress(onDate) != null)
-                removed = getAddress(onDate).removeInhabitant(this);
+                if (getAddress(onDate) != null)
+                    removed = getAddress(onDate).removeInhabitant(this);
 
-            // if children get shuttled around before birth then remove old addresses
-            if(addressHistory.get(onDate) != null) { // this is different to the above if as it looks for values at the exact key rather than taking the value at the floor of the key!
+                // if children get shuttled around before birth then remove old addresses
+                if (addressHistory.get(onDate) != null) { // this is different to the above if as it looks for values at the exact key rather than taking the value at the floor of the key!
 //                removed = addressHistory.get(onDate).removeInhabitant(this);
-                addressHistory.remove(onDate);
-            }
+                    addressHistory.remove(onDate);
+                }
 
-            if(!removed) {
-                while(addressHistory.ceilingEntry(onDate) != null) { // if theres a future move - from a forced adulterousBirth move - we scratch that move
-                    addressHistory.ceilingEntry(onDate).getValue().removeInhabitant(this);
-                    addressHistory.remove(addressHistory.ceilingKey(onDate));
+                if (!removed) {
+                    while (addressHistory.ceilingEntry(onDate) != null) { // if theres a future move - from a forced adulterousBirth move - we scratch that move
+                        addressHistory.ceilingEntry(onDate).getValue().removeInhabitant(this);
+                        addressHistory.remove(addressHistory.ceilingKey(onDate));
+                    }
                 }
             }
-        }
 
-        address.addInhabitant(this);
-        addressHistory.put(onDate, address);
+            address.addInhabitant(this);
+            addressHistory.put(onDate, address);
+        }
     }
 
     @Override
@@ -465,7 +471,7 @@ public class Person implements IPerson {
             return parents.getMalePartner().getSurnameRef();
         }
         else {
-            if(immigrant) {
+            if (immigrant) {
                 return new Surname(statistics.getMigrantSurnameDistribution(Year.of(birthDate.getYear())).getSample());
             } else {
                 return new Surname(statistics.getSurnameDistribution(Year.of(birthDate.getYear())).getSample());

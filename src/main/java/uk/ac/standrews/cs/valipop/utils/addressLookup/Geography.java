@@ -37,7 +37,7 @@ public class Geography {
 
         for(Area area : residentialGeography) {
 
-            if(geographicalLimits.containsPoint(area.getCentriod())) {
+            if(geographicalLimits.containsPoint(area.getCentroid())) {
                 if (!area.isFull()) {
 
                     // scale street numbers by factor
@@ -238,7 +238,7 @@ public class Geography {
     }
 
     private void addToLookup(Area area) {
-        Coords centroid = area.getCentriod();
+        Coords centroid = area.getCentroid();
         addToLookup(area, centroid.lat, centroid.lon);
     }
 
@@ -249,12 +249,12 @@ public class Geography {
 
     private void removeFromLookup(Area area) {
 
-        Map<Double, Area> index = areaLookup.get(round(area.getCentriod().lat));
+        Map<Double, Area> index = areaLookup.get(round(area.getCentroid().lat));
         if(index != null) {
-            index.remove(round(area.getCentriod().lon), area);
+            index.remove(round(area.getCentroid().lon), area);
 
             if (index.size() == 0) {
-                areaLookup.remove(round(area.getCentriod().lat), index);
+                areaLookup.remove(round(area.getCentroid().lat), index);
             }
         }
 

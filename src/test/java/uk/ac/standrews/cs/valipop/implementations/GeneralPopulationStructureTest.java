@@ -387,7 +387,7 @@ public abstract class GeneralPopulationStructureTest {
         return false;
     }
 
-    private void assertSurnameInheritedOnMaleLine(final IPerson person) {
+    private static void assertSurnameInheritedOnMaleLine(final IPerson person) {
 
         if (person.getSex() == SexOption.MALE) {
 
@@ -395,7 +395,11 @@ public abstract class GeneralPopulationStructureTest {
 
                 for (final IPerson child : partnership.getChildren()) {
 
-                    assertEquals(person.getSurname(), child.getSurname());
+                    boolean same = person.getSurname().equals(child.getSurname());
+                    assertTrue(same);
+
+
+//                    assertEquals(person.getSurname(), child.getSurname());
 
                     if (child.getSex() == SexOption.MALE) {
                         assertSurnameInheritedOnMaleLine(child);
