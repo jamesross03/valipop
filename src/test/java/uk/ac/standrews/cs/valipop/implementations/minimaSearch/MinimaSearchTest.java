@@ -1,7 +1,7 @@
 package uk.ac.standrews.cs.valipop.implementations.minimaSearch;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.ac.standrews.cs.valipop.Config;
 import uk.ac.standrews.cs.valipop.implementations.OBDModel;
 import uk.ac.standrews.cs.valipop.implementations.SpaceExploredException;
@@ -9,7 +9,7 @@ import uk.ac.standrews.cs.valipop.implementations.SpaceExploredException;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Tom Dalton (tsd4@st-andrews.ac.uk)
@@ -18,8 +18,7 @@ public class MinimaSearchTest {
 
     OBDModel model;
 
-    //@Ignore
-    @Before
+    @BeforeEach
     public void setup() {
 
         Config config = new Config(
@@ -34,7 +33,6 @@ public class MinimaSearchTest {
         model = new OBDModel(config);
     }
 
-    //@Ignore
     @Test
     public void nanTesting() throws SpaceExploredException {
 

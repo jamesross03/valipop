@@ -12,6 +12,7 @@ import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 import java.io.*;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,12 +51,10 @@ public class PlanetXML {
         cache.writeToFile();
 
         System.out.println("END OF PLANET XML REACHED!!!");
-
-
     }
 
     @SuppressWarnings("unused")
-    private static void addResidentialWaysToCache(Document document, ReverseGeocodeLookup rgl) throws InterruptedException, InvalidCoordSet, IOException, APIOverloadedException {
+    private static void addResidentialWaysToCache(Document document, ReverseGeocodeLookup rgl) throws InterruptedException, InvalidCoordSet, IOException, APIOverloadedException, URISyntaxException {
 
         NodeList wayList = document.getElementsByTagName("way");
 
@@ -81,14 +80,12 @@ public class PlanetXML {
 
                         String nodeID = node.getAttribute("ref");
 
-
                         if(nodeID.equals("")) {
                             String key = node.getAttribute("k");
                             if(key.equals("highway")) {
                                 String value = node.getAttribute("v");
                                 residentialWay = residentialWay || value.equals("residential");
                             }
-
 
                         } else {
                             Coords c = nodeMap.get(nodeID);
@@ -99,7 +96,6 @@ public class PlanetXML {
                                 System.out.println(nodeID);
                             }
                         }
-
                     }
                 }
 
@@ -110,9 +106,7 @@ public class PlanetXML {
                         rgl.getArea(middle);
                     }
                 }
-
             }
-
         }
     }
 
@@ -133,9 +127,7 @@ public class PlanetXML {
                 Coords coords = new Coords(lat, lon);
 
                 nodeMap.put(id, coords);
-
             }
-
         }
     }
 
@@ -150,7 +142,6 @@ public class PlanetXML {
     private static Coords getMiddleElement(ArrayList<Coords> nodes) {
 
         return nodes.size() != 0 ? nodes.get(nodes.size() / 2) : null;
-
     }
 
     private static void parseXML(String fileName, ReverseGeocodeLookup rgl) throws InterruptedException, InvalidCoordSet, IOException {
@@ -164,26 +155,7 @@ public class PlanetXML {
 
             boolean residentialWay = false;
 
-
-            int i = 0;
-
-//            long time = System.currentTimeMillis();
-//            long gap = 1000 * 60 * 10;
-
             while(xmlEventReader.hasNext()){
-
-                if(i != 0 && i % 1000000 == 0) {
-                    System.out.println(i);
-//                    rgl.cache.writeToFile();
-                }
-
-//                if(System.currentTimeMillis() - time > gap) {
-//                    System.out.println("Regular. 10 min pause");
-//                    Thread.sleep(1000 * 60 * 10);
-//                    time = System.currentTimeMillis();
-//                }
-
-                i++;
 
                 XMLEvent xmlEvent = xmlEventReader.nextEvent();
                 if (xmlEvent.isStartElement()){
@@ -217,7 +189,6 @@ public class PlanetXML {
                             String value = startElement.getAttributeByName(new QName("v")).getValue();
                             residentialWay = residentialWay || value.equals("residential");
                         }
-
                     }
                 }
 
@@ -243,6 +214,8 @@ public class PlanetXML {
                                             } catch (APIOverloadedException e) {
                                                 System.out.println("Block. 30 min pause");
                                                 Thread.sleep(1000 * 60 * 30);
+                                            } catch (URISyntaxException e) {
+                                                throw new RuntimeException(e);
                                             }
                                         }
                                     }
@@ -252,7 +225,6 @@ public class PlanetXML {
                         }
 
                         waysNodes.clear();
-
                     }
                 }
             }
@@ -260,9 +232,7 @@ public class PlanetXML {
         } catch (FileNotFoundException | XMLStreamException e) {
             e.printStackTrace();
         }
-
     }
-
 
     public static Element getElement(NodeList nodeList, int index) {
 
@@ -273,7 +243,5 @@ public class PlanetXML {
         }
 
         return null;
-
     }
-
 }

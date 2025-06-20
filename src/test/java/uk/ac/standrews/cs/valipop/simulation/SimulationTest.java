@@ -16,66 +16,50 @@
  */
 package uk.ac.standrews.cs.valipop.simulation;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.FieldSource;
+import uk.ac.standrews.cs.valipop.Config;
+import uk.ac.standrews.cs.valipop.implementations.OBDModel;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.Base64;
-import java.util.Collection;
+import java.util.List;
 
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-
-import uk.ac.standrews.cs.valipop.Config;
-import uk.ac.standrews.cs.valipop.implementations.OBDModel;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * E2E tests which compares ValiPop generated record checksums 
  *
  * @author Daniel Brathagen (dbrathagen@gmail.com)
  */
-@RunWith(Parameterized.class)
 public class SimulationTest {
-    private Path configPath;
-    private String expectedBirthHash;
-    private String expectedDeathHash;
-    private String expectedMarriageHash;
 
     private static final Path TEST_RESOURCE_DIR = Path.of("src/test/resources/valipop/config/simulation");
     private static final String RECORD_DIR = "records";
 
-    private static final String[] RECORD_NAMES = new String[] {
+    private static final List<String> RECORD_NAMES = List.of(
         "birth_records.csv",
         "death_records.csv",
-        "marriage_records.csv",
-    };
+        "marriage_records.csv"
+    );
 
-    public SimulationTest(Path configPath, String expectedBirthHash, String expectedDeathHash, String expectedMarriageHash) {
-        this.configPath = configPath;
-        this.expectedBirthHash = expectedBirthHash;
-        this.expectedDeathHash = expectedDeathHash;
-        this.expectedMarriageHash = expectedMarriageHash;
-    }
+    private static List<Arguments> configurations = List.of(
+        Arguments.of(TEST_RESOURCE_DIR.resolve("config-1.txt"), "+wEc08pgIweIC4advvfcIw==", "DWj48GAsFtJS/PX4c+59dA==", "D0jUpvTWOpCVGYPRbc4dQw=="),
+        Arguments.of(TEST_RESOURCE_DIR.resolve("config-2.txt"), "mEkjBgtyHFMqTZz02r9H4w==", "fhE/MQV8AkzKMtaLcA7rQA==", "jjcDTaoYW4OizssyCtRnTA==" ),
+        Arguments.of(TEST_RESOURCE_DIR.resolve("config-3.txt"), "VJw8XWYYWzyn3OCs5/wcgA==", "3nKYMFhMxJ1rLhfNYEv/zA==", "QKw8S3qci40qr/ofUNvoJg==" ),
+        Arguments.of(TEST_RESOURCE_DIR.resolve("config-4.txt"), "FdGj7mPJh9jBk9LGZuhGCA==", "9wdMQtsoGhVGTDH/T49QpQ==", "FxXNt+HHl+xek5Qw6kozsA==" )
+    );
 
-    @Parameterized.Parameters
-    public static Collection<Object[]> getTestCases() {
-        return Arrays
-            .asList(new Object[] { TEST_RESOURCE_DIR.resolve("config-1.txt"), "+wEc08pgIweIC4advvfcIw==", "DWj48GAsFtJS/PX4c+59dA==", "D0jUpvTWOpCVGYPRbc4dQw==" },
-                new Object[] { TEST_RESOURCE_DIR.resolve("config-2.txt"), "mEkjBgtyHFMqTZz02r9H4w==", "fhE/MQV8AkzKMtaLcA7rQA==", "jjcDTaoYW4OizssyCtRnTA==" },
-                new Object[] { TEST_RESOURCE_DIR.resolve("config-3.txt"), "VJw8XWYYWzyn3OCs5/wcgA==", "3nKYMFhMxJ1rLhfNYEv/zA==", "QKw8S3qci40qr/ofUNvoJg==" },
-                new Object[] { TEST_RESOURCE_DIR.resolve("config-4.txt"), "FdGj7mPJh9jBk9LGZuhGCA==", "9wdMQtsoGhVGTDH/T49QpQ==", "FxXNt+HHl+xek5Qw6kozsA==" });
-    }
-
-    @Test
-    @Ignore
-    public void testRecordHashes() throws IOException, NoSuchAlgorithmException {
-        System.out.println("Testing with " +  configPath.toString());
+    @ParameterizedTest
+    @FieldSource("configurations")
+    @Disabled
+    public void testGeneratedRecordsAsExpected(Path configPath, String expectedBirthHash, String expectedDeathHash, String expectedMarriageHash) throws IOException, NoSuchAlgorithmException {
 
         Config config = new Config(configPath);
         OBDModel model = new OBDModel(config);

@@ -2,69 +2,61 @@ package uk.ac.standrews.cs.valipop.utils.sourceEventRecords;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import uk.ac.standrews.cs.utilities.FileManipulation;
-import uk.ac.standrews.cs.utilities.TimeManipulation;
+import uk.ac.standrews.cs.valipop.Config;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPartnership;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPerson;
 import uk.ac.standrews.cs.valipop.utils.sourceEventRecords.oldDSformat.SourceRecord;
-import uk.ac.standrews.cs.utilities.archive.Diagnostic;
 
 abstract public class Record {
-  private static final String BIRTH_RECORDS_PATH = "birth_records.csv";
-  private static final String DEATH_RECORDS_PATH = "death_records.csv";
-  private static final String MARRIAGE_RECORDS_PATH = "marriage_records.csv";
 
-  // TODO allow output file paths to be configured, add -i option to output to console
+    private static final String BIRTH_RECORDS_PATH = "birth_records.csv";
+    private static final String DEATH_RECORDS_PATH = "death_records.csv";
+    private static final String MARRIAGE_RECORDS_PATH = "marriage_records.csv";
 
-  private Iterable<IPerson> people;
-  private Iterable<IPartnership> partnerships;
+    // TODO allow output file paths to be configured, add -i option to output to console
 
-  Record(Iterable<IPerson> people, Iterable<IPartnership> partnerships) {
-    this.people = people;
-    this.partnerships = partnerships;
-  }
+    private Iterable<IPerson> people;
+    private Iterable<IPartnership> partnerships;
 
-  abstract protected Iterable<? extends SourceRecord> toBirthRecords(Iterable<IPerson> people);
-  abstract protected Iterable<? extends SourceRecord> toDeathRecords(Iterable<IPerson> people);
-  abstract protected Iterable<? extends SourceRecord> toMarriageRecords(Iterable<IPartnership> partnerships);
+    Record(Iterable<IPerson> people, Iterable<IPartnership> partnerships) {
+        this.people = people;
+        this.partnerships = partnerships;
+    }
 
-  public void exportRecords(Path recordDir) throws IOException {
+    abstract protected Iterable<? extends SourceRecord> toBirthRecords(Iterable<IPerson> people);
 
-    final long start_time = System.currentTimeMillis();
+    abstract protected Iterable<? extends SourceRecord> toDeathRecords(Iterable<IPerson> people);
 
-    Diagnostic.traceNoSource("Generating birth records");
-    exportRecord(toBirthRecords(people), recordDir.resolve(BIRTH_RECORDS_PATH));
-    TimeManipulation.reportElapsedTime(start_time);
+    abstract protected Iterable<? extends SourceRecord> toMarriageRecords(Iterable<IPartnership> partnerships);
 
-    Diagnostic.traceNoSource("Generating death records");
-    exportRecord(toDeathRecords(people), recordDir.resolve(DEATH_RECORDS_PATH));
-    TimeManipulation.reportElapsedTime(start_time);
+    public void exportRecords(Path recordDir) throws IOException {
 
-    Diagnostic.traceNoSource("Generating marriage records");
-    exportRecord(toMarriageRecords(partnerships), recordDir.resolve(MARRIAGE_RECORDS_PATH));
-    TimeManipulation.reportElapsedTime(start_time);
-  }
+        exportRecord(toBirthRecords(people), recordDir.resolve(BIRTH_RECORDS_PATH));
+        exportRecord(toDeathRecords(people), recordDir.resolve(DEATH_RECORDS_PATH));
+        exportRecord(toMarriageRecords(partnerships), recordDir.resolve(MARRIAGE_RECORDS_PATH));
+    }
 
-  private void exportRecord(final Iterable<? extends SourceRecord> records, Path recordPath) throws IOException {
-    // Generate birth records
-    FileManipulation.createParentDirectoryIfDoesNotExist(recordPath);
+    private void exportRecord(final Iterable<? extends SourceRecord> records, Path recordPath) throws IOException {
+        // Generate birth records
+        Config.createParentDirectoryIfDoesNotExist(recordPath);
 
-    try (final PrintWriter writer = new PrintWriter(Files.newBufferedWriter(recordPath, FileManipulation.FILE_CHARSET))) {
+        try (final PrintWriter writer = new PrintWriter(Files.newBufferedWriter(recordPath, StandardCharsets.UTF_8))) {
 
-        boolean first = true;
+            boolean first = true;
 
-        for (final SourceRecord record : records) {
+            for (final SourceRecord record : records) {
 
-            if (first) {
-                writer.println(record.getHeaders());
-                first = false;
+                if (first) {
+                    writer.println(record.getHeaders());
+                    first = false;
+                }
+
+                writer.println(record);
             }
-
-            writer.println(record);
         }
     }
-  }
 }

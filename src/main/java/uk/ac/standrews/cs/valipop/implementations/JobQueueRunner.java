@@ -23,36 +23,35 @@ import java.util.logging.Logger;
  */
 public class JobQueueRunner {
 
-    private static int THREAD_LIMIT = 1;
     public static int threadCount = 1;
 
-    private static double appropriateUsageThreshold = 0.65;
-    private static double memoryIncreaseOnMemoryException = 1.2;
+    private static final double appropriateUsageThreshold = 0.65;
+    private static final double memoryIncreaseOnMemoryException = 1.2;
 
     private static final ArrayList<String> order = new ArrayList<>(Arrays.asList(new String[]{"priority","code version","reason","n","seed size","rf","prf","iw","input dir","results dir","summary results dir","required memory","output record format","deterministic","seed","setup br","setup dr","tS","t0","tE","timestep","binomial sampling","min birth spacing","min ges period","ct tree stepback","oversized geography factor"}));
 
-    public static void main(String[] args) throws InterruptedException, IOException {
+    public static void main(final String[] args) throws InterruptedException, IOException {
 
         // from cmd line args:
         // get status path
-        Path statusPath = Paths.get(args[0]);
+        final Path statusPath = Paths.get(args[0]);
 
         // get job q path
-        Path jobQPath = Paths.get(args[1]);
+        final Path jobQPath = Paths.get(args[1]);
 
         // get assigned memory
-        int assignedMemory = Integer.valueOf(args[2]);
+        final int assignedMemory = Integer.parseInt(args[2]);
 
-        THREAD_LIMIT = Integer.valueOf(args[3]);
+        final int THREAD_LIMIT = Integer.parseInt(args[3]);
 
-        double threshold = Double.parseDouble(args[4]);
+        final double threshold = Double.parseDouble(args[4]);
 
         while(getStatus(statusPath)) {
 
             if(nodeIdle(threshold) && !checkPause(statusPath)) {
 
                 try {
-                    DataRow chosenJob = getJob(jobQPath, assignedMemory);
+                    final DataRow chosenJob = getJob(jobQPath, assignedMemory);
 
                     if (chosenJob != null) {
                         System.out.println("JOB TAKEN @ " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + " - " + chosenJob.toString(order));
@@ -62,10 +61,10 @@ public class JobQueueRunner {
                             // runs GC to ensure no object left in memory from previous sims that may skew memory usage logging
                             System.gc();
 
-                            Config config = convertJobToConfig(chosenJob);
+                            final Config config = convertJobToConfig(chosenJob);
 
                             
-                            OBDModel model = new OBDModel(config);
+                            final OBDModel model = new OBDModel(config);
                             try {
                                 doubleLog(OBDModel.log, "Sim commencing @ " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + " with seed: " + config.getSeed());
                                 model.runSimulation();
@@ -73,7 +72,7 @@ public class JobQueueRunner {
                                 model.analyseAndOutputPopulation(false, 5);
                                 doubleLog(OBDModel.log, "CT tables generation concluded @ " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 
-                                if(THREAD_LIMIT == 1) {
+                                if (THREAD_LIMIT == 1) {
                                     doubleLog(OBDModel.log, "Beginning R Analysis in main thread @ " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
                                     new AnalysisThread(model, config, threadCount).run(); // this runs it in the main thread
                                 } else {
@@ -88,7 +87,7 @@ public class JobQueueRunner {
 
                                 doubleLog(OBDModel.log, "R Analysis concluded @ " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 
-                            } catch (PreEmptiveOutOfMemoryWarning e) {
+                            } catch (final PreEmptiveOutOfMemoryWarning e) {
                                 model.recordOutOfMemorySummary();
                                 model.getSummaryRow().outputSummaryRowToFile();
 
@@ -97,7 +96,7 @@ public class JobQueueRunner {
                                 returnJobToQueue(jobQPath, chosenJob, (int) Math.ceil(assignedMemory * memoryIncreaseOnMemoryException), chosenJob.getInt("priority"), true);
                             }
 
-                        } catch (InvalidInputFileException e) {
+                        } catch (final InvalidInputFileException e) {
                             System.out.println("JOB RETURNED - Invalid input @ " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + " - " + chosenJob.toString(order));
                             returnJobToQueue(jobQPath, chosenJob, chosenJob.getInt("required memory"), 99, true);
                         }
@@ -106,7 +105,7 @@ public class JobQueueRunner {
                         System.out.println("NO SUITABLE JOB FOUND @ " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
                         Thread.sleep(10000);
                     }
-                } catch (InvalidInputFileException e) {
+                } catch (final InvalidInputFileException e) {
                     System.out.println("Either the job file doesn't have any jobs or it's malformed - I'm going to keep looping and wait for you to fix that... @ " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
                     Thread.sleep(60000);
                 }
@@ -114,19 +113,18 @@ public class JobQueueRunner {
         }
 
         System.out.println("Closing due to status");
-
     }
 
-    private static void doubleLog(Logger l, String s) {
+    private static void doubleLog(final Logger l, final String s) {
         System.out.println(s);
         l.info(s);
     }
 
     // checks recent load average - if over threshold then does not run next sim until load average has dropped
-    private static boolean nodeIdle(double threshold) throws IOException, InterruptedException {
-        String result = execCmd("uptime");
-        String[] split = result.split(" ");
-        double load = Double.parseDouble(split[split.length - 3].split(",")[0]);
+    private static boolean nodeIdle(final double threshold) throws IOException, InterruptedException {
+        final String result = execCmd("uptime");
+        final String[] split = result.split(" ");
+        final double load = Double.parseDouble(split[split.length - 3].split(",")[0]);
 
         System.out.println("Node check (" + load + ") @ " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         
@@ -138,15 +136,16 @@ public class JobQueueRunner {
         return load < threshold;
     }
 
-    public static String execCmd(String cmd) throws java.io.IOException {
-        try (java.util.Scanner s = new java.util.Scanner(Runtime.getRuntime().exec(cmd).getInputStream()).useDelimiter("\\A")) {
+    public static String execCmd(final String cmd) throws java.io.IOException {
+        // TODO use ProcessBuilder.
+        try (final java.util.Scanner s = new java.util.Scanner(Runtime.getRuntime().exec(cmd).getInputStream()).useDelimiter("\\A")) {
             return s.hasNext() ? s.next() : "";
         }
     }
 
-    private static boolean getStatus(Path statusPath) throws IOException {
+    private static boolean getStatus(final Path statusPath) throws IOException {
         // read in file
-        ArrayList<String> lines = new ArrayList<>(InputFileReader.getAllLines(statusPath));
+        final ArrayList<String> lines = new ArrayList<>(InputFileReader.getAllLines(statusPath));
 
         if(!lines.isEmpty()) {
             switch (lines.get(0)) {
@@ -158,9 +157,9 @@ public class JobQueueRunner {
         return true;
     }
 
-    private static boolean checkPause(Path statusPath) throws IOException, InterruptedException {
+    private static boolean checkPause(final Path statusPath) throws IOException, InterruptedException {
         // read in file
-        ArrayList<String> lines = new ArrayList<>(InputFileReader.getAllLines(statusPath));
+        final ArrayList<String> lines = new ArrayList<>(InputFileReader.getAllLines(statusPath));
         
         boolean pause = false;
         
@@ -175,10 +174,9 @@ public class JobQueueRunner {
         return pause;
     }
 
-    public static DataRow getJob(Path jobFile, int availiableMemory) throws IOException, InterruptedException, InvalidInputFileException {
+    public static DataRow getJob(final Path jobFile, final int availiableMemory) throws IOException, InterruptedException, InvalidInputFileException {
 
-        
-        FileChannel fileChannel = getFileChannel(jobFile);
+        final FileChannel fileChannel = getFileChannel(jobFile);
         DataRow chosenJob = null;
 
         try {
@@ -198,18 +196,18 @@ public class JobQueueRunner {
             int maxUncheckedPriorityLevel = 99;
 
             // throw away jobs requiring too much memory
-            Map<String, DataRowSet> jobsByMemory = jobs.splitOn("required memory");
+            final Map<String, DataRowSet> jobsByMemory = jobs.splitOn("required memory");
 
-            for(String memoryRequired : jobsByMemory.keySet()) {
+            for(final String memoryRequired : jobsByMemory.keySet()) {
 
-                int reqMemory = Integer.valueOf(memoryRequired);
+                final int reqMemory = Integer.valueOf(memoryRequired);
 
                 if(availiableMemory >= reqMemory) {
 
-                    for(DataRow dr : jobsByMemory.get(memoryRequired)) {
+                    for(final DataRow dr : jobsByMemory.get(memoryRequired)) {
                         // get priority
                         try {
-                            int priority = dr.getInt("priority");
+                            final int priority = dr.getInt("priority");
 
                             // if priority greater than maxPriority
                             if(priority < maxPriorityLevel) {
@@ -230,7 +228,7 @@ public class JobQueueRunner {
                                 maxUncheckedPriorityLevel = priority;
                             }
 
-                        } catch (InvalidInputFileException e) {
+                        } catch (final InvalidInputFileException e) {
                             // Priority is malformed
                             returnJobToQueue(jobFile, dr, dr.getInt("required memory"), 99, false);
                         }
@@ -257,19 +255,19 @@ public class JobQueueRunner {
 
     static String multipleJobs = "-*[0-4]\\.[0-9]+->[0-4]\\.[0-9]+@[0-4]\\.[0-9]+";
 
-    private static DataRowSet explodeRegexJobs(DataRowSet jobs) throws InvalidInputFileException {
+    private static DataRowSet explodeRegexJobs(final DataRowSet jobs) throws InvalidInputFileException {
 
         DataRowSet explodedJobs = null;
         DataRowSet toRemoveJobs = null;
 
-        for(DataRow job : jobs) {
+        for(final DataRow job : jobs) {
 
             if(job.getInt("priority") != 99 && (job.getValue("prf").matches(multipleJobs) || job.getValue("rf").matches(multipleJobs))) {
 
                 try {
-                    for(double prf : toValueSet(job.getValue("prf"))) {
-                        for(double rf : toValueSet(job.getValue("rf"))) {
-                            DataRow copy = job.clone();
+                    for(final double prf : toValueSet(job.getValue("prf"))) {
+                        for(final double rf : toValueSet(job.getValue("rf"))) {
+                            final DataRow copy = job.clone();
                             copy.setValue("rf", String.valueOf(rf));
                             copy.setValue("prf", String.valueOf(prf));
 
@@ -288,41 +286,41 @@ public class JobQueueRunner {
                         toRemoveJobs.add(job);
                     }
 
-                } catch (InvalidInputFileException e) {
+                } catch (final InvalidInputFileException e) {
                     job.setValue("priority", "99");
                 }
             }
         }
 
         if(toRemoveJobs != null)
-            for(DataRow toRemove : toRemoveJobs)
+            for(final DataRow toRemove : toRemoveJobs)
                 jobs.remove(toRemove);
 
         if(explodedJobs != null)
-            for(DataRow toAdd : explodedJobs)
+            for(final DataRow toAdd : explodedJobs)
                 jobs.add(toAdd);
 
         return jobs;
 
     }
 
-    private static Set<Double> toValueSet(String rfExpression) throws InvalidInputFileException {
+    private static Set<Double> toValueSet(final String rfExpression) throws InvalidInputFileException {
 
         if(rfExpression.matches(multipleJobs)) {
-            Set<Double> set = new HashSet<>();
+            final Set<Double> set = new HashSet<>();
 
-            String[] splitA = rfExpression.split("->");
+            final String[] splitA = rfExpression.split("->");
             if(splitA.length != 2) throw new InvalidInputFileException("Multi job expresion incorrect");
 
-            String[] splitB = splitA[1].split("@");
+            final String[] splitB = splitA[1].split("@");
             if(splitB.length != 2) throw new InvalidInputFileException("Multi job expresion incorrect");
 
             double a = Double.valueOf(splitA[0]);
             double b = Double.valueOf(splitB[0]);
-            double inc = Double.valueOf(splitB[1]);
+            final double inc = Double.valueOf(splitB[1]);
 
             if(a > b) {
-                double temp = a;
+                final double temp = a;
                 a = b;
                 b = temp;
             }
@@ -339,15 +337,15 @@ public class JobQueueRunner {
 
     }
 
-    private static double clean(double d, double a, double inc) {
-        int roundTo = Math.max(postPointDigits(a), postPointDigits(inc));
-        DecimalFormat df = new DecimalFormat(generatePattern(roundTo));
+    private static double clean(final double d, final double a, final double inc) {
+        final int roundTo = Math.max(postPointDigits(a), postPointDigits(inc));
+        final DecimalFormat df = new DecimalFormat(generatePattern(roundTo));
         df.setRoundingMode(RoundingMode.HALF_UP);
         return Double.valueOf(df.format(d));
     }
 
-    private static String generatePattern(int roundTo) {
-        StringBuilder sb = new StringBuilder("#.");
+    private static String generatePattern(final int roundTo) {
+        final StringBuilder sb = new StringBuilder("#.");
 
         for(int i = 0; i < roundTo; i ++) {
             sb.append("#");
@@ -356,18 +354,18 @@ public class JobQueueRunner {
         return sb.toString();
     }
 
-    private static int postPointDigits(double d) {
-        String[] split = String.valueOf(d).split("\\.");
+    private static int postPointDigits(final double d) {
+        final String[] split = String.valueOf(d).split("\\.");
         return split.length == 1 ? 1 : split[1].length();
     }
 
-    private static DataRow chooseJob(Map<String, DataRowSet> jobsByMemory, int maxRequiredMemory, int maxPriorityLevel, DataRowSet jobs, FileChannel fileChannel) throws IOException, InvalidInputFileException {
+    private static DataRow chooseJob(final Map<String, DataRowSet> jobsByMemory, final int maxRequiredMemory, final int maxPriorityLevel, final DataRowSet jobs, final FileChannel fileChannel) throws IOException, InvalidInputFileException {
 
         // set of jobs that can be done iwth this host's resources
-        DataRowSet chosenJobSet = jobsByMemory.get(String.valueOf(maxRequiredMemory)).splitOn("priority").get(String.valueOf(maxPriorityLevel));
+        final DataRowSet chosenJobSet = jobsByMemory.get(String.valueOf(maxRequiredMemory)).splitOn("priority").get(String.valueOf(maxPriorityLevel));
 
         // take job at head of remaning jobQueue
-        DataRow chosenJob  = chosenJobSet.iterator().next();
+        final DataRow chosenJob  = chosenJobSet.iterator().next();
 
         // decrement n value in chosen job
         int n = Integer.valueOf(chosenJob.getValue("n"));
@@ -390,9 +388,9 @@ public class JobQueueRunner {
         return chosenJob;
     }
 
-    private static Config convertJobToConfig(DataRow chosenJob) throws InvalidInputFileException {
+    private static Config convertJobToConfig(final DataRow chosenJob) throws InvalidInputFileException {
 
-        Config config = new Config(
+        final Config config = new Config(
                 chosenJob.getLocalDate("tS"),
                 chosenJob.getLocalDate("t0"),
                 chosenJob.getLocalDate("tE"),
@@ -413,11 +411,11 @@ public class JobQueueRunner {
 
         try {
             config.setOutputRecordFormat(Enum.valueOf(RecordFormat.class, chosenJob.getValue("output record format")));
-        } catch (IllegalArgumentException e) {
+        } catch (final IllegalArgumentException e) {
             throw new InvalidInputFileException("Invalid value for output record format");
         }
 
-        boolean deterministic = chosenJob.getBoolean("deterministic");
+        final boolean deterministic = chosenJob.getBoolean("deterministic");
         config.setDeterministic(deterministic);
         if(deterministic) {
             config.setSeed(chosenJob.getInt("seed"));
@@ -431,15 +429,15 @@ public class JobQueueRunner {
         return config;
     }
 
-    private static FileChannel getFileChannel(Path jobFile) throws IOException {
-        HashSet<StandardOpenOption> options = new HashSet<>(Sets.newHashSet(StandardOpenOption.READ, StandardOpenOption.WRITE));
+    private static FileChannel getFileChannel(final Path jobFile) throws IOException {
+        final HashSet<StandardOpenOption> options = new HashSet<>(Sets.newHashSet(StandardOpenOption.READ, StandardOpenOption.WRITE));
         return FileChannel.open(jobFile, options);
     }
 
-    public static void returnJobToQueue(Path jobFile, DataRow chosenJob, int requiredMemory, int priority, boolean releaseLockOnExit) throws IOException, InvalidInputFileException, InterruptedException {
+    public static void returnJobToQueue(final Path jobFile, final DataRow chosenJob, final int requiredMemory, final int priority, final boolean releaseLockOnExit) throws IOException, InvalidInputFileException, InterruptedException {
 
         // get file and lock
-        FileChannel fileChannel = getFileChannel(jobFile);
+        final FileChannel fileChannel = getFileChannel(jobFile);
 
         try {
             System.out.println("Locking job file (R) @ " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
@@ -447,11 +445,11 @@ public class JobQueueRunner {
             System.out.println("Locked job file (R) @ " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 
             // read in file to data structure
-            DataRowSet jobs = readInJobFile(fileChannel);
+            final DataRowSet jobs = readInJobFile(fileChannel);
 
             boolean jobFound = false;
 
-            for(DataRow job : jobs) {
+            for(final DataRow job : jobs) {
                 // find job that matches on all fields apart from count and memory requirment
                 if(sameJob(job, chosenJob)) {
                     // inc. count by 1
@@ -488,9 +486,9 @@ public class JobQueueRunner {
         }
     }
 
-    private static boolean sameJob(DataRow a, DataRow b) {
+    private static boolean sameJob(final DataRow a, final DataRow b) {
         // assert if all fields apart from count and memory requirment
-        for(String label : a.getLabels())
+        for(final String label : a.getLabels())
             if(!label.equals("required memory") && !label.equals("n") )
                 if(!a.getValue(label).equals(b.getValue(label)))
                     return false;
@@ -498,12 +496,12 @@ public class JobQueueRunner {
         return true;
     }
 
-    public static void writeToJobFile(FileChannel jobFile, DataRowSet jobs) throws IOException {
+    public static void writeToJobFile(final FileChannel jobFile, final DataRowSet jobs) throws IOException {
         jobFile.truncate(0);
 
-        String toFileString = jobs.toString(order);
+        final String toFileString = jobs.toString(order);
 
-        ByteBuffer buf = ByteBuffer.allocate(toFileString.getBytes().length + 1000);
+        final ByteBuffer buf = ByteBuffer.allocate(toFileString.getBytes().length + 1000);
         buf.clear();
         buf.put(toFileString.getBytes());
 
@@ -514,13 +512,13 @@ public class JobQueueRunner {
         }
     }
 
-    public static DataRowSet readInJobFile(FileChannel jobFile) throws IOException, InvalidInputFileException, InterruptedException {
+    public static DataRowSet readInJobFile(final FileChannel jobFile) throws IOException, InvalidInputFileException, InterruptedException {
 
-        ByteBuffer buffer = ByteBuffer.allocate((int) jobFile.size());
+        final ByteBuffer buffer = ByteBuffer.allocate((int) jobFile.size());
         int noOfBytesRead = jobFile.read(buffer);
 
         String labels = null;
-        Set<String> data = new HashSet<>();
+        final Set<String> data = new HashSet<>();
 
         while (noOfBytesRead != -1) {
 
@@ -530,7 +528,7 @@ public class JobQueueRunner {
 
             while (buffer.hasRemaining()) {
 
-                char c = (char) buffer.get();
+                final char c = (char) buffer.get();
                 if(c == '\n') {
                     if(labels == null)
                         labels = line;
@@ -553,7 +551,7 @@ public class JobQueueRunner {
 
         try {
             return new DataRowSet(labels, data);
-        } catch (NoSuchElementException e) {
+        } catch (final NoSuchElementException e) {
             throw new InvalidInputFileException("There's no jobs in the file");
         }
     }

@@ -4,9 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
+import java.net.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,7 +25,7 @@ public class OpenStreetMapAPI {
 
         long wait = requestGapMillis - (System.currentTimeMillis() - lastAPIRequestTime);
 
-        if(wait > 0) {
+        if (wait > 0) {
             Thread.sleep(wait);
         }
 
@@ -41,12 +39,10 @@ public class OpenStreetMapAPI {
             requestsSinceLastPause = 0;
         }
 
-
         lastAPIRequestTime = System.currentTimeMillis();
-
     }
 
-    public static Area getAreaFromAPI(double lat, double lon, Cache cache) throws IOException, InvalidCoordSet, InterruptedException, APIOverloadedException {
+    public static Area getAreaFromAPI(double lat, double lon, Cache cache) throws IOException, InvalidCoordSet, InterruptedException, APIOverloadedException, URISyntaxException {
 
         Map<String, String> parameters = new HashMap<>();
         parameters.put("format", "json");
@@ -54,26 +50,24 @@ public class OpenStreetMapAPI {
         parameters.put("lon", String.valueOf(lon));
         parameters.put("zoom", "16");
 
-        URL url = new URL("https://nominatim.openstreetmap.org/reverse.php?" + getParamsString(parameters));
+        URL url = new URI("https://nominatim.openstreetmap.org/reverse.php?" + getParamsString(parameters)).toURL();
 
         StringBuffer content = callAPI(url, cache);
 
         return Area.makeArea(content.toString(), cache);
-
     }
 
-    public static Place getPlaceFromAPI(long placeId, Cache cache) throws IOException, InterruptedException, APIOverloadedException {
+    public static Place getPlaceFromAPI(long placeId, Cache cache) throws IOException, InterruptedException, APIOverloadedException, URISyntaxException {
 
         Map<String, String> parameters = new HashMap<>();
         parameters.put("format", "json");
         parameters.put("place_id", String.valueOf(placeId));
 
-        URL url = new URL("https://nominatim.openstreetmap.org/details.php?" + getParamsString(parameters));
+        URL url = new URI("https://nominatim.openstreetmap.org/details.php?" + getParamsString(parameters)).toURL();
 
         StringBuffer content = callAPI(url, cache);
 
         return Place.makePlace(content.toString());
-
     }
 
     private static StringBuffer callAPI(URL url, Cache cache) throws IOException, InterruptedException, APIOverloadedException {
@@ -108,9 +102,7 @@ public class OpenStreetMapAPI {
         return content;
     }
 
-
-    public static String getParamsString(Map<String, String> params)
-            throws UnsupportedEncodingException {
+    public static String getParamsString(Map<String, String> params) throws UnsupportedEncodingException {
         StringBuilder result = new StringBuilder();
 
         for (Map.Entry<String, String> entry : params.entrySet()) {
@@ -125,5 +117,4 @@ public class OpenStreetMapAPI {
                 ? resultString.substring(0, resultString.length() - 1)
                 : resultString;
     }
-
 }

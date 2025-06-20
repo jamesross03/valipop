@@ -1,6 +1,7 @@
 package uk.ac.standrews.cs.valipop.utils.addressLookup;
 
 import java.io.*;
+import java.net.URISyntaxException;
 
 /**
  * Return an area given coordinates.
@@ -8,9 +9,7 @@ import java.io.*;
  */
 public class ReverseGeocodeLookup {
 
-    // config stuff
     public static final int ABODES_PER_KM = 500;
-
 
     Cache cache;
 
@@ -18,12 +17,11 @@ public class ReverseGeocodeLookup {
         this.cache = cache;
     }
 
-
-    public Area getArea(Coords coords) throws IOException, InvalidCoordSet, InterruptedException, APIOverloadedException {
+    public Area getArea(Coords coords) throws IOException, InvalidCoordSet, InterruptedException, APIOverloadedException, URISyntaxException {
         return getArea(coords.lat, coords.lon);
     }
 
-    public Area getArea(double lat, double lon) throws IOException, InvalidCoordSet, InterruptedException, APIOverloadedException {
+    public Area getArea(double lat, double lon) throws IOException, InvalidCoordSet, InterruptedException, APIOverloadedException, URISyntaxException {
 
         // look up in cache
         Area area = cache.checkCache(lat, lon);
@@ -44,14 +42,4 @@ public class ReverseGeocodeLookup {
 
         return area;
     }
-
-
-
-
-
-
-
-
 }
-
-

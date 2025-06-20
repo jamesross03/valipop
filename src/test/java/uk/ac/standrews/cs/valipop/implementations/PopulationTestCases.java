@@ -16,7 +16,7 @@
  */
 package uk.ac.standrews.cs.valipop.implementations;
 
-import org.apache.hadoop.yarn.webapp.hamlet2.Hamlet;
+import org.junit.jupiter.params.provider.Arguments;
 import uk.ac.standrews.cs.valipop.Config;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPersonCollection;
 import uk.ac.standrews.cs.valipop.simulationEntities.dataStructure.PeopleCollection;
@@ -29,17 +29,14 @@ import java.util.List;
 
 class PopulationTestCases {
 
+    synchronized static List<Arguments> getTestCases()  {
 
+        return List.of(
 
-    synchronized static List<Object[]> getTestCases()  {
-
-        final List<Object[]> testCases = new ArrayList<>();
-
-        testCases.add(new Object[]{fullPopulation(200, 841584), 200});
-        testCases.add(new Object[]{fullPopulation(350, 56854687), 350});
-        testCases.add(new Object[]{fullPopulation(1000, 56854687), 1000});
-
-        return testCases;
+            Arguments.of(fullPopulation(200, 841584), 200),
+            Arguments.of(fullPopulation(350, 56854687), 350),
+            Arguments.of(fullPopulation(1000, 56854687), 1000)
+        );
     }
 
     private static IPersonCollection fullPopulation(final int t0PopulationSize, final int seed)  {

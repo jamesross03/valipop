@@ -1,6 +1,5 @@
 package uk.ac.standrews.cs.valipop.utils.sourceEventRecords;
 
-import uk.ac.standrews.cs.utilities.MappedIterator;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPartnership;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPerson;
 import uk.ac.standrews.cs.valipop.utils.sourceEventRecords.oldDSformat.BirthSourceRecord;
@@ -10,23 +9,22 @@ import uk.ac.standrews.cs.valipop.utils.sourceEventRecords.oldDSformat.SourceRec
 
 public class DsRecord extends Record {
 
-    DsRecord(Iterable<IPerson> people, Iterable<IPartnership> partnerships) {
+    DsRecord(final Iterable<IPerson> people, final Iterable<IPartnership> partnerships) {
       super(people, partnerships);
     }
 
     @Override
-    protected Iterable<SourceRecord> toBirthRecords(Iterable<IPerson> people) {
-        return () -> new MappedIterator<>(people.iterator(), BirthSourceRecord::new);
+    protected Iterable<SourceRecord> toBirthRecords(final Iterable<IPerson> people) {
+        return SimplifiedRecord.getRecords(people, BirthSourceRecord::new);
     }
 
     @Override
-    protected Iterable<SourceRecord> toDeathRecords(Iterable<IPerson> people) {
-        return () -> new MappedIterator<>(people.iterator(), DeathSourceRecord::new);
+    protected Iterable<SourceRecord> toDeathRecords(final Iterable<IPerson> people) {
+        return SimplifiedRecord.getRecords(people, DeathSourceRecord::new);
     }
 
     @Override
-    protected Iterable<SourceRecord> toMarriageRecords(Iterable<IPartnership> partnerships) {
-        return () -> new MappedIterator<>(partnerships.iterator(), MarriageSourceRecord::new);
+    protected Iterable<SourceRecord> toMarriageRecords(final Iterable<IPartnership> partnerships) {
+        return SimplifiedRecord.getRecords(partnerships, MarriageSourceRecord::new);
     }
 }
-

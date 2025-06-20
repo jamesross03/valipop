@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -70,7 +71,7 @@ public class Area implements Serializable {
 
     private transient ArrayList<Address> addresses = new ArrayList<>();
 
-    public static Area makeArea(String jsonInput, Cache cache) throws IOException, InvalidCoordSet, InterruptedException, APIOverloadedException {
+    public static Area makeArea(String jsonInput, Cache cache) throws IOException, InvalidCoordSet, InterruptedException, APIOverloadedException, URISyntaxException {
         Area area = mapper.readValue(jsonInput, Area.class);
 
         if(area.error.equals("none")) {

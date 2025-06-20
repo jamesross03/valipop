@@ -1,6 +1,5 @@
 package uk.ac.standrews.cs.valipop.utils;
 
-import uk.ac.standrews.cs.nds.util.FileUtil;
 import uk.ac.standrews.cs.valipop.statistics.distributions.InconsistentWeightException;
 import uk.ac.standrews.cs.valipop.statistics.populationStatistics.PopulationStatistics;
 import uk.ac.standrews.cs.valipop.utils.specialTypes.labeledValueSets.IntegerRange;
@@ -8,6 +7,7 @@ import uk.ac.standrews.cs.valipop.utils.specialTypes.labeledValueSets.LabelledVa
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -70,38 +70,37 @@ public class DistributionGenerator {
             // TODO handle random generator consistently with main simulation.
             TreeMap<IntegerRange, LabelledValueSet<String, Double>> dist = dataset.to2DTableOfProportions(groupX, groupY, PopulationStatistics.randomGenerator);
 
-            PrintStream ps = FileUtil.createPrintStreamToFile(Paths.get(outToDir.toString(), filterValue + ".txt").toString());
+            try (PrintStream ps = new PrintStream(Files.newOutputStream(outToDir.resolve(filterValue + ".txt")))) {
 
-            boolean first = true;
+                boolean first = true;
 
-            ps.println("YEAR\t" + forYear);
-            ps.println("POPULATION\t" + sourcePopulation);
-            ps.println("SOURCE\t" + sourceOrganisation);
-            ps.println("VAR\tOCCUPATION");
-            ps.println("FORM\tPROPORTION");
-            ps.println("SEX\t" + filterValue);
+                ps.println("YEAR\t" + forYear);
+                ps.println("POPULATION\t" + sourcePopulation);
+                ps.println("SOURCE\t" + sourceOrganisation);
+                ps.println("VAR\tOCCUPATION");
+                ps.println("FORM\tPROPORTION");
+                ps.println("SEX\t" + filterValue);
 
-            for (IntegerRange iR: dist.keySet()) {
+                for (IntegerRange iR : dist.keySet()) {
 
-                LabelledValueSet<String, Double> row = dist.get(iR);
+                    LabelledValueSet<String, Double> row = dist.get(iR);
 
-                if (first) {
-                    ps.print("LABELS\t");
+                    if (first) {
+                        ps.print("LABELS\t");
+                        for (String s : row.getLabels())
+                            ps.print(s + "\t");
+                        ps.println();
+                        ps.println("DATA");
+                        first = false;
+                    }
+                    ps.print(iR + " \t");
+
                     for (String s : row.getLabels())
-                        ps.print(s + "\t");
+                        ps.print(row.getValue(s) + "\t");
+
                     ps.println();
-                    ps.println("DATA");
-                    first = false;
                 }
-                ps.print(iR + " \t");
-
-                for (String s : row.getLabels())
-                    ps.print(row.getValue(s) + "\t");
-
-                ps.println();
             }
-
-            ps.close();
         }
     }
 }

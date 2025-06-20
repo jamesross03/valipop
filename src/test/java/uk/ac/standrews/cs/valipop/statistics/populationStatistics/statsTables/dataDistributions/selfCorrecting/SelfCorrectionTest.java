@@ -16,7 +16,7 @@
  */
 package uk.ac.standrews.cs.valipop.statistics.populationStatistics.statsTables.dataDistributions.selfCorrecting;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.ac.standrews.cs.valipop.statistics.analysis.validation.contingencyTables.TreeStructure.SexOption;
 import uk.ac.standrews.cs.valipop.statistics.populationStatistics.PopulationStatistics;
 import uk.ac.standrews.cs.valipop.statistics.populationStatistics.determinedCounts.DeterminedCount;
@@ -30,7 +30,7 @@ import java.time.Year;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Tom Dalton (tsd4@st-andrews.ac.uk)

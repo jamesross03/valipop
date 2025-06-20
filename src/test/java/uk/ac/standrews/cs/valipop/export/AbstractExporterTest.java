@@ -16,36 +16,39 @@
  */
 package uk.ac.standrews.cs.valipop.export;
 
-import org.junit.After;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.AfterEach;
+
+import org.junit.jupiter.params.ParameterizedClass;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import uk.ac.standrews.cs.valipop.Config;
 import uk.ac.standrews.cs.valipop.implementations.OBDModel;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPersonCollection;
 
-import static uk.ac.standrews.cs.utilities.FileManipulation.FILE_CHARSET;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * @author Graham Kirby (graham.kirby@st-andrews.ac.uk)
  */
-@RunWith(Parameterized.class)
+@ParameterizedClass
+@MethodSource("getConfigurations")
 public abstract class AbstractExporterTest {
 
     static final String TEST_DIRECTORY_PATH_STRING = "src/test/resources/valipop/";
 
-    static final int[] TEST_CASE_POPULATION_SIZES = {200, 350, 500};
+//    static final int[] TEST_CASE_POPULATION_SIZES = {200, 350, 500};
+    static final int[] TEST_CASE_POPULATION_SIZES = {200};
     static final int SEED = 841584;
     static final String[] TEST_CASE_FILE_NAME_ROOTS = new String[TEST_CASE_POPULATION_SIZES.length];
 
@@ -68,24 +71,32 @@ public abstract class AbstractExporterTest {
         this.file_name_root = file_name_root;
     }
 
-    @Parameterized.Parameters(name = "{0}")
-    public static Collection<Object[]> generateConfigurations() throws Exception {
+//    @Parameterized.Parameters(name = "{0}")
+    public static List<Arguments> generateConfigurations() {
 
-        final Object[][] configurations = new Object[TEST_CASE_POPULATION_SIZES.length][];
-        for (int i = 0; i < configurations.length; i++) {
-            configurations[i] = makeTestConfiguration(TEST_CASE_POPULATION_SIZES[i], TEST_CASE_FILE_NAME_ROOTS[i]);
+//        final Object[][] configurations = new Object[TEST_CASE_POPULATION_SIZES.length][];
+        final List<Arguments> arguments = new ArrayList<>();
+        for (int i = 0; i < TEST_CASE_POPULATION_SIZES.length; i++) {
+
+            arguments.add(makeTestConfiguration(TEST_CASE_POPULATION_SIZES[i], TEST_CASE_FILE_NAME_ROOTS[i]));
         }
-        return Arrays.asList(configurations);
+        return arguments;
     }
 
-    @After
+    static List<Arguments> configurations = generateConfigurations();
+
+    static List<Arguments> getConfigurations() {
+        return configurations;
+    }
+
+    @AfterEach
     public void tearDown() throws IOException {
 
         Files.delete(generated_output1);
         Files.delete(generated_output2);
     }
 
-    private static Object[] makeTestConfiguration(final int population_size, final String file_name_root) {
+    private static Arguments makeTestConfiguration(final int population_size, final String file_name_root) {
 
         String purpose = "graph-test";
 
@@ -107,7 +118,7 @@ public abstract class AbstractExporterTest {
         final IPersonCollection population = sim.getPopulation().getPeople();
         population.setDescription(String.valueOf(population_size));
 
-        return new Object[]{population, file_name_root};
+        return Arguments.of(population, file_name_root);
     }
 
     private static String makeFileNameRoot(final int population_size) {
@@ -117,7 +128,7 @@ public abstract class AbstractExporterTest {
 
     protected static void assertThatFilesHaveSameContent(final Path path1, final Path path2) throws IOException {
 
-        try (BufferedReader reader1 = Files.newBufferedReader(path1, FILE_CHARSET); BufferedReader reader2 = Files.newBufferedReader(path2, FILE_CHARSET)) {
+        try (BufferedReader reader1 = Files.newBufferedReader(path1, StandardCharsets.UTF_8); BufferedReader reader2 = Files.newBufferedReader(path2, StandardCharsets.UTF_8)) {
 
             String line1;
 

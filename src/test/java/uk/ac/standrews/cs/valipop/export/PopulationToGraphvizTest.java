@@ -16,9 +16,9 @@
  */
 package uk.ac.standrews.cs.valipop.export;
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import uk.ac.standrews.cs.valipop.export.graphviz.GraphvizPopulationWriter;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPersonCollection;
 
@@ -35,7 +35,7 @@ public class PopulationToGraphvizTest extends AbstractExporterTest {
 
     static final String INTENDED_SUFFIX = ".dot";
 
-    @Before
+    @BeforeEach
     public void setup() throws IOException {
 
         generated_output1 = Files.createTempFile(null, INTENDED_SUFFIX);
@@ -48,7 +48,7 @@ public class PopulationToGraphvizTest extends AbstractExporterTest {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void graphvizExportIsAsExpected() throws Exception {
 
         final IPopulationWriter population_writer = new GraphvizPopulationWriter(population, generated_output1);

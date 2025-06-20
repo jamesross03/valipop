@@ -16,10 +16,11 @@
  */
 package uk.ac.standrews.cs.valipop.export;
 
-import uk.ac.standrews.cs.utilities.FileManipulation;
+import uk.ac.standrews.cs.valipop.Config;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.NumberFormat;
@@ -60,9 +61,9 @@ public abstract class AbstractFilePopulationWriter implements IPopulationWriter 
      */
     public AbstractFilePopulationWriter(final Path path) throws IOException {
 
-        FileManipulation.createParentDirectoryIfDoesNotExist(path);
+        Config.createParentDirectoryIfDoesNotExist(path);
 
-        writer = new PrintWriter(Files.newBufferedWriter(path, FileManipulation.FILE_CHARSET));
+        writer = new PrintWriter(Files.newBufferedWriter(path, StandardCharsets.UTF_8));
 
         outputHeader(writer);
     }

@@ -16,7 +16,6 @@
  */
 package uk.ac.standrews.cs.valipop;
 
-import uk.ac.standrews.cs.utilities.FileManipulation;
 import uk.ac.standrews.cs.valipop.export.ExportFormat;
 import uk.ac.standrews.cs.valipop.implementations.SerializableConfig;
 import uk.ac.standrews.cs.valipop.statistics.analysis.simulationSummaryLogging.SummaryRow;
@@ -27,11 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Serializable;
-import java.nio.file.DirectoryStream;
-import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
@@ -592,23 +587,34 @@ public class Config implements Serializable {
 
         varMaleOccupationChangePaths = annotationsPath.resolve(maleOccupationChangeSubFile);
         varFemaleOccupationChangePaths = annotationsPath.resolve(femaleOccupationChangeSubFile);
-
     }
 
     public static void mkBlankFile(final Path blankFilePath) {
 
         try {
-            FileManipulation.createFileIfDoesNotExist(blankFilePath);
-        } catch (final FileAlreadyExistsException e){
-
+            createFileIfDoesNotExist(blankFilePath);
         } catch (final IOException e) {
             throw new RuntimeException(e);
         }
     }
 
+    public static void createFileIfDoesNotExist(Path path) throws IOException {
+        if (!Files.exists(path)) {
+            createParentDirectoryIfDoesNotExist(path);
+            Files.createFile(path);
+        }
+    }
+
+    public static void createParentDirectoryIfDoesNotExist(Path path) throws IOException {
+        Path parent_dir = path.getParent();
+        if (parent_dir != null) {
+            Files.createDirectories(parent_dir);
+        }
+    }
+
     private static void mkSummaryFile(final Path summaryFilePath) {
 
-        if(summaryFilePath.toFile().exists()) {
+        if (summaryFilePath.toFile().exists()) {
             return;
         }
 

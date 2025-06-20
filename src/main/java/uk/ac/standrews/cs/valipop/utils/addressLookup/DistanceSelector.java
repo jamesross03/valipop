@@ -24,13 +24,11 @@ public class DistanceSelector {
 
         this.random = random;
         distribution = new PoissonDistribution(random, poissonM - 0.5, PoissonDistribution.DEFAULT_EPSILON, PoissonDistribution.DEFAULT_MAX_ITERATIONS);
-        secondaryDistribution = new UniformRealDistribution(random, 0.0, averageMoveDistance / poissonM, UniformRealDistribution.DEFAULT_INVERSE_ABSOLUTE_ACCURACY);
+        secondaryDistribution = new UniformRealDistribution(random, 0.0, averageMoveDistance / poissonM);
     }
 
     public double selectRandomDistance() {
 
         return (distribution.sample() * averageMoveDistance / poissonM) + secondaryDistribution.sample();
-
     }
-
 }

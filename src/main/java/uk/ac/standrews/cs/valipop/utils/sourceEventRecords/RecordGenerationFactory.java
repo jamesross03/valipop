@@ -1,12 +1,14 @@
 package uk.ac.standrews.cs.valipop.utils.sourceEventRecords;
 
-import uk.ac.standrews.cs.utilities.FilteredIterator;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPartnership;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPerson;
 import uk.ac.standrews.cs.valipop.simulationEntities.PopulationNavigation;
 
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
 
@@ -18,6 +20,7 @@ public class RecordGenerationFactory {
     public static final Logger log = Logger.getLogger(RecordGenerationFactory.class.getName());
 
     public static void outputRecords(RecordFormat recordFormat, Path recordsOutputDir,  Iterable<IPerson> people, Iterable<IPartnership> partnerships, LocalDate startDate) {
+
         Iterable<IPerson> filteredPeople = filterPeople(people, startDate);
         Iterable<IPartnership> filteredPartnerships = filterPartnerships(partnerships, startDate);
 
@@ -57,18 +60,27 @@ public class RecordGenerationFactory {
         }
     }
 
-    private static Iterable<IPerson> filterPeople(Iterable<IPerson> people, LocalDate startDate) {
-        return () -> {
-            Predicate<IPerson> isPresent = person -> person.getDeathDate() != null && PopulationNavigation.presentOnDate(person, person.getDeathDate()) && person.getDeathDate() != null && startDate.isBefore( person.getDeathDate());
-            return new FilteredIterator<>(people.iterator(), isPresent);
-        };
+    private static List<IPerson> filterPeople(Iterable<IPerson> people, LocalDate startDate) {
+
+        List<IPerson> result = new ArrayList<>();
+
+        for (IPerson person : people) {
+            if (person.getDeathDate() != null && PopulationNavigation.presentOnDate(person, person.getDeathDate()) && person.getDeathDate() != null && startDate.isBefore( person.getDeathDate()))
+                result.add(person);
+        }
+
+        return result;
     }
 
-    private static Iterable<IPartnership> filterPartnerships(Iterable<IPartnership> partneships, LocalDate startDate) {
-        return () -> {
-            Predicate<IPartnership> isPresent = partnership -> partnership.getMarriageDate() != null && PopulationNavigation.presentOnDate(partnership.getMalePartner(), partnership.getMarriageDate()) && PopulationNavigation.presentOnDate(partnership.getFemalePartner(), partnership.getMarriageDate()) && startDate.isBefore( partnership.getMarriageDate());
+    private static List<IPartnership> filterPartnerships(Iterable<IPartnership> partneships, LocalDate startDate) {
 
-            return new FilteredIterator<>(partneships.iterator(), isPresent);
-        };
+        List<IPartnership> result = new ArrayList<>();
+
+        for (IPartnership partnership : partneships) {
+            if (partnership.getMarriageDate() != null && PopulationNavigation.presentOnDate(partnership.getMalePartner(), partnership.getMarriageDate()) && PopulationNavigation.presentOnDate(partnership.getFemalePartner(), partnership.getMarriageDate()) && startDate.isBefore( partnership.getMarriageDate()))
+                result.add(partnership);
+        }
+
+        return result;
     }
 }

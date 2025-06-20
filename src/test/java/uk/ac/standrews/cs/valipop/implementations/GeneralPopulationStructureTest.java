@@ -16,7 +16,11 @@
  */
 package uk.ac.standrews.cs.valipop.implementations;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedClass;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.FieldSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPartnership;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPerson;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPersonCollection;
@@ -24,12 +28,9 @@ import uk.ac.standrews.cs.valipop.statistics.analysis.validation.contingencyTabl
 
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.*;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests of properties of abstract population interface that should hold for all populations.
@@ -37,7 +38,9 @@ import static org.junit.Assert.*;
  * @author Alan Dearle (alan.dearle@st-andrews.ac.uk)
  * @author Graham Kirby (graham.kirby@st-andrews.ac.uk)
  */
-public abstract class GeneralPopulationStructureTest {
+@ParameterizedClass
+@MethodSource("uk.ac.standrews.cs.valipop.implementations.PopulationTestCases#getTestCases")
+public class GeneralPopulationStructureTest {
 
     private static final int PEOPLE_ITERATION_SAMPLE_THRESHOLD = 40;
     private static final int PEOPLE_ITERATION_SAMPLE_START = 30;
@@ -49,7 +52,7 @@ public abstract class GeneralPopulationStructureTest {
     private final IPersonCollection population;
     private final int initialSize;
 
-    GeneralPopulationStructureTest(final IPersonCollection population, int initialSize) {
+    GeneralPopulationStructureTest(final IPersonCollection population, final int initialSize) {
 
         this.population = population;
         this.initialSize = initialSize;
@@ -91,16 +94,18 @@ public abstract class GeneralPopulationStructureTest {
         assertEquals(population.getNumberOfPartnerships(), partnerships.size());
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void tooManyPersonIterations() {
 
-        doTooManyIterations(population.getPeople().iterator(), population.getNumberOfPeople());
+        assertThrows(NoSuchElementException.class, () ->
+            doTooManyIterations(population.getPeople().iterator(), population.getNumberOfPeople()));
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void tooManyPartnershipIterations() {
 
-        doTooManyIterations(population.getPartnerships().iterator(), population.getNumberOfPartnerships());
+        assertThrows(NoSuchElementException.class, () ->
+        doTooManyIterations(population.getPartnerships().iterator(), population.getNumberOfPartnerships()));
     }
 
     @Test
@@ -280,11 +285,11 @@ public abstract class GeneralPopulationStructureTest {
 
     private void assertParentsAndChildrenConsistent(final IPerson person) {
 
-        IPartnership parents = person.getParents();
+        final IPartnership parents = person.getParents();
 
         if (parents != null) {
             assertTrue(parents.getChildren().contains(person));
-            IPerson father = parents.getMalePartner();
+            final IPerson father = parents.getMalePartner();
 
             assertPersonIsPresentInPopulation(father);
             assertPersonIsPresentInPopulation(parents.getFemalePartner());
@@ -296,7 +301,7 @@ public abstract class GeneralPopulationStructureTest {
         assertNotNull(population.findPerson(person.getId()));
     }
 
-    private void assertParentsHaveSensibleAgesAtBirth(final IPartnership partnership) {
+    private static void assertParentsHaveSensibleAgesAtBirth(final IPartnership partnership) {
 
         final IPerson mother = partnership.getFemalePartner();
         final IPerson father = partnership.getMalePartner();
@@ -316,7 +321,7 @@ public abstract class GeneralPopulationStructureTest {
         }
     }
 
-    private void assertNoneOfChildrenAreSiblingPartners(final IPerson person) {
+    private static void assertNoneOfChildrenAreSiblingPartners(final IPerson person) {
 
         // Include half-siblings.
         final Set<IPerson> siblings = new HashSet<>();
@@ -346,36 +351,36 @@ public abstract class GeneralPopulationStructureTest {
         return Period.between(person.getBirthDate(), population.getEndDate()).minus(OBDModel.MAX_AGE).isNegative();
     }
 
-    private static boolean deathDateIsDefined(IPerson person) {
+    private static boolean deathDateIsDefined(final IPerson person) {
 
         return person.getDeathDate() != null;
     }
 
-    private static boolean deathPlaceIsDefined(IPerson person) {
+    private static boolean deathPlaceIsDefined(final IPerson person) {
 
-        return person.getDeathPlace() != null && person.getDeathPlace().length() > 0;
+        return person.getDeathPlace() != null && !person.getDeathPlace().isEmpty();
     }
 
-    private static boolean deathCauseIsDefined(IPerson person) {
+    private static boolean deathCauseIsDefined(final IPerson person) {
 
-        return person.getDeathCause() != null && person.getDeathCause().length() > 0;
+        return person.getDeathCause() != null && !person.getDeathCause().isEmpty();
     }
 
-    private void assertSexesConsistent(final IPartnership partnership) {
+    private static void assertSexesConsistent(final IPartnership partnership) {
 
         assertEquals(SexOption.FEMALE, partnership.getFemalePartner().getSex());
         assertEquals(SexOption.MALE, partnership.getMalePartner().getSex());
     }
 
-    private void assertNotPartnerOfAny(final IPerson person, final Set<IPerson> people) {
+    private static void assertNotPartnerOfAny(final IPerson person, final Set<IPerson> people) {
 
         for (final IPerson another_person : people) {
-            boolean partnerOf = isPartnerOf(person, another_person);
+            final boolean partnerOf = isPartnerOf(person, another_person);
             assertFalse(partnerOf);
         }
     }
 
-    private boolean isPartnerOf(final IPerson p1, final IPerson p2) {
+    private static boolean isPartnerOf(final IPerson p1, final IPerson p2) {
 
         for (final IPartnership partnership : p1.getPartnerships()) {
 
@@ -395,11 +400,7 @@ public abstract class GeneralPopulationStructureTest {
 
                 for (final IPerson child : partnership.getChildren()) {
 
-                    boolean same = person.getSurname().equals(child.getSurname());
-                    assertTrue(same);
-
-
-//                    assertEquals(person.getSurname(), child.getSurname());
+                    assertEquals(person.getSurname(), child.getSurname());
 
                     if (child.getSex() == SexOption.MALE) {
                         assertSurnameInheritedOnMaleLine(child);

@@ -16,9 +16,9 @@
  */
 package uk.ac.standrews.cs.valipop.export;
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import uk.ac.standrews.cs.valipop.export.gedcom.GEDCOMPopulationAdapter;
 import uk.ac.standrews.cs.valipop.export.gedcom.GEDCOMPopulationWriter;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPartnership;
@@ -31,8 +31,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * E2E tests of GEDCOM export.
@@ -44,7 +44,7 @@ public class PopulationToGEDCOMTest extends AbstractExporterTest {
     static final String INTENDED_SUFFIX = ".ged";
     private static final int POPULATION_SIZE_LIMIT_FOR_EXPENSIVE_TESTS = 1000;
 
-    @Before
+    @BeforeEach
     public void setup() throws IOException {
 
         generated_output1 = Files.createTempFile(null, INTENDED_SUFFIX);
@@ -58,12 +58,12 @@ public class PopulationToGEDCOMTest extends AbstractExporterTest {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void GEDCOMExportIsAsExpected() throws Exception {
 
         final IPopulationWriter population_writer = new GEDCOMPopulationWriter(generated_output1);
 
-        try (PopulationConverter converter = new PopulationConverter(population, population_writer)) {
+        try (final PopulationConverter converter = new PopulationConverter(population, population_writer)) {
             converter.convert();
         }
 
@@ -71,22 +71,21 @@ public class PopulationToGEDCOMTest extends AbstractExporterTest {
     }
 
     @Test
-    @Ignore
     public void exportImportGivesEquivalentPopulation() throws Exception {
 
         final IPopulationWriter population_writer1 = new GEDCOMPopulationWriter(generated_output1);
 
-        try (PopulationConverter converter = new PopulationConverter(population, population_writer1)) {
+        try (final PopulationConverter converter = new PopulationConverter(population, population_writer1)) {
             converter.convert();
         }
 
-        IPersonCollection imported = new GEDCOMPopulationAdapter(generated_output1);
+        final IPersonCollection imported = new GEDCOMPopulationAdapter(generated_output1);
 
         assertEqualPopulations(population, imported);
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void exportImportExportGivesSamePopulationFile() throws Exception {
 
         // TODO get working with non-ASCII characters in names; may require GEDCOM 7.
@@ -94,13 +93,13 @@ public class PopulationToGEDCOMTest extends AbstractExporterTest {
         final IPopulationWriter population_writer1 = new GEDCOMPopulationWriter(generated_output1);
         final IPopulationWriter population_writer2 = new GEDCOMPopulationWriter(generated_output2);
 
-        try (PopulationConverter converter = new PopulationConverter(population, population_writer1)) {
+        try (final PopulationConverter converter = new PopulationConverter(population, population_writer1)) {
             converter.convert();
         }
 
-        IPersonCollection imported = new GEDCOMPopulationAdapter(generated_output1);
+        final IPersonCollection imported = new GEDCOMPopulationAdapter(generated_output1);
 
-        try (PopulationConverter converter = new PopulationConverter(imported, population_writer2)) {
+        try (final PopulationConverter converter = new PopulationConverter(imported, population_writer2)) {
             converter.convert();
         }
 
@@ -112,48 +111,46 @@ public class PopulationToGEDCOMTest extends AbstractExporterTest {
         return Integer.parseInt(population.toString()) <= POPULATION_SIZE_LIMIT_FOR_EXPENSIVE_TESTS;
     }
 
-    private void assertEqualPopulations(IPersonCollection population1, IPersonCollection population2) {
+    private static void assertEqualPopulations(final IPersonCollection population1, final IPersonCollection population2) {
 
-        int numberOfPeople1 = population1.getNumberOfPeople();
-        int numberOfPeople2 = population2.getNumberOfPeople();
+        final int numberOfPeople1 = population1.getNumberOfPeople();
+        final int numberOfPeople2 = population2.getNumberOfPeople();
         assertEquals(numberOfPeople1, numberOfPeople2);
 
-        List<IPerson> population1_people = new ArrayList<>();
+        final List<IPerson> population1_people = new ArrayList<>();
         population1.getPeople().forEach(population1_people::add);
 
-        List<IPerson> population2_people = new ArrayList<>();
+        final List<IPerson> population2_people = new ArrayList<>();
         population2.getPeople().forEach(population2_people::add);
 
-        int size1 = population1_people.size();
-        int size2 = population2_people.size();
+        final int size1 = population1_people.size();
+        final int size2 = population2_people.size();
         assertEquals(size1, size2);
 
         population1_people.sort(Comparable::compareTo);
         population2_people.sort(Comparable::compareTo);
 
-        for (int i = 0; i < population1_people.size(); i++) {
+        for (int i = 0; i < population1_people.size(); i++)
             assertEqualPeople(population1_people.get(i), population2_people.get(i));
-        }
     }
 
-    private void assertEqualPeople(IPerson person1, IPerson person2) {
+    private static void assertEqualPeople(final IPerson person1, final IPerson person2) {
 
         assertEqualPersonalDetails(person1, person2);
 
         assertEqualPartnerships(person1.getParents(), person2.getParents());
 
-        List<IPartnership> person1_partnerships = new ArrayList<>(person1.getPartnerships());
-        List<IPartnership> person2_partnerships = new ArrayList<>(person2.getPartnerships());
+        final List<IPartnership> person1_partnerships = new ArrayList<>(person1.getPartnerships());
+        final List<IPartnership> person2_partnerships = new ArrayList<>(person2.getPartnerships());
 
         person1_partnerships.sort(Comparable::compareTo);
         person2_partnerships.sort(Comparable::compareTo);
 
-        for (int i = 0; i < person1_partnerships.size(); i++) {
+        for (int i = 0; i < person1_partnerships.size(); i++)
             assertEqualPartnerships(person1_partnerships.get(i), person2_partnerships.get(i));
-        }
     }
 
-    private static void assertEqualPersonalDetails(IPerson person1, IPerson person2) {
+    private static void assertEqualPersonalDetails(final IPerson person1, final IPerson person2) {
 
         assertEquals(person1.getId(), person2.getId());
         assertEquals(person1.getFirstName(), person2.getFirstName());
@@ -167,11 +164,11 @@ public class PopulationToGEDCOMTest extends AbstractExporterTest {
         assertEquals(person1.getLastOccupation(), person2.getLastOccupation());
     }
 
-    private void assertEqualPartnerships(IPartnership partnership1, IPartnership partnership2) {
+    private static void assertEqualPartnerships(final IPartnership partnership1, final IPartnership partnership2) {
 
         if (partnership1 != null || partnership2 != null) {
-            if (partnership1 == null) fail();
-            if (partnership2 == null) fail();
+
+            if (partnership1 == null || partnership2 == null) fail();
 
             assertEquals(partnership1.getId(), partnership2.getId());
             assertEquals(partnership1.getMarriageDate(), partnership2.getMarriageDate());
@@ -180,15 +177,14 @@ public class PopulationToGEDCOMTest extends AbstractExporterTest {
             assertEqualPersonalDetails(partnership1.getFemalePartner(), partnership2.getFemalePartner());
             assertEqualPersonalDetails(partnership1.getMalePartner(), partnership2.getMalePartner());
 
-            List<IPerson> partnership1_children = new ArrayList<>(partnership1.getChildren());
-            List<IPerson> partnership2_children = new ArrayList<>(partnership1.getChildren());
+            final List<IPerson> partnership1_children = new ArrayList<>(partnership1.getChildren());
+            final List<IPerson> partnership2_children = new ArrayList<>(partnership1.getChildren());
 
             partnership1_children.sort(Comparable::compareTo);
             partnership2_children.sort(Comparable::compareTo);
 
-            for (int i = 0; i < partnership1_children.size(); i++) {
+            for (int i = 0; i < partnership1_children.size(); i++)
                 assertEqualPersonalDetails(partnership1_children.get(i), partnership2_children.get(i));
-            }
         }
     }
 }

@@ -70,7 +70,6 @@ public class DistributedFactorSearch {
         SparkConf conf = new SparkConf().setAppName("valipop");
         JavaSparkContext sc = new JavaSparkContext(conf);
 
-
         List<ModelInput> inputs = generateInputs(seedSize, rfs, prfs, precisions, dataFiles, numberOfRunsPerSim, runPurpose, resultsDir, summaryResultsDir, projectPath);
 
         if (!inputs.isEmpty()) {

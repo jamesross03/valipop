@@ -16,10 +16,8 @@
  */
 package uk.ac.standrews.cs.valipop.simulationEntities.dataStructure;
 
-
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.ac.standrews.cs.valipop.Config;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPerson;
 import uk.ac.standrews.cs.valipop.simulationEntities.Partnership;
@@ -35,18 +33,16 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Tom Dalton (tsd4@st-andrews.ac.uk)
  */
-@Ignore
 public class PeopleCollectionTest {
 
     private PopulationStatistics ps;
 
-    @Before
+    @BeforeEach
     public void setUpPopulationStatistics() {
         Config config = new Config(
                 LocalDate.of(1, 1, 1),
@@ -278,7 +274,6 @@ public class PeopleCollectionTest {
         people = living.getPeople();
         assertTrue(people.contains(c1));
 
-
         living.remove(f1);
 
         // can we move females (with births) - twin births
@@ -303,69 +298,77 @@ public class PeopleCollectionTest {
         assertTrue(people.contains(c3));
     }
 
-    @Test(expected = PersonNotFoundException.class)
+    @Test
     public void removeNonExistentFemaleFromEmptyCollection() throws PersonNotFoundException {
 
-        LocalDate s = LocalDate.of(0, 1, 1);
-        LocalDate e = LocalDate.of(3000, 1, 1);
+        assertThrows(PersonNotFoundException.class, () -> {
+            LocalDate s = LocalDate.of(0, 1, 1);
+            LocalDate e = LocalDate.of(3000, 1, 1);
 
-        Period y = Period.ofYears(1);
-        PeopleCollection living = new PeopleCollection(s, e, y,"");
+            Period y = Period.ofYears(1);
+            PeopleCollection living = new PeopleCollection(s, e, y,"");
 
-        LocalDate start = LocalDate.of(1600, 1, 1);
+            LocalDate start = LocalDate.of(1600, 1, 1);
 
-        Person f1 = new Person(SexOption.FEMALE, start, null, ps, false);
-        living.remove(f1);
+            Person f1 = new Person(SexOption.FEMALE, start, null, ps, false);
+            living.remove(f1);
+        });
     }
 
-    @Test(expected = PersonNotFoundException.class)
+    @Test
     public void removeNonExistentFemale() throws PersonNotFoundException {
 
-        LocalDate s = LocalDate.of(0, 1, 1);
-        LocalDate e = LocalDate.of(3000, 1, 1);
+        assertThrows(PersonNotFoundException.class, () -> {
+            LocalDate s = LocalDate.of(0, 1, 1);
+            LocalDate e = LocalDate.of(3000, 1, 1);
 
-        Period y = Period.ofYears(1);
-        PeopleCollection living = new PeopleCollection(s, e, y,"");
+            Period y = Period.ofYears(1);
+            PeopleCollection living = new PeopleCollection(s, e, y,"");
 
-        LocalDate start = LocalDate.of(1600, 1, 1);
+            LocalDate start = LocalDate.of(1600, 1, 1);
 
-        Person f1 = new Person(SexOption.FEMALE, start, null, ps, false);
-        Person f2 = new Person(SexOption.FEMALE, start, null, ps, false);
+            Person f1 = new Person(SexOption.FEMALE, start, null, ps, false);
+            Person f2 = new Person(SexOption.FEMALE, start, null, ps, false);
 
-        living.add(f2);
-        living.remove(f1);
+            living.add(f2);
+            living.remove(f1);
+        });
     }
 
-    @Test(expected = PersonNotFoundException.class)
+    @Test
     public void removeNonExistentMaleFromEmptyCollection() throws PersonNotFoundException {
 
-        LocalDate s = LocalDate.of(0, 1, 1);
-        LocalDate e = LocalDate.of(3000, 1, 1);
+        assertThrows(PersonNotFoundException.class, () -> {
+            LocalDate s = LocalDate.of(0, 1, 1);
+            LocalDate e = LocalDate.of(3000, 1, 1);
 
-        Period y = Period.ofYears(1);
-        PeopleCollection living = new PeopleCollection(s, e, y,"");
+            Period y = Period.ofYears(1);
+            PeopleCollection living = new PeopleCollection(s, e, y,"");
 
-        LocalDate start = LocalDate.of(1600, 1, 1);
+            LocalDate start = LocalDate.of(1600, 1, 1);
 
-        Person m1 = new Person(SexOption.MALE, start, null, ps, false);
-        living.remove(m1);
+            Person m1 = new Person(SexOption.MALE, start, null, ps, false);
+            living.remove(m1);
+        });
     }
 
-    @Test(expected = PersonNotFoundException.class)
+    @Test
     public void removeNonExistentMale() throws PersonNotFoundException {
 
-        LocalDate s = LocalDate.of(0, 1, 1);
-        LocalDate e = LocalDate.of(3000, 1, 1);
+        assertThrows(PersonNotFoundException.class, () -> {
+            LocalDate s = LocalDate.of(0, 1, 1);
+            LocalDate e = LocalDate.of(3000, 1, 1);
 
-        Period y = Period.ofYears(1);
-        PeopleCollection living = new PeopleCollection(s, e, y,"");
+            Period y = Period.ofYears(1);
+            PeopleCollection living = new PeopleCollection(s, e, y,"");
 
-        LocalDate start = LocalDate.of(1600, 1, 1);
+            LocalDate start = LocalDate.of(1600, 1, 1);
 
-        Person m1 = new Person(SexOption.MALE, start, null, ps, false);
-        Person m2 = new Person(SexOption.MALE, start, null, ps, false);
+            Person m1 = new Person(SexOption.MALE, start, null, ps, false);
+            Person m2 = new Person(SexOption.MALE, start, null, ps, false);
 
-        living.add(m2);
-        living.remove(m1);
+            living.add(m2);
+            living.remove(m1);
+        });
     }
 }

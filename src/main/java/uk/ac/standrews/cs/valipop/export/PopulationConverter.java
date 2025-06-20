@@ -16,7 +16,6 @@
  */
 package uk.ac.standrews.cs.valipop.export;
 
-import uk.ac.standrews.cs.utilities.ProgressIndicator;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPartnership;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPerson;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPersonCollection;
@@ -33,8 +32,6 @@ public class PopulationConverter implements AutoCloseable {
     private final IPersonCollection population;
     private final IPopulationWriter population_writer;
 
-    private ProgressIndicator progress_indicator;
-
     /**
      * Initialises the population converter.
      *
@@ -45,23 +42,6 @@ public class PopulationConverter implements AutoCloseable {
 
         this.population = population;
         this.population_writer = population_writer;
-        progress_indicator = null;
-    }
-
-    /**
-     * Initialises the population converter.
-     *
-     * @param population         the population to be converted
-     * @param population_writer  the population writer to be used to create the new representation
-     * @param progress_indicator a progress indicator
-     * @throws Exception if the progress indicator cannot be initialised
-     */
-    public PopulationConverter(final IPersonCollection population, final IPopulationWriter population_writer, final ProgressIndicator progress_indicator) {
-
-        this(population, population_writer);
-
-        this.progress_indicator = progress_indicator;
-        initialiseProgressIndicator();
     }
 
     /**
@@ -97,17 +77,12 @@ public class PopulationConverter implements AutoCloseable {
         people.addAll(immigrantParentsToAdd);
         partnerships.addAll(immigrantParentPartnershipsToAdd);
 
-        for (final IPerson person : sort(people)) {
-
+        for (final IPerson person : sort(people))
             population_writer.recordPerson(person);
-            progressStep();
-        }
 
-        for (final IPartnership partnership : sort(partnerships)) {
 
+        for (final IPartnership partnership : sort(partnerships))
             population_writer.recordPartnership(partnership);
-            progressStep();
-        }
     }
 
     @Override
@@ -124,19 +99,5 @@ public class PopulationConverter implements AutoCloseable {
         }
         Collections.sort(list);
         return list;
-    }
-
-    private void initialiseProgressIndicator() {
-
-        if (progress_indicator != null) {
-            progress_indicator.setTotalSteps(population.getNumberOfPeople() + population.getNumberOfPartnerships());
-        }
-    }
-
-    private void progressStep() {
-
-        if (progress_indicator != null) {
-            progress_indicator.progressStep();
-        }
     }
 }
