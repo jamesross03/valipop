@@ -39,13 +39,13 @@ All simulation results of running ValiPop are written to a single directory. The
 <results_save_location>/<run_purpose>/<datetime>/
 ```
 
-[`results_save_location`](configuration/config-reference.md#results_save_location) and [`run_purpose`](configuration/config-reference.md#run_purpose) can be specified in the [config file](configuration/index.md) and `datetime` represents the datetime when valiPop was executed in the form  `yyyy-mm-ddThh-mm-ss-sss`.
+[`results_save_location`](configuration/config-reference.md#results_save_location) and [`run_purpose`](configuration/config-reference.md#run_purpose) can be specified in the [config file](configuration/index.md) and `datetime` represents the datetime when ValiPop was executed in the form  `yyyy-mm-ddThh-mm-ss-sss`.
 
 ValiPop will create the directory structure for the results if it does not exist already.
 
 ### Result Structure
 
-The directory structure of the results of running valiPop looks like the following:
+The directory structure of the results of running ValiPop looks like the following:
 
 ```
 <results_path>/<run_purpose>/<datetime>/

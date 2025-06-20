@@ -5,6 +5,6 @@ TD_NODE_IN_USE=`echo $TD_LOAD_AVG'>'0.5 | bc -l`
 
 
 if [ $TD_NODE_IN_USE -eq 0 ]; then
-	cd population-model
+	cd valipop
 	nohup sh src/main/resources/valipop/scripts/run-factor-search.sh 14 src/main/resources/valipop/inputs/proxy-scotland-population-JA/ 20000 ja-batch1 1 0.0,0.3,0.6,1.0 0.0,0.3,0.6,1.0 /cs/tmp/tsd4/results/ > ja-batch1-`hostname`.txt
 fi

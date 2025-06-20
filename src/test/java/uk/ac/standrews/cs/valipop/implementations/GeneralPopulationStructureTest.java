@@ -19,8 +19,6 @@ package uk.ac.standrews.cs.valipop.implementations;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedClass;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.FieldSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPartnership;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPerson;
@@ -29,7 +27,10 @@ import uk.ac.standrews.cs.valipop.statistics.analysis.validation.contingencyTabl
 
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 

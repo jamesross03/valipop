@@ -1,10 +1,10 @@
-#setwd("~/OneDrive/cs/PhD/code/population-model/src/main/resources/valipop/analysis-r/")
+#setwd("")
 
 source("paper/code/FileFunctions.R")
 source("parameter-search/function-code/promising-candidates-functions.R")
 source("parameter-search/function-code/utils.R")
 
-all.runs <- filesToDF("/cs/tmp/tsd4/results/ss-40k-records/ss-40k-records-results-summary.csv", onlyGetStatErrors = FALSE)
+all.runs <- filesToDF("ss-40k-records-results-summary.csv", onlyGetStatErrors = FALSE)
 runs.to.recover <- all.runs[which(all.runs$Code.Version == "1062b2fc152c78f740ceb02f371702745f4c8fc4"),]
 
 promisingCandidatesBySeed(all.runs, 1)
@@ -17,4 +17,4 @@ bestN <- 5
 runs.to.recover <- getBestNRuns(all.runs[which(all.runs$Proportional.Recovery.Factor == prf & all.runs$Recovery.Factor == rf),], bestN, seed.size)
 runs.to.recover <- runs.to.recover[which(runs.to.recover$v.M == 0),]
 
-outputToFile(paste0("scp -r ", runs.to.recover$Hostname,":", gsub("\\.", "-", gsub(":", "-", runs.to.recover$Results.Directory)), " ."), "~/Desktop/dataRecovery.sh")
+outputToFile(paste0("scp -r ", runs.to.recover$Hostname,":", gsub("\\.", "-", gsub(":", "-", runs.to.recover$Results.Directory)), " ."), "dataRecovery.sh")

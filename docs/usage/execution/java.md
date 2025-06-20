@@ -24,7 +24,7 @@ R -e "install.packages('geepack', repos = c(CRAN = 'https://cloud.r-project.org'
 
 ## Installing the JAR file
 
-ValiPop can be run with Java using its JAR file. To install the latest valiPop JAR file, you can visit [the releases page](https://github.com/stacs-srg/population-model/releases).
+ValiPop can be run with Java using its JAR file. To install the latest ValiPop JAR file, you can visit [the releases page](https://github.com/stacs-srg/valipop/releases).
 
 ## Running ValiPop
 
@@ -50,14 +50,14 @@ Then you can follow these steps to build the JAR:
 # Open a terminal
 
 # Clone the repository
-git clone https://github.com/stacs-srg/population-model
+git clone https://github.com/stacs-srg/valipop
 
 # Navigate to the project repository
-cd population-model
+cd valipop
 
 # Installing dependencies, compiling, and packaging into JARs
 mvn clean package -Dmaven.test.skip -Dmaven.repo.local=repository
 
 # The build should be in `target/`, including the runnable JARs
-# "population-model-x.0-SNAPSHOT-jar-with-dependencies.jar" is the main executable JAR
+# "valipop-x.0-SNAPSHOT-jar-with-dependencies.jar" is the main executable JAR
 ```

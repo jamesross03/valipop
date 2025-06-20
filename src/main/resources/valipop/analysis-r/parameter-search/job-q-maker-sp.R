@@ -1,23 +1,20 @@
-#setwd("~/tom/phd/repos/population-model/src/main/resources/valipop/analysis-r/")
+#setwd("working directory")
 
 source("parameter-search/function-code/job-file-maker.R")
 source("parameter-search/function-code/utils.R")
 source("parameter-search/function-code/promising-candidates-functions.R")
 
 ssCS <- makeConstantsSet(0.01,0.01,"1772-01-01")
-clustersResultDir <- "/cs/tmp/tsd4/results/sns-populations"
-clustersSummaryResultDir <- "/cs/tmp/tsd4/results/sns-populations"
+clustersResultDir <- "sns-populations"
+clustersSummaryResultDir <- "sns-populations"
 
+maniResultDir <- "sns-populations"
+maniSummaryResultDir <- "results"
 
-maniResultDir <- "/home/tsd4/results/sns-populations"
-maniSummaryResultDir <- "/home/tsd4/results/"
+localResultDir <- "results"
+localSummaryResultDir <- "results"
 
-localResultDir <- "/Users/tdalton/tom/phd/"
-localSummaryResultDir <- "/Users/tdalton/tom/phd/"
-
-
-runs.ss <- filesToDF("~/1k-sns-cluster-tk5-neg-df-results-summary.csv", onlyGetStatErrors = FALSE)
-
+runs.ss <- filesToDF("1k-sns-cluster-tk5-neg-df-results-summary.csv", onlyGetStatErrors = FALSE)
 
 summary(runs.ss)
 passingRuns <- runs.ss[which(runs.ss$v.M == 0),]
@@ -66,37 +63,34 @@ selected <- rbind(selected, selectBest(runs.ss, 4000)[1:4,])
 selected <- rbind(selected, selectBest(runs.ss, 6000)[1:4,])
 
 jobQ <- repeatJobsDeterministically(passingRuns, ssCS, localResultDir, localSummaryResultDir, recordFormat = "TD", reason = "ss-dr-final", reqMemory = 119)
-outputToFile(jobQ, "~/Desktop/gen-ss-dr-final.csv")
+outputToFile(jobQ, "gen-ss-dr-final.csv")
 
 selected.cluster <- selected[which(selected$Peak.Memory.Usage..MB. < 16000),]
 selected.mani <- selected[which(selected$Peak.Memory.Usage..MB. > 16000),]
 
 jobQ <- repeatJobsDeterministically(selected, ssCS, maniResultDir, maniSummaryResultDir, recordFormat = "TD", reason = "ss-scot-final", reqMemory = 119)
-outputToFile(jobQ, "~/Desktop/valipop-experiments/gen-ss-scot-final.csv")
-outputToFile(jobQ.cluster, "~/Desktop/valipop-experiments/gen-ss-max-records-400k.csv")
+outputToFile(jobQ, "gen-ss-scot-final.csv")
+outputToFile(jobQ.cluster, "gen-ss-max-records-400k.csv")
 
 jobQ <- repeatJobsDeterministically(selected, ssCS, maniResultDir, maniSummaryResultDir, recordFormat = "TD", reason = "ss-scot-final", reqMemory = 119)
-outputToFile(jobQ, "~/Desktop/valipop-experiments/gen-ss-scot-final.csv")
+outputToFile(jobQ, "gen-ss-scot-final.csv")
 
 checkPlots(selected)
 avgRunTimesBySeed(selected)
 
 passingRuns <- runs.ss[which(runs.ss$v.M == 0), ]
 jobQ <- repeatJobsDeterministically(runs.ss, ssCS, clustersResultDir, clustersSummaryResultDir, recordFormat = "TD", reason = "dr-final")
-outputToFile(jobQ, "~/Desktop/gen-dr-final-with-records.csv")
+outputToFile(jobQ, "gen-dr-final-with-records.csv")
 
 promisingJobExtraRuns <- runMorePromisingJobs(passingRuns, ssCS, 25, maniResultDir, maniSummaryResultDir, 20, reqMemory = 100)
 calc <- calcDeployProfile(promisingJobExtraRuns, runs.ss, 22)
 
 #jobQ <- rbind(jobQ, )
 
-outputToFile(promisingJobExtraRuns, "~/Desktop/valipop-experiments/gen-ss-max-job-q-cluster-extras.csv")
+outputToFile(promisingJobExtraRuns, "gen-ss-max-job-q-cluster-extras.csv")
 
 
 pcs <- promisingCandidates(15625, dfToSummaryDF(runs.fs))[1:10,]
-
-
-
 
 o <- data.frame("x" = 0.5, "y" = 0.5)
 
@@ -120,7 +114,7 @@ ggplot(temp) +
 results <- runs.ss[which(runs.ss$Seed.Pop.Size == 400000), ]
 search <- searchNearPromisingJobs(results, ssCS, 5, clustersResultDir, clustersSummaryResultDir, 20, 0.01, 0.125, 4, reqMemory = 12)
 calc <- calcDeployProfile(search, results, 22)
-outputToFile(search, "~/Desktop/valipop-experiments/gen-ss-max-job-q-cluster.csv")
+outputToFile(search, "gen-ss-max-job-q-cluster.csv")
 
 
 plot(sort(runs.ss$Peak.Memory.Usage..MB.))

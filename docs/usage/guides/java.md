@@ -31,12 +31,12 @@ To run ValiPop with Java, you only need the ValiPop JAR file. However we will be
 
 ### 2.1. Installing the configuration
 
-We will use the config and input files from the [ValiPop repository](https://github.com/stacs-srg/population-model). To install the repository, run the following command
+We will use the config and input files from the [ValiPop repository](https://github.com/stacs-srg/valipop). To install the repository, run the following command
 
 ```shell
 # In a terminal (Windows/macOS/Linux)
 
-git clone https://github.com/stacs-srg/population-model.git
+git clone https://github.com/stacs-srg/valipop.git
 ```
 
 Within the repository, we will use the following config file
@@ -45,7 +45,7 @@ Within the repository, we will use the following config file
 
 ### 2.2. Installing the JAR file
 
-You can install the latest ValiPop JAR file from [the releases page](https://github.com/stacs-srg/population-model/releases).
+You can install the latest ValiPop JAR file from [the releases page](https://github.com/stacs-srg/valipop/releases).
 
 For the following steps, the JAR file should be installed in the root of the ValiPop repository.
 
@@ -129,7 +129,7 @@ You can make the following changes to the configuration file to alter ValiPop's 
 - Change the start and end data (as written in the record files) with [`t0`](../configuration/config-reference.md#t0) and [`tE`](../configuration/config-reference.md#tE).
 - Change input distributions used with [`var_data_files`](../configuration/config-reference.md#var_data_files). [Read more about input distributions.](../configuration/input-reference.md).
 - Change output record format with [`output_record_format`](../configuration/config-reference.md#output_record_format).
-- To disable the analysis portion of valiPop, set [`output_tables`](../configuration/config-reference.md#output_tables) to `false`.
+- To disable the analysis portion of ValiPop, set [`output_tables`](../configuration/config-reference.md#output_tables) to `false`.
 - Change the location of the result directory with [`results_save_location`](../configuration/config-reference.md#results_save_location).
 - Change the name of the run within the result directory with [`run_purpose`](../configuration/config-reference.md#run_purpose).
 

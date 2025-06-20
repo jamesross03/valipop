@@ -1,29 +1,29 @@
-#setwd("~/tom/phd/repos/population-model/src/main/resources/valipop/analysis-r/")
+#setwd("")
 
 source("parameter-search/function-code/new-search-plots.R")
 source("parameter-search/function-code/promising-candidates-functions.R")
 source("paper/code/rfs-discovery/explorationPlots.R")
 
-runs.ss <- filesToDF("~/sns-results/sns-cluster-adj-death-tk3/sns-cluster-adj-death-tk3-results-summary.csv", onlyGetStatErrors = FALSE)
+runs.ss <- filesToDF("sns-cluster-adj-death-tk3-results-summary.csv", onlyGetStatErrors = FALSE)
 
-runs.ss <- filesToDF("~/tom/phd/repos/population-model/results/sns-populations/sns-cluster-adj-death-tk3-mini/sns-cluster-adj-death-tk3-mini-results-summary.csv", onlyGetStatErrors = FALSE)
+runs.ss <- filesToDF("sns-cluster-adj-death-tk3-mini-results-summary.csv", onlyGetStatErrors = FALSE)
 
-runs.ss <- filesToDF("/cs/tmp/tsd4/results/ss-6/ss-6-results-summary.csv", onlyGetStatErrors = FALSE)
+runs.ss <- filesToDF("ss-6-results-summary.csv", onlyGetStatErrors = FALSE)
 
-runs.ss <- filesToDF("/cs/tmp/tsd4/results/ss-scot-final/ss-scot-final-results-summary.csv", onlyGetStatErrors = FALSE)
+runs.ss <- filesToDF("ss-scot-final-results-summary.csv", onlyGetStatErrors = FALSE)
 
-runs.ss <- filesToDF("/cs/tmp/tsd4/results/ss-1k-records/ss-1k-records-results-summary.csv",
-                     "/cs/tmp/tsd4/results/ss-10k-records/ss-10k-records-results-summary.csv",
-                     "/cs/tmp/tsd4/results/ss-40k-records/ss-40k-records-results-summary.csv",
-                     "/cs/tmp/tsd4/results/ss-max-cluster/ss-max-results-summary.csv", 
-                     "/cs/tmp/tsd4/results/ss-max-cluster/ss-max-cluster-results-summary.csv",
-                     "/cs/tmp/tsd4/results/ss-max-mani/ss-max-results-summary.csv", onlyGetStatErrors = FALSE)
+runs.ss <- filesToDF("ss-1k-records-results-summary.csv",
+                     "ss-10k-records-results-summary.csv",
+                     "ss-40k-records-results-summary.csv",
+                     "ss-max-results-summary.csv",
+                     "ss-max-cluster-results-summary.csv",
+                     "ss-max-results-summary.csv", onlyGetStatErrors = FALSE)
 runs.ss <- runs.ss[which(runs.ss$Seed.Pop.Size == 1000 | runs.ss$Seed.Pop.Size == 10000 | runs.ss$Seed.Pop.Size == 40000
                          | runs.ss$Seed.Pop.Size == 100000 | runs.ss$Seed.Pop.Size == 200000 | runs.ss$Seed.Pop.Size == 400000
                          | runs.ss$Seed.Pop.Size == 800000 | runs.ss$Seed.Pop.Size == 1600000 | runs.ss$Seed.Pop.Size == 2400000),]
 
 
-runs.ss <- filesToDF("/cs/tmp/tsd4/results/ss-max-mani/ss-max-results-summary.csv", onlyGetStatErrors = FALSE)
+runs.ss <- filesToDF("ss-max-results-summary.csv", onlyGetStatErrors = FALSE)
 
 checkPlots(runs.ss)
 

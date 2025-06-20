@@ -15,7 +15,7 @@ RUN mvn -B -s /usr/share/maven/ref/settings-docker.xml clean package -Dmaven.tes
 FROM valipop-base AS run
 
 # Only extract the Jar file
-COPY --from=build /app/target/population-model-4.0-SNAPSHOT-jar-with-dependencies.jar ./valipop.jar
+COPY --from=build /app/target/valipop-4.0-SNAPSHOT-jar-with-dependencies.jar ./valipop.jar
 
 COPY docker/model/entrypoint.sh .
 
