@@ -65,7 +65,7 @@
                                 <exclude>docker/**</exclude>
                                 <exclude>results/**</exclude>
                                 <!-- Entries below included experimentally for docker image build. -->
-                                <exclude>/app/repository/**</exclude>
+                                <exclude>**/app/repository/**</exclude>
                                 <exclude>app/repository/**</exclude>
                             </excludes>
                         </licenseSet>

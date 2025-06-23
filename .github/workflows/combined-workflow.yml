@@ -34,8 +34,13 @@ jobs:
         uses: r-lib/actions/setup-r@12d8dd416fec5aaa60f2f54609b713b2ec031a94
         with:
           r-version: '4.4.2'
-      - name: Install R package
-        run: R -e "install.packages('geepack', repos = c(CRAN = 'https://cloud.r-project.org'))"
+
+      - name: Install R packages
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::geepack
+#      - name: Install R package
+#        run: R -e "install.packages('geepack', repos = c(CRAN = 'https://cloud.r-project.org'))"
       - name: Build and test with Maven
         run: mvn -B package --file pom.xml
 
