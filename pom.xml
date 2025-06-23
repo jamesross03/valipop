@@ -64,6 +64,9 @@
                                 <exclude>src/main/resources/**</exclude>
                                 <exclude>docker/**</exclude>
                                 <exclude>results/**</exclude>
+                                <!-- Entries below included experimentally for docker image build. -->
+                                <exclude>/app/repository/**</exclude>
+                                <exclude>app/repository/**</exclude>
                             </excludes>
                         </licenseSet>
                     </licenseSets>
@@ -81,6 +84,7 @@
     </build>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jdk.version>21</jdk.version>
         <maven.compiler.source>${jdk.version}</maven.compiler.source>
         <maven.compiler.target>${jdk.version}</maven.compiler.target>
