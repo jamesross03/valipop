@@ -80,14 +80,14 @@
                         </licenseSet>
                     </licenseSets>
                 </configuration>
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <phase>initialize</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>check</goal>-->
-<!--                        </goals>-->
-<!--                    </execution>-->
-<!--                </executions>-->
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

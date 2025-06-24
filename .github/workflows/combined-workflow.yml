@@ -22,6 +22,8 @@ concurrency:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
 
@@ -86,7 +88,6 @@ jobs:
   build-and-push-model-image:
     needs: build-and-test
     runs-on: ubuntu-latest
-    # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
     env:
       REGISTRY: ghcr.io
       IMAGE_NAME: ${{ github.repository_owner }}/valipop
@@ -99,7 +100,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
 
-      # Uses the `docker/login-action` action to log in to the Container registry registry using the account and password that will publish the packages. Once published, the packages are scoped to the account defined here.
       - name: Log in to the Container registry
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
         with:
@@ -113,14 +113,12 @@ jobs:
           sudo apt-get -y install docker-compose
           docker-compose build base
 
-      # Generate metadata for the main ValiPop image
       - name: Extract metadata (tags, labels) for ValiPop image
         id: meta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      # Builds and pushes the main ValiPop image
       - name: Build and push the ValiPop image
         id: push
         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
@@ -132,7 +130,6 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           ulimit: nofile=65536:65536
 
-      # Generates artifact attestation for the main ValiPop image
       - name: Generate artifact attestation for ValiPop image
         uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2
         with:
@@ -140,115 +137,104 @@ jobs:
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
 
-#  build-and-push-search-images:
-#    needs: build-and-test
-#    runs-on: ubuntu-latest
-#    # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
-#    env:
-#      REGISTRY: ghcr.io
-#      LEADER_IMAGE_NAME: ${{ github.repository_owner }}/valipop-leader
-#      WORKER_IMAGE_NAME: ${{ github.repository_owner }}/valipop-worker
-#      SEARCH_IMAGE_NAME: ${{ github.repository_owner }}/valipop-search
-#    permissions:
-#      contents: read
-#      packages: write
-#      attestations: write
-#      id-token: write
-#    steps:
-#      - name: Checkout repository
-#        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-#
-#      # Uses the `docker/login-action` action to log in to the Container registry registry using the account and password that will publish the packages. Once published, the packages are scoped to the account defined here.
-#      - name: Log in to the Container registry
-#        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
-#        with:
-#          registry: ${{ env.REGISTRY }}
-#          username: ${{ github.actor }}
-#          password: ${{ secrets.GITHUB_TOKEN }}
-#
-#      # Build ValiPop-base, which is a dependency of multiple images
-#      - name: Build base
-#        run: |
-#          sudo apt-get update
-#          sudo apt-get -y install docker-compose
-#          docker-compose build base
-#
-#      # Deploying the leader image for creating clusters
-#
-#      - name: Extract metadata (tags, labels) for ValiPop leader image
-#        id: meta-leader
-#        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
-#        with:
-#          images: ${{ env.REGISTRY }}/${{ env.LEADER_IMAGE_NAME }}
-#
-#      - name: Build and push the ValiPop leader image
-#        id: push-leader
-#        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
-#        with:
-#          file: docker/model/Dockerfile
-#          context: .
-#          push: true
-#          tags: ${{ steps.meta-leader.outputs.tags }}
-#          labels: ${{ steps.meta-leader.outputs.labels }}
-#          ulimit: nofile=65536:65536
-#
-#      - name: Generate artifact attestation for ValiPop leader image
-#        uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2
-#        with:
-#          subject-name: ${{ env.REGISTRY }}/${{ env.LEADER_IMAGE_NAME}}
-#          subject-digest: ${{ steps.push-leader.outputs.digest }}
-#          push-to-registry: true
-#
-#      # Deploying the worker image for creating clusters
-#
-#      - name: Extract metadata (tags, labels) for ValiPop worker image
-#        id: meta-worker
-#        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
-#        with:
-#          images: ${{ env.REGISTRY }}/${{ env.WORKER_IMAGE_NAME }}
-#
-#      - name: Build and push the ValiPop worker image
-#        id: push-worker
-#        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
-#        with:
-#          file: docker/model/Dockerfile
-#          context: .
-#          push: true
-#          tags: ${{ steps.meta-worker.outputs.tags }}
-#          labels: ${{ steps.meta-worker.outputs.labels }}
-#          ulimit: nofile=65536:65536
-#
-#      - name: Generate artifact attestation for ValiPop worker image
-#        uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2
-#        with:
-#          subject-name: ${{ env.REGISTRY }}/${{ env.WORKER_IMAGE_NAME}}
-#          subject-digest: ${{ steps.push-worker.outputs.digest }}
-#          push-to-registry: true
-#
-#      # Deploy the factor search image
-#
-#      - name: Extract metadata (tags, labels) for ValiPop search image
-#        id: meta-search
-#        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
-#        with:
-#          images: ${{ env.REGISTRY }}/${{ env.SEARCH_IMAGE_NAME }}
-#
-#      # Builds and pushes the ValiPop search image
-#      - name: Build and push the ValiPop search image
-#        id: push-search
-#        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
-#        with:
-#          file: docker/model/Dockerfile
-#          context: .
-#          push: true
-#          tags: ${{ steps.meta-search.outputs.tags }}
-#          labels: ${{ steps.meta-search.outputs.labels }}
-#          ulimit: nofile=65536:65536
-#
-#      # Generates artifact attestation for the ValiPop search image
-#      - name: Generate artifact attestation for ValiPop search image
-#        uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2
-#        with:
-#          subject-name: ${{ env.REGISTRY }}/${{ env.SEARCH_IMAGE_NAME}}
-#          subject-digest: ${{ steps.push-search.outputs.digest }}
-#          push-to-registry: true
+  build-and-push-search-images:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    env:
+      REGISTRY: ghcr.io
+      LEADER_IMAGE_NAME: ${{ github.repository_owner }}/valipop-leader
+      WORKER_IMAGE_NAME: ${{ github.repository_owner }}/valipop-worker
+      SEARCH_IMAGE_NAME: ${{ github.repository_owner }}/valipop-search
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build ValiPop base
+        run: |
+          sudo apt-get update
+          sudo apt-get -y install docker-compose
+          docker-compose build base
+
+      - name: Extract metadata (tags, labels) for ValiPop leader image
+        id: meta-leader
+        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.LEADER_IMAGE_NAME }}
+
+      - name: Build and push the ValiPop leader image
+        id: push-leader
+        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+        with:
+          file: docker/model/Dockerfile
+          context: .
+          push: true
+          tags: ${{ steps.meta-leader.outputs.tags }}
+          labels: ${{ steps.meta-leader.outputs.labels }}
+          ulimit: nofile=65536:65536
+
+      - name: Generate artifact attestation for ValiPop leader image
+        uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ env.LEADER_IMAGE_NAME}}
+          subject-digest: ${{ steps.push-leader.outputs.digest }}
+          push-to-registry: true
+
+      - name: Extract metadata (tags, labels) for ValiPop worker image
+        id: meta-worker
+        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.WORKER_IMAGE_NAME }}
+
+      - name: Build and push the ValiPop worker image
+        id: push-worker
+        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+        with:
+          file: docker/model/Dockerfile
+          context: .
+          push: true
+          tags: ${{ steps.meta-worker.outputs.tags }}
+          labels: ${{ steps.meta-worker.outputs.labels }}
+          ulimit: nofile=65536:65536
+
+      - name: Generate artifact attestation for ValiPop worker image
+        uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ env.WORKER_IMAGE_NAME}}
+          subject-digest: ${{ steps.push-worker.outputs.digest }}
+          push-to-registry: true
+
+      - name: Extract metadata (tags, labels) for ValiPop search image
+        id: meta-search
+        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.SEARCH_IMAGE_NAME }}
+
+      - name: Build and push the ValiPop search image
+        id: push-search
+        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+        with:
+          file: docker/model/Dockerfile
+          context: .
+          push: true
+          tags: ${{ steps.meta-search.outputs.tags }}
+          labels: ${{ steps.meta-search.outputs.labels }}
+          ulimit: nofile=65536:65536
+
+      - name: Generate artifact attestation for ValiPop search image
+        uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ env.SEARCH_IMAGE_NAME}}
+          subject-digest: ${{ steps.push-search.outputs.digest }}
+          push-to-registry: true
