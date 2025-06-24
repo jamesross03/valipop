@@ -22,26 +22,26 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4.2.2
-#      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683                                        # @v4.2.2
+#      - uses: actions/checkout@v4.2.2
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683                                        # @v4.2.2
 
       - name: Set up JDK 21
-        uses: actions/setup-java@v4.7.1
-#        uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00                                      # @v4.7.1
+#        uses: actions/setup-java@v4.7.1
+        uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00                                      # @v4.7.1
         with:
           java-version: '21'
           distribution: 'corretto'
           cache: 'maven'
 
       - name: Install R
-        uses: r-lib/actions/setup-r@6b49fefb2846ed3e5e6e58366e7f7dfe01377f02
-#        uses: r-lib/actions/setup-r@6b49fefb2846ed3e5e6e58366e7f7dfe01377f02                                # 29/04/2025
+#        uses: r-lib/actions/setup-r@6b49fefb2846ed3e5e6e58366e7f7dfe01377f02
+        uses: r-lib/actions/setup-r@6b49fefb2846ed3e5e6e58366e7f7dfe01377f02                                # 29/04/2025
         with:
           r-version: '4.4.2'
 
       - name: Install R packages
-        uses: r-lib/actions/setup-r-dependencies@6b49fefb2846ed3e5e6e58366e7f7dfe01377f02
-#        uses: r-lib/actions/setup-r-dependencies@6b49fefb2846ed3e5e6e58366e7f7dfe01377f02                   # 29/04/2025
+#        uses: r-lib/actions/setup-r-dependencies@6b49fefb2846ed3e5e6e58366e7f7dfe01377f02
+        uses: r-lib/actions/setup-r-dependencies@6b49fefb2846ed3e5e6e58366e7f7dfe01377f02                   # 29/04/2025
         with:
           extra-packages: any::geepack
 
