@@ -67,6 +67,7 @@
                                 <!-- Entries below included experimentally for docker image build. -->
                                 <exclude>**/app/repository/**</exclude>
                                 <exclude>app/repository/**</exclude>
+                                <exclude>**/*.pom</exclude>
                             </excludes>
                         </licenseSet>
                     </licenseSets>
