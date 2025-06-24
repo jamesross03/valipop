@@ -22,11 +22,9 @@ jobs:
     permissions:
       contents: read
     steps:
-#      - uses: actions/checkout@v4.2.2
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683                                        # @v4.2.2
 
       - name: Set up JDK 21
-#        uses: actions/setup-java@v4.7.1
         uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00                                      # @v4.7.1
         with:
           java-version: '21'
@@ -34,13 +32,11 @@ jobs:
           cache: 'maven'
 
       - name: Install R
-#        uses: r-lib/actions/setup-r@6b49fefb2846ed3e5e6e58366e7f7dfe01377f02
         uses: r-lib/actions/setup-r@6b49fefb2846ed3e5e6e58366e7f7dfe01377f02                                # 29/04/2025
         with:
           r-version: '4.4.2'
 
       - name: Install R packages
-#        uses: r-lib/actions/setup-r-dependencies@6b49fefb2846ed3e5e6e58366e7f7dfe01377f02
         uses: r-lib/actions/setup-r-dependencies@6b49fefb2846ed3e5e6e58366e7f7dfe01377f02                   # 29/04/2025
         with:
           extra-packages: any::geepack
@@ -48,43 +44,43 @@ jobs:
       - name: Build and test with Maven
         run: mvn -B package --file pom.xml
 
-#  build-pages:
-#    needs: build-and-test
-#    runs-on: ubuntu-latest
-#    permissions:
-#      contents: read
-#      pages: write
-#      id-token: write
-#    steps:
-#      - name: Checkout
-#        uses: actions/11bd71901bbe5b1630ceea73d27597364c9af683                                                 # @v4.2.2
-#
-#      - name: Setup Pages
-#        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b                                 # @v5.0.0
-#
-#      - name: Build with Jekyll
-#        uses: actions/jekyll-build-pages@44a6e6beabd48582f863aeeb6cb2151cc1716697                             # @v1.0.13
-#        with:
-#          source: ./docs
-#          destination: ./_site
-#
-#      - name: Upload artifact
-#        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa                           # @v3.0.1
-#
-#  deploy-pages:
-#    needs: build-pages
-#    environment:
-#      name: github-pages
-#      url: ${{ steps.deployment.outputs.page_url }}
-#    runs-on: ubuntu-latest
-#    permissions:
-#      contents: read
-#      pages: write
-#      id-token: write
-#    steps:
-#      - name: Deploy to GitHub Pages
-#        id: deployment
-#        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e                                    # @v4.0.5
+  build-pages:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/11bd71901bbe5b1630ceea73d27597364c9af683                                                 # @v4.2.2
+
+      - name: Setup Pages
+        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b                                 # @v5.0.0
+
+      - name: Build with Jekyll
+        uses: actions/jekyll-build-pages@44a6e6beabd48582f863aeeb6cb2151cc1716697                             # @v1.0.13
+        with:
+          source: ./docs
+          destination: ./_site
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa                           # @v3.0.1
+
+  deploy-pages:
+    needs: build-pages
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e                                    # @v4.0.5
 #
 #  build-and-push-model-image:
 #    needs: build-and-test
