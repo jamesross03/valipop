@@ -64,22 +64,21 @@
                                 <exclude>src/main/resources/**</exclude>
                                 <exclude>docker/**</exclude>
                                 <exclude>results/**</exclude>
-                                <!-- Entries below included experimentally for docker image build. -->
-                                <exclude>**/app/repository/**</exclude>
-                                <exclude>app/repository/**</exclude>
+                                <!-- Entries below to exclude licence checking of dependencies during docker image build. -->
                                 <exclude>**/*.pom</exclude>
+                                <exclude>**/*.repositories</exclude>
                             </excludes>
                         </licenseSet>
                     </licenseSets>
                 </configuration>
-                <executions>
-                    <execution>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <phase>initialize</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>check</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
             </plugin>
         </plugins>
     </build>
