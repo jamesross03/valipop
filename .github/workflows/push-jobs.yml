@@ -76,7 +76,7 @@ jobs:
 
   build-and-push-model-image:
     name: Build Docker image (model)
-    needs: build-and-test
+    needs: build-and-test-linux
     runs-on: ubuntu-latest
     env:
       REGISTRY: ghcr.io
@@ -129,7 +129,7 @@ jobs:
 
   build-and-push-search-images:
     name: Build Docker image (parameter search)
-    needs: build-and-test
+    needs: build-and-test-linux
     runs-on: ubuntu-latest
     env:
       REGISTRY: ghcr.io
