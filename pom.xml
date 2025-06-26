@@ -43,7 +43,6 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <id>assemble-all</id>
                         <phase>package</phase>
                         <goals>
                             <goal>single</goal>
