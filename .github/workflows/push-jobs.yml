@@ -1,5 +1,5 @@
 # All jobs defined within single workflow file to allow control of job concurrency.
-# Actions bind to specific action commits to reduce risk of action repos being compromised.defaults:
+# Actions bind to specific action commits to reduce risk of action repos being compromised.
 # It would be nice to define the commit hashes and version numbers as environment variables to
 # reduce repetition, but actions can't be resolved dynamically.
 
