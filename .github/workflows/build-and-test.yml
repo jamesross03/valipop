@@ -6,6 +6,9 @@ on:
       platform:
         required: true
         type: string
+      maven-target:
+        required: true
+        type: string
       upload-dependencies:
         required: false
         type: boolean
@@ -14,6 +17,7 @@ on:
 env:
   JDK_VERSION: '21'
   JDK_DISTRIBUTION: 'corretto'
+  R_VERSION: '4.4.3'
 
 jobs:
   build-and-test:
@@ -35,7 +39,7 @@ jobs:
     - name: Install R
       uses: r-lib/actions/setup-r@6b49fefb2846ed3e5e6e58366e7f7dfe01377f02                                # 29/04/2025
       with:
-        r-version: '4.4.2'
+        r-version: ${{ env.R_VERSION }}
 
     - name: Install R packages
       uses: r-lib/actions/setup-r-dependencies@6b49fefb2846ed3e5e6e58366e7f7dfe01377f02                   # 29/04/2025

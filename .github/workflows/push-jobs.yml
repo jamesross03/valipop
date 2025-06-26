@@ -3,7 +3,7 @@
 # It would be nice to define the commit hashes and version numbers as environment variables to
 # reduce repetition, but actions can't be resolved dynamically.
 
-name: Build and Deploy
+name: Build and Deploy (On Push)
 
 on:
   push:
@@ -24,6 +24,7 @@ jobs:
     uses: ./.github/workflows/build-and-test.yml
     with:
       platform: ubuntu-latest
+      maven-target: package
       upload-dependencies: true
 
   build-and-test-windows:
@@ -33,6 +34,7 @@ jobs:
     uses: ./.github/workflows/build-and-test.yml
     with:
       platform: windows-latest
+      maven-target: test
 
   build-pages:
     name: Build website
