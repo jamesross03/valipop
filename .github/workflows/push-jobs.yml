@@ -3,7 +3,7 @@
 # It would be nice to define the commit hashes and version numbers as environment variables to
 # reduce repetition, but actions can't be resolved dynamically.
 
-name: Build and Deploy (On Push)
+name: Build and deploy (on push)
 
 on:
   push:
