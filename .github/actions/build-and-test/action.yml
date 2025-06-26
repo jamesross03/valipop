@@ -1,5 +1,5 @@
 name: 'Maven build and test'
-description: 'Maven build test composite action'
+description: 'Maven build and test composite action'
 
 inputs:
   maven-target:
