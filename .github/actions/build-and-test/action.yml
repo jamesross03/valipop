@@ -6,6 +6,11 @@ inputs:
     required: true
     description: 'maven target'
 
+  maven-params:
+    required: false
+    description: 'maven parameters'
+    default: ''
+
   upload-dependencies:
     required: false
     description: 'whether to upload dependencies for analysis'
@@ -34,7 +39,7 @@ runs:
 
   - name: Build and test with Maven
     shell: bash
-    run: mvn -B ${{ inputs.maven-target }}
+    run: mvn -B ${{ inputs.maven-target }} ${{ inputs.maven-params }}
 
   - name: Upload dependencies
     if: inputs.upload-dependencies == 'true'

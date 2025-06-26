@@ -40,9 +40,9 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Alan Dearle (alan.dearle@st-andrews.ac.uk)
  * @author Graham Kirby (graham.kirby@st-andrews.ac.uk)
  */
-@ParameterizedClass
-@MethodSource("uk.ac.standrews.cs.valipop.implementations.PopulationTestCases#getTestCases")
-public class GeneralPopulationStructureTest {
+//@ParameterizedClass
+//@MethodSource("uk.ac.standrews.cs.valipop.implementations.PopulationTestCases#getTestCases")
+public abstract class GeneralPopulationStructureTest {
 
     private static final int PEOPLE_ITERATION_SAMPLE_THRESHOLD = 40;
     private static final int PEOPLE_ITERATION_SAMPLE_START = 30;

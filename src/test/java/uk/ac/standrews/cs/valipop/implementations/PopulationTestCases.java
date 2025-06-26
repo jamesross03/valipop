@@ -25,18 +25,26 @@ import uk.ac.standrews.cs.valipop.simulationEntities.dataStructure.PeopleCollect
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 class PopulationTestCases {
 
-    synchronized static List<Arguments> getTestCases()  {
+    static List<Arguments> getFastTestCases()  {
 
         return List.of(
 
             Arguments.of(fullPopulation(200, 841584), 200),
             Arguments.of(fullPopulation(350, 56854687), 350),
             Arguments.of(fullPopulation(1000, 56854687), 1000)
+        );
+    }
+
+    static List<Arguments> getSlowTestCases()  {
+
+        return List.of(
+
+            Arguments.of(fullPopulation(5000, 841584), 5000),
+            Arguments.of(fullPopulation(10000, 56854687), 10000)
         );
     }
 
