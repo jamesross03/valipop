@@ -1,0 +1,44 @@
+name: 'Maven build and test'
+description: 'Maven build test composite action'
+
+inputs:
+  maven-target:
+    required: true
+    description: 'maven target'
+
+  upload-dependencies:
+    required: false
+    description: 'whether to upload dependencies for analysis'
+    default: 'false'
+
+runs:
+  using: "composite"
+
+  steps:
+  - name: Check out project
+    uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683                                        # @v4.2.2
+
+  - name: Set up JDK
+    uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00                                      # @v4.7.1
+    with:
+      java-version: '21'
+      distribution: 'corretto'
+      cache: 'maven'
+
+  - name: Install R
+    uses: r-lib/actions/setup-r@6b49fefb2846ed3e5e6e58366e7f7dfe01377f02                                # 29/04/2025
+    with:
+      r-version: '4.4.3'
+
+  - name: Install R packages
+    uses: r-lib/actions/setup-r-dependencies@6b49fefb2846ed3e5e6e58366e7f7dfe01377f02                   # 29/04/2025
+    with:
+      extra-packages: any::geepack
+
+  - name: Build and test with Maven
+    shell: bash
+    run: mvn -B ${{ inputs.maven-target }}
+
+  - name: Upload dependencies
+    if: inputs.upload-dependencies == 'true'
+    uses: advanced-security/maven-dependency-submission-action@v4

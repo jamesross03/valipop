@@ -26,7 +26,6 @@ jobs:
 
       - name: Build and test if there are recent changes
         if: ${{ env.NEW_COMMIT_COUNT > 0 }}
-        uses: ./.github/workflows/build-and-test.yml
+        uses: ./.github/actions/build-and-test
         with:
-          platform: ubuntu-latest
-          maven-target: test
+          maven-target: 'test'

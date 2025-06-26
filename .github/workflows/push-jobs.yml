@@ -19,22 +19,24 @@ concurrency:
 jobs:
   build-and-test-linux:
     name: Build and test (Linux)
+    runs-on: ubuntu-latest
     permissions:
       contents: write
-    uses: ./.github/workflows/build-and-test.yml
-    with:
-      platform: ubuntu-latest
-      maven-target: package
-      upload-dependencies: true
+    steps:
+      - uses: ./.github/actions/build-and-test
+        with:
+          maven-target: 'package'
+          upload-dependencies: 'true'
 
   build-and-test-windows:
     name: Build and test (Windows)
+    runs-on: windows-latest
     permissions:
       contents: write
-    uses: ./.github/workflows/build-and-test.yml
-    with:
-      platform: windows-latest
-      maven-target: test
+    steps:
+      - uses: ./.github/actions/build-and-test
+        with:
+          maven-target: 'test'
 
   build-pages:
     name: Build website
