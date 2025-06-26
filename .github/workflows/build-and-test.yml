@@ -47,7 +47,7 @@ jobs:
         extra-packages: any::geepack
 
     - name: Build and test with Maven
-      run: mvn -B package
+      run: mvn -B ${{ inputs.maven-target }}
 
     - name: Upload dependencies
       if: inputs.upload-dependencies

@@ -1,8 +1,8 @@
-name: Build and Deploy (Scheduled)
+name: Build and Test (Scheduled)
 
 on:
   schedule:
-    - cron: "0 * * * *"
+    - cron: "15,45 * * * *"
   workflow_dispatch:
 
 concurrency:
@@ -12,9 +12,15 @@ concurrency:
 jobs:
   build-and-test-linux:
     name: Build and test (Linux)
+    runs-on: ubuntu-latest
     permissions:
       contents: write
-    uses: ./.github/workflows/build-and-test.yml
-    with:
-      platform: ubuntu-latest
-      maven-target: test
+    steps:
+      - name: Count recent commits
+        run: echo "NEW_COMMIT_COUNT=$(git log --oneline --since '24 hours ago' | wc -l)" >> $GITHUB_ENV
+      - name: Build and test if recent changes
+        if: ${{ env.NEW_COMMIT_COUNT > 0 }}
+        uses: ./.github/workflows/build-and-test.yml
+        with:
+          platform: ubuntu-latest
+          maven-target: test
