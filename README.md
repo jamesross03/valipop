@@ -72,13 +72,14 @@ To build ValiPop:
 
 ```shell
 # Clone the repository.
+# Add flag --depth 1 to reduce download size if you don't care about getting the whole repository history.
 git clone https://github.com/stacs-srg/valipop
 
 # Navigate to the repository directory.
 cd valipop
 
 # Install dependencies, compile, and package into JARs.
-mvn clean package -Dmaven.test.skip -Dmaven.repo.local=repository
+mvn clean package -Dmaven.test.skip
 
 # The build should be created in 'target/', including the runnable JARs.
 ```
