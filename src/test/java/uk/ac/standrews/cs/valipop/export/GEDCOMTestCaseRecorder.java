@@ -17,6 +17,7 @@
  */
 package uk.ac.standrews.cs.valipop.export;
 
+import uk.ac.standrews.cs.valipop.config.AbstractTestCaseRecorder;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPersonCollection;
 import uk.ac.standrews.cs.valipop.export.gedcom.GEDCOMPopulationWriter;
 
@@ -46,7 +47,7 @@ public class GEDCOMTestCaseRecorder extends AbstractTestCaseRecorder {
     @Override
     protected String getIntendedOutputFileSuffix() {
 
-        return PopulationToGEDCOMTest.INTENDED_SUFFIX;
+        return GEDCOMTest.INTENDED_SUFFIX;
     }
 
     @Override

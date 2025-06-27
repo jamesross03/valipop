@@ -15,24 +15,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.standrews.cs.valipop.implementations;
+package uk.ac.standrews.cs.valipop.export;
 
 import org.junit.jupiter.params.ParameterizedClass;
 import org.junit.jupiter.params.provider.MethodSource;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPersonCollection;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 /**
- * Tests of properties of abstract population interface that should hold for all populations.
+ * E2E tests of GEDCOM export.
  *
- * @author Alan Dearle (alan.dearle@st-andrews.ac.uk)
  * @author Graham Kirby (graham.kirby@st-andrews.ac.uk)
  */
 @ParameterizedClass
-@MethodSource("uk.ac.standrews.cs.valipop.implementations.PopulationTestCases#getFastTestCases")
-public class GeneralPopulationStructureFastTest extends GeneralPopulationStructureTest {
+@MethodSource("getFastTestCases")
+public class GEDCOMFastTest extends GEDCOMTest {
 
-    GeneralPopulationStructureFastTest(final IPersonCollection population, final int initialSize) {
+    public GEDCOMFastTest(final IPersonCollection population) {
 
-        super(population, initialSize);
+        super(population);
     }
 }

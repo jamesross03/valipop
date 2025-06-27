@@ -17,6 +17,7 @@
  */
 package uk.ac.standrews.cs.valipop.export;
 
+import uk.ac.standrews.cs.valipop.config.AbstractTestCaseRecorder;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPersonCollection;
 import uk.ac.standrews.cs.valipop.export.graphviz.GraphvizPopulationWriter;
 

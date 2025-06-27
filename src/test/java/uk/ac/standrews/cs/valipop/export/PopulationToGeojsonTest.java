@@ -32,32 +32,32 @@ import java.nio.file.Paths;
  *
  * @author Daniel Brathagen (dbrathagen@gmail.com)
  */
-public class PopulationToGeojsonTest extends AbstractExporterTest {
+@Disabled
+public class PopulationToGeojsonTest extends PopulationExportTest {
 
     static final String INTENDED_SUFFIX = ".geojson";
 
     @BeforeEach
     public void setup() throws IOException {
 
-        generated_output1 = Files.createTempFile(null, INTENDED_SUFFIX);
-        expected_output = Paths.get(TEST_DIRECTORY_PATH_STRING, "geojson", file_name_root + INTENDED_SUFFIX);
+        generated_output_file1 = Files.createTempFile(null, INTENDED_SUFFIX);
+        expected_output_file = Paths.get(TEST_DIRECTORY_PATH_STRING, "geojson", file_name_root + INTENDED_SUFFIX);
     }
 
     public PopulationToGeojsonTest(final IPersonCollection population, final String file_name) {
 
-        super(population, file_name);
+        super(population);
     }
 
     @Test
-    @Disabled
     public void GeojsonExportIsAsExpected() throws Exception {
 
-        final IPopulationWriter population_writer = new GeojsonPopulationWriter(generated_output1);
+        final IPopulationWriter population_writer = new GeojsonPopulationWriter(generated_output_file1);
 
         try (PopulationConverter converter = new PopulationConverter(population, population_writer)) {
             converter.convert();
         }
 
-        assertThatFilesHaveSameContent(generated_output1, expected_output);
+        assertThatFilesHaveSameContent(generated_output_file1, expected_output_file);
     }
 }

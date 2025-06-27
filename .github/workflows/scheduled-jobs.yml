@@ -20,7 +20,7 @@ jobs:
       - name: Count recent commits
         run: echo "NEW_COMMIT_COUNT=$(git log --oneline --since '24 hours ago' | wc -l)" >> $GITHUB_ENV
 
-      - name: Build and test if there are recent changes
+      - name: Build and run tests if there were recent changes
         if: ${{ env.NEW_COMMIT_COUNT > 0 }}
         uses: ./.github/actions/build-and-test
         with:

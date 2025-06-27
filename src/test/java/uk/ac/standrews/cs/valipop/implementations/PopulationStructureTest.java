@@ -18,8 +18,7 @@
 package uk.ac.standrews.cs.valipop.implementations;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedClass;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.Arguments;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPartnership;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPerson;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPersonCollection;
@@ -27,12 +26,10 @@ import uk.ac.standrews.cs.valipop.statistics.analysis.validation.contingencyTabl
 
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static uk.ac.standrews.cs.valipop.config.TestCases.getTestConfigurations;
 
 /**
  * Tests of properties of abstract population interface that should hold for all populations.
@@ -40,24 +37,32 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Alan Dearle (alan.dearle@st-andrews.ac.uk)
  * @author Graham Kirby (graham.kirby@st-andrews.ac.uk)
  */
-//@ParameterizedClass
-//@MethodSource("uk.ac.standrews.cs.valipop.implementations.PopulationTestCases#getTestCases")
-public abstract class GeneralPopulationStructureTest {
+public abstract class PopulationStructureTest {
+
+    public static final List<Integer> FAST_TEST_CASE_INITIAL_POPULATION_SIZES = List.of(200, 300);
+    public static final List<Integer> SLOW_TEST_CASE_INITIAL_POPULATION_SIZES = List.of(1000, 10000);
 
     private static final int PEOPLE_ITERATION_SAMPLE_THRESHOLD = 40;
     private static final int PEOPLE_ITERATION_SAMPLE_START = 30;
     private static final int PARTNERSHIP_ITERATION_SAMPLE_THRESHOLD = 20;
     private static final int PARTNERSHIP_ITERATION_SAMPLE_START = 10;
     private static final int MAX_REASONABLE_FAMILY_SIZE = 20;
-    private static final int POPULATION_SIZE_LIMIT_FOR_EXPENSIVE_TESTS = 10000;
 
     private final IPersonCollection population;
-    private final int initialSize;
 
-    GeneralPopulationStructureTest(final IPersonCollection population, final int initialSize) {
+    PopulationStructureTest(final IPersonCollection population) {
 
         this.population = population;
-        this.initialSize = initialSize;
+    }
+
+    static List<Arguments> getFastTestCases()  {
+
+        return getTestConfigurations(FAST_TEST_CASE_INITIAL_POPULATION_SIZES);
+    }
+
+    static List<Arguments> getSlowTestCases()  {
+
+        return getTestConfigurations(SLOW_TEST_CASE_INITIAL_POPULATION_SIZES);
     }
 
     @Test
@@ -126,12 +131,8 @@ public abstract class GeneralPopulationStructureTest {
             assertRetrievedConsistently(sample);
         }
 
-        if (testingSmallPopulation()) {
-            // Check consistency during iteration.
-
-            for (final IPerson person : population.getPeople()) {
-                assertRetrievedConsistently(person);
-            }
+        for (final IPerson person : population.getPeople()) {
+            assertRetrievedConsistently(person);
         }
     }
 
@@ -266,10 +267,6 @@ public abstract class GeneralPopulationStructureTest {
         for (final IPerson person : population.getPeople()) {
             assertParentsAndChildrenConsistent(person);
         }
-    }
-
-    private boolean testingSmallPopulation() {
-        return initialSize <= POPULATION_SIZE_LIMIT_FOR_EXPENSIVE_TESTS;
     }
 
     private static void assertBirthInfoConsistent(final IPerson person) {

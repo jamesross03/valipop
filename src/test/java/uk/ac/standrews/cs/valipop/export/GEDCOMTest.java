@@ -40,47 +40,47 @@ import static org.junit.jupiter.api.Assertions.fail;
  *
  * @author Graham Kirby (graham.kirby@st-andrews.ac.uk)
  */
-public class PopulationToGEDCOMTest extends AbstractExporterTest {
+public abstract class GEDCOMTest extends PopulationExportTest {
 
     static final String INTENDED_SUFFIX = ".ged";
-    private static final int POPULATION_SIZE_LIMIT_FOR_EXPENSIVE_TESTS = 1000;
 
     @BeforeEach
     public void setup() throws IOException {
 
-        generated_output1 = Files.createTempFile(null, INTENDED_SUFFIX);
-        generated_output2 = Files.createTempFile(null, INTENDED_SUFFIX);
-        expected_output = Paths.get(TEST_DIRECTORY_PATH_STRING, "gedcom", file_name_root + INTENDED_SUFFIX);
+        generated_output_file1 = Files.createTempFile(temp_dir, null, INTENDED_SUFFIX);
+        generated_output_file2 = Files.createTempFile(temp_dir,null, INTENDED_SUFFIX);
+
+        expected_output_file = Paths.get(TEST_DIRECTORY_PATH_STRING, "gedcom", file_name_root + INTENDED_SUFFIX);
     }
 
-    public PopulationToGEDCOMTest(final IPersonCollection population, final String file_name) {
+    public GEDCOMTest(final IPersonCollection population) {
 
-        super(population, file_name);
+        super(population);
     }
 
     @Test
     @Disabled
     public void GEDCOMExportIsAsExpected() throws Exception {
 
-        final IPopulationWriter population_writer = new GEDCOMPopulationWriter(generated_output1);
+        final IPopulationWriter population_writer = new GEDCOMPopulationWriter(generated_output_file1);
 
         try (final PopulationConverter converter = new PopulationConverter(population, population_writer)) {
             converter.convert();
         }
 
-        assertThatFilesHaveSameContent(generated_output1, expected_output);
+        assertThatFilesHaveSameContent(generated_output_file1, expected_output_file);
     }
 
     @Test
     public void exportImportGivesEquivalentPopulation() throws Exception {
 
-        final IPopulationWriter population_writer1 = new GEDCOMPopulationWriter(generated_output1);
+        final IPopulationWriter population_writer1 = new GEDCOMPopulationWriter(generated_output_file1);
 
         try (final PopulationConverter converter = new PopulationConverter(population, population_writer1)) {
             converter.convert();
         }
 
-        final IPersonCollection imported = new GEDCOMPopulationAdapter(generated_output1);
+        final IPersonCollection imported = new GEDCOMPopulationAdapter(generated_output_file1);
 
         assertEqualPopulations(population, imported);
     }
@@ -91,25 +91,20 @@ public class PopulationToGEDCOMTest extends AbstractExporterTest {
 
         // TODO get working with non-ASCII characters in names; may require GEDCOM 7.
 
-        final IPopulationWriter population_writer1 = new GEDCOMPopulationWriter(generated_output1);
-        final IPopulationWriter population_writer2 = new GEDCOMPopulationWriter(generated_output2);
+        final IPopulationWriter population_writer1 = new GEDCOMPopulationWriter(generated_output_file1);
+        final IPopulationWriter population_writer2 = new GEDCOMPopulationWriter(generated_output_file2);
 
         try (final PopulationConverter converter = new PopulationConverter(population, population_writer1)) {
             converter.convert();
         }
 
-        final IPersonCollection imported = new GEDCOMPopulationAdapter(generated_output1);
+        final IPersonCollection imported = new GEDCOMPopulationAdapter(generated_output_file1);
 
         try (final PopulationConverter converter = new PopulationConverter(imported, population_writer2)) {
             converter.convert();
         }
 
-        assertThatFilesHaveSameContent(generated_output1, generated_output2);
-    }
-
-    private boolean testingSmallPopulation() {
-
-        return Integer.parseInt(population.toString()) <= POPULATION_SIZE_LIMIT_FOR_EXPENSIVE_TESTS;
+        assertThatFilesHaveSameContent(generated_output_file1, generated_output_file2);
     }
 
     private static void assertEqualPopulations(final IPersonCollection population1, final IPersonCollection population2) {

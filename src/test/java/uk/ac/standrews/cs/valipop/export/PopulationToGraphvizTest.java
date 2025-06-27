@@ -32,33 +32,32 @@ import java.nio.file.Paths;
  *
  * @author Daniel Brathagen (dbrathagen@gmail.com)
  */
-public class PopulationToGraphvizTest extends AbstractExporterTest {
+@Disabled
+public class PopulationToGraphvizTest extends PopulationExportTest {
 
     static final String INTENDED_SUFFIX = ".dot";
 
     @BeforeEach
     public void setup() throws IOException {
 
-        generated_output1 = Files.createTempFile(null, INTENDED_SUFFIX);
-        expected_output = Paths.get(TEST_DIRECTORY_PATH_STRING, "graphviz", file_name_root + INTENDED_SUFFIX);
+        generated_output_file1 = Files.createTempFile(null, INTENDED_SUFFIX);
+        expected_output_file = Paths.get(TEST_DIRECTORY_PATH_STRING, "graphviz", file_name_root + INTENDED_SUFFIX);
     }
 
     public PopulationToGraphvizTest(final IPersonCollection population, final String file_name) {
 
-        super(population, file_name);
+        super(population);
     }
 
     @Test
-    @Disabled
     public void graphvizExportIsAsExpected() throws Exception {
 
-        final IPopulationWriter population_writer = new GraphvizPopulationWriter(population, generated_output1);
+        final IPopulationWriter population_writer = new GraphvizPopulationWriter(population, generated_output_file1);
 
         try (PopulationConverter converter = new PopulationConverter(population, population_writer)) {
             converter.convert();
         }
 
-        assertThatFilesHaveSameContent(generated_output1, expected_output);
+        assertThatFilesHaveSameContent(generated_output_file1, expected_output_file);
     }
 }
-

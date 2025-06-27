@@ -5,8 +5,8 @@
 _ValiPop_ is a micro-simulation model for generating synthetic genealogical populations
 from a set of desired statistics. _ValiPop_ also verifies that the 
 desired properties exist in the generated populations. It is reasonably scalable and 
-customisable, and able to create populations for a wide range of purposes.  The focus 
-of our research is the use of multiple synthetic genealogical populations to evaluate and 
+customisable, and able to create populations for a wide range of purposes. The intended
+purpose is to enable generation of multiple synthetic genealogical populations to evaluate and 
 improve data linkage algorithms.
 
 _ValiPop_'s micro-simulation model is written in Java. The supporting verification analysis 
