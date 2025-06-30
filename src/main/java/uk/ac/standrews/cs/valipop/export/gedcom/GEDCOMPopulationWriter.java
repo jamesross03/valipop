@@ -40,7 +40,7 @@ import java.util.Map;
  */
 public class GEDCOMPopulationWriter extends AbstractFilePopulationWriter {
 
-    private static final String CHAR_SET = "ASCII";
+    private static final String CHAR_SET = "UTF-8";
     private static final String GEDCOM_FORM = "LINEAGE-LINKED";
     private static final String GEDCOM_VERSION = "5.5.1";
     private static final String SOURCE_SOFTWARE = "Digitising_Scotland";

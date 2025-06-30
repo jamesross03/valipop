@@ -86,10 +86,7 @@ public abstract class GEDCOMTest extends PopulationExportTest {
     }
 
     @Test
-    @Disabled
     public void exportImportExportGivesSamePopulationFile() throws Exception {
-
-        // TODO get working with non-ASCII characters in names; may require GEDCOM 7.
 
         final IPopulationWriter population_writer1 = new GEDCOMPopulationWriter(generated_output_file1);
         final IPopulationWriter population_writer2 = new GEDCOMPopulationWriter(generated_output_file2);
