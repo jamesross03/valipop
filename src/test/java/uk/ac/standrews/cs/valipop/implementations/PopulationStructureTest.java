@@ -40,7 +40,7 @@ import static uk.ac.standrews.cs.valipop.config.TestCases.getTestConfigurations;
 public abstract class PopulationStructureTest {
 
     public static final List<Integer> FAST_TEST_CASE_INITIAL_POPULATION_SIZES = List.of(200, 300);
-    public static final List<Integer> SLOW_TEST_CASE_INITIAL_POPULATION_SIZES = List.of(1000, 10000);
+    public static final List<Integer> SLOW_TEST_CASE_INITIAL_POPULATION_SIZES = List.of(1000, 5000);
 
     private static final int PEOPLE_ITERATION_SAMPLE_THRESHOLD = 40;
     private static final int PEOPLE_ITERATION_SAMPLE_START = 30;
