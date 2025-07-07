@@ -1,4 +1,4 @@
-# Config 6 - Larger population
+# Config 7 - Larger population
 
 tS = 1650-01-01
 t0 = 1800-01-01

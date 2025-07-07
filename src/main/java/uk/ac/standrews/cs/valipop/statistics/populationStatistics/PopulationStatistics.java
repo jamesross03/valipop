@@ -85,23 +85,26 @@ public class PopulationStatistics implements EventRateTables {
     private TreeMap<Year, SelfCorrecting2DEnumeratedProportionalDistribution> maleOccupationChange;
     private TreeMap<Year, SelfCorrecting2DEnumeratedProportionalDistribution> femaleOccupationChange;
 
+    // TODO make non-static.
     public static RandomGenerator randomGenerator;
+
+    public static void resetRandomGenerator(final int seed) {
+
+        synchronized(PopulationStatistics.class) {
+
+            randomGenerator = new JDKRandomGenerator(seed);
+        }
+    }
 
     public PopulationStatistics(final Config config) {
 
         try {
-            synchronized(PopulationStatistics.class) {
-
-                if (randomGenerator == null) {
-
-                    if (!config.deterministic()) {
-                        // sets a seed based on time so that it can be logged for recreation of simulation
-                        config.setSeed((int) System.nanoTime());
-                    }
-
-                    randomGenerator = new JDKRandomGenerator(config.getSeed());
-                }
+            if (!config.deterministic()) {
+                // sets a seed based on time so that it can be logged for recreation of simulation
+                config.setSeed((int) System.nanoTime());
             }
+
+            resetRandomGenerator(config.getSeed());
 
             final TreeMap<Year, SelfCorrectingOneDimensionDataDistribution> maleDeath = readInSC1DDataFiles(config.getVarMaleLifetablePaths(), config);
             final TreeMap<Year, AgeDependantEnumeratedDistribution> maleDeathCauses = readInAgeDependantEnumeratedDistributionDataFiles(config.getVarMaleDeathCausesPaths(), config);

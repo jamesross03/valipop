@@ -182,7 +182,7 @@ public class DistributedFactorSearch {
             System.out.println("Simulating the model");
             model.runSimulation();
             System.out.println("Analysing the model");
-            model.analyseAndOutputPopulation(false, 5);
+            model.analyseAndOutputPopulation(false);
             System.out.println("Complete for rf: " +config.getRecoveryFactor() + ", rpf: " + config.getProportionalRecoveryFactor());
         } catch(Exception e) {
             System.out.println("Given rf: " + config.getRecoveryFactor() + ", rpf: " + config.getProportionalRecoveryFactor());

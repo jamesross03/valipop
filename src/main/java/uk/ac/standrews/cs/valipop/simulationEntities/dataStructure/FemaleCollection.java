@@ -193,7 +193,7 @@ public class FemaleCollection extends PersonCollection {
      * @param birthOrder the number of children
      * @return the by number of children
      */
-    Collection<IPerson> getByDatePeriodAndBirthOrder(final LocalDate date, final Period period, final int birthOrder) {
+    public Collection<IPerson> getByDatePeriodAndBirthOrder(final LocalDate date, final Period period, final int birthOrder) {
 
         final int divisionsInPeriod = DateUtils.divideYieldingInt(period, getDivisionSize());
 

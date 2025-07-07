@@ -52,9 +52,9 @@ public class CL_OBDModel {
 
         OBDModel model = new OBDModel( config);
         model.runSimulation();
-        model.analyseAndOutputPopulation(false, 5);
+        model.analyseAndOutputPopulation(false);
 
-        if (config.getOutputTables()) {
+        if (config.shouldGenerateContingencyTables()) {
             performAnalysis(model, config);
         }
 

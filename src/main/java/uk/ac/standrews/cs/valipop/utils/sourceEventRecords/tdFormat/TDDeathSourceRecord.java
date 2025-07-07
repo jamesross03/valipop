@@ -23,6 +23,7 @@ import uk.ac.standrews.cs.valipop.simulationEntities.PopulationNavigation;
 import uk.ac.standrews.cs.valipop.statistics.analysis.validation.contingencyTables.TableStructure.PersonCharacteristicsIdentifier;
 import uk.ac.standrews.cs.valipop.statistics.analysis.validation.contingencyTables.TreeStructure.SexOption;
 import uk.ac.standrews.cs.valipop.statistics.populationStatistics.PopulationStatistics;
+import uk.ac.standrews.cs.valipop.utils.addressLookup.Address;
 import uk.ac.standrews.cs.valipop.utils.sourceEventRecords.oldDSformat.DeathSourceRecord;
 
 import java.time.LocalDate;
@@ -59,7 +60,8 @@ public class TDDeathSourceRecord extends DeathSourceRecord {
         super(person);
 
         deathDate = person.getDeathDate();
-        deathAddress = person.getAddress(deathDate).toString();
+        Address address = person.getAddress(deathDate);
+        deathAddress = address != null ? address.toString() : "";
 
         final String[] deathCauses = person.getDeathCause().split(" ");
 

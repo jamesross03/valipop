@@ -466,7 +466,7 @@ public class Config implements Serializable {
         return outputGraphFormat;
     }
 
-    public boolean getOutputTables() {
+    public boolean shouldGenerateContingencyTables() {
         return outputTables;
     }
 

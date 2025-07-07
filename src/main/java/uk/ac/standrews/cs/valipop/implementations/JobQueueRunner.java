@@ -86,7 +86,7 @@ public class JobQueueRunner {
                                 doubleLog(OBDModel.log, "Sim commencing @ " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + " with seed: " + config.getSeed());
                                 model.runSimulation();
                                 doubleLog(OBDModel.log, "Sim concluded, beginning CT tables generation @ " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-                                model.analyseAndOutputPopulation(false, 5);
+                                model.analyseAndOutputPopulation(false);
                                 doubleLog(OBDModel.log, "CT tables generation concluded @ " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 
                                 if (THREAD_LIMIT == 1) {

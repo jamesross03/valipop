@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.standrews.cs.valipop.simulationEntities.dataStructure;
+package uk.ac.standrews.cs.valipop.implementations;
 
 import org.junit.jupiter.api.Test;
 

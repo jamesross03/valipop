@@ -15,13 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.standrews.cs.valipop.implementations.minimaSearch;
+package uk.ac.standrews.cs.valipop.implementations;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.ac.standrews.cs.valipop.Config;
-import uk.ac.standrews.cs.valipop.implementations.OBDModel;
-import uk.ac.standrews.cs.valipop.implementations.SpaceExploredException;
+import uk.ac.standrews.cs.valipop.implementations.minimaSearch.Control;
+import uk.ac.standrews.cs.valipop.implementations.minimaSearch.MinimaSearch;
 
 import java.nio.file.Paths;
 import java.time.LocalDate;

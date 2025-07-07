@@ -19,6 +19,7 @@ package uk.ac.standrews.cs.valipop.utils.sourceEventRecords.oldDSformat;
 
 import uk.ac.standrews.cs.valipop.simulationEntities.IPartnership;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPerson;
+import uk.ac.standrews.cs.valipop.utils.addressLookup.Address;
 import uk.ac.standrews.cs.valipop.utils.sourceEventRecords.IndividualSourceRecord;
 
 import java.time.LocalDate;
@@ -116,7 +117,8 @@ public class BirthSourceRecord extends IndividualSourceRecord {
 
                 setParentsPlaceOfMarriage(parents_partnership.getMarriagePlace());
 
-                setBirthAddress(person.getAddress(person.getBirthDate()).toString());
+                final Address address = person.getAddress(person.getBirthDate());
+                if (address != null) setBirthAddress(address.toString());
             }
 
             setParentAttributes(person);

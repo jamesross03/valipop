@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.standrews.cs.valipop.simulationEntities.dataStructure;
+package uk.ac.standrews.cs.valipop.implementations;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,6 +23,8 @@ import uk.ac.standrews.cs.valipop.Config;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPerson;
 import uk.ac.standrews.cs.valipop.simulationEntities.Partnership;
 import uk.ac.standrews.cs.valipop.simulationEntities.Person;
+import uk.ac.standrews.cs.valipop.simulationEntities.dataStructure.PeopleCollection;
+import uk.ac.standrews.cs.valipop.simulationEntities.dataStructure.PersonNotFoundException;
 import uk.ac.standrews.cs.valipop.statistics.analysis.validation.contingencyTables.TreeStructure.SexOption;
 import uk.ac.standrews.cs.valipop.statistics.populationStatistics.PopulationStatistics;
 

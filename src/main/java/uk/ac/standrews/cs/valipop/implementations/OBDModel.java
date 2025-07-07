@@ -105,8 +105,6 @@ public class OBDModel {
     private int birthsCount = 0;
     private int deathCount = 0;
 
-//    private PrintWriter birthOrders;
-
     private final PersonFactory personFactory;
     private final BalancedMigrationModel migrationModel;
     private final OccupationChangeModel occupationChangeModel;
@@ -190,25 +188,18 @@ public class OBDModel {
         return summary;
     }
 
-    public void analyseAndOutputPopulation(final boolean outputSummaryRow, final int stepBack) {
+    public void analyseAndOutputPopulation(final boolean outputSummaryRow) {
 
-        if (config.getOutputTables()) {
-            System.out.println("Writing contingency tables");
-            // the 5 year step back is to combat the kick in the early stages of the CTtables for STAT - run in RStudio with no cleaning to see - potential bug in CTtree?
+        if (config.shouldGenerateContingencyTables())
             ContingencyTableFactory.generateContingencyTables(population.getPeople(), desired, config, summary);
-        }
 
         final ProgramTimer recordTimer = new ProgramTimer();
 
-        if (config.getOutputRecordFormat() != RecordFormat.NONE) {
-            System.out.println("Writing records");
+        if (config.getOutputRecordFormat() != RecordFormat.NONE)
             RecordGenerationFactory.outputRecords(config.getOutputRecordFormat(), config.getRecordsDirPath(), population.getPeople(), population.getPeople().getPartnerships(), config.getT0());
-        }
 
-        if (config.getOutputGraphFormat() != ExportFormat.NONE) {
-            System.out.println("Writing graph");
+        if (config.getOutputGraphFormat() != ExportFormat.NONE)
             outputToGraph(config.getOutputGraphFormat(), population.getPeople(), config.getGraphsDirPath());
-        }
 
         summary.setRecordsRunTime(recordTimer.getRunTimeSeconds());
 
@@ -224,9 +215,8 @@ public class OBDModel {
         summary.setMaxMemoryUsage(MemoryUsageAnalysis.getMaxSimUsage());
         MemoryUsageAnalysis.reset();
 
-        if (outputSummaryRow) {
+        if (outputSummaryRow)
             summary.outputSummaryRowToFile();
-        }
 
         log.info("OBDModel --- Output complete");
     }
@@ -808,7 +798,7 @@ public class OBDModel {
 
             final LinkedList<IPerson> men = new LinkedList<>(population.getLivingPeople().getMales().getPeopleBornInTimePeriod(yobOfOlderEndOfIR, rangeLength));
 
-            CollectionUtils.shuffle(men, desired.getRandomGenerator());
+            CollectionUtils.shuffle(men, randomNumberGenerator);
 
             allMen.put(range, men);
             availableMen.update(range, men.size());
@@ -1091,7 +1081,7 @@ public class OBDModel {
     private MothersNeedingPartners getMothersNeedingPartners(final List<IPerson> females, final int numberOfChildren, final MultipleDeterminedCountByIR requiredBirths,
                                                              final LabelledValueSet<IntegerRange, Integer> motherCountsByMaternities, final OperableLabelledValueSet<IntegerRange, Integer> remainingMothersToFind) {
 
-        CollectionUtils.shuffle(females, desired.getRandomGenerator());
+        CollectionUtils.shuffle(females, randomNumberGenerator);
 
         IntegerRange highestBirthOption = remainingMothersToFind.getLargestLabelOfNonZeroValue();
 

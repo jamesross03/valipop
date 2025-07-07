@@ -39,10 +39,10 @@ import java.util.List;
  */
 public class MinimaSearch {
 
-    static double startFactor;
-    static double step;
+    public static double startFactor;
+    public static double step;
 
-    static double initStep;
+    public static double initStep;
 
     private static double maxAbsFactor = 4;
 
@@ -125,7 +125,7 @@ public class MinimaSearch {
 
                     try {
                         model.runSimulation();
-                        model.analyseAndOutputPopulation(false, 5);
+                        model.analyseAndOutputPopulation(false);
 
                         int maxBirthingAge = model.getDesiredPopulationStatistics().getOrderedBirthRates(Year.of(0)).getLargestLabel().getValue();
                         double v = getV(minimiseFor, maxBirthingAge, controlBy, config);
@@ -180,7 +180,7 @@ public class MinimaSearch {
         }
     }
 
-    static double getControllingFactor(Control controlBy) {
+    public static double getControllingFactor(Control controlBy) {
 
         switch (controlBy) {
 
@@ -194,7 +194,7 @@ public class MinimaSearch {
         throw new InvalidParameterException(controlBy.toString() + " did not resolve to a known parameter");
     }
 
-    static void setControllingFactor(Control controlBy, double startFactor) {
+    public static void setControllingFactor(Control controlBy, double startFactor) {
 
         switch (controlBy) {
 
@@ -444,7 +444,7 @@ public class MinimaSearch {
         return selected;
     }
 
-    static double getNextFactorValue() throws SpaceExploredException {
+    public static double getNextFactorValue() throws SpaceExploredException {
 
         if (jumpingPhase) {
             double nextFactor = jumpOut();
@@ -544,7 +544,7 @@ public class MinimaSearch {
 
     private static LinkedList<FVPoint> points = new LinkedList<>();
 
-    static void logFactortoV(double factor, double v) {
+    public static void logFactortoV(double factor, double v) {
 
         points.addLast(new FVPoint(factor, v));
     }
