@@ -98,7 +98,7 @@ public class OBDModel {
 
     private final DistanceSelector moveDistanceSelector;
 
-    private LocalDate currentTime;
+    private LocalDate currentDate;
     private ProgramTimer simTimer;
     private int currentHypotheticalPopulationSize;
 
@@ -114,7 +114,7 @@ public class OBDModel {
         try {
             this.config = config;
 
-            currentTime = config.getTS();
+            currentDate = config.getTS();
 
             partnersToSeparate = new HashSet<>();
             population = new Population(config);
@@ -138,8 +138,8 @@ public class OBDModel {
             log.info("Initial hypothetical population size set: " + currentHypotheticalPopulationSize);
 
             // End of init period is the greatest age specified in the ordered birth rates (take min bound if max bound is unset)
-            final Period timeStep = Period.ofYears(desired.getOrderedBirthRates(Year.of(currentTime.getYear())).getLargestLabel().getValue());
-            endOfInitPeriod = currentTime.plus(timeStep);
+            final Period timeStep = Period.ofYears(desired.getOrderedBirthRates(Year.of(currentDate.getYear())).getLargestLabel().getValue());
+            endOfInitPeriod = currentDate.plus(timeStep);
 
             log.info("End of Initialisation Period set: " + endOfInitPeriod);
 
@@ -263,7 +263,6 @@ public class OBDModel {
         recordSummary();
 
         closeLogFile();
-//        birthOrders.close(); // QUESTION why closed here when might be used in another simulation attempt? - TD: Separate file should be produced for each simulation
     }
 
     private static void closeLogFile() {
@@ -295,7 +294,7 @@ public class OBDModel {
 
         MemoryUsageAnalysis.log();
 
-        final String logEntry = currentTime + "\t" + MemoryUsageAnalysis.getMaxSimUsage() / 1e6 + "MB\t" + numberBorn + "\t" +
+        final String logEntry = currentDate + "\t" + MemoryUsageAnalysis.getMaxSimUsage() / 1e6 + "MB\t" + numberBorn + "\t" +
             shortFallInBirths + "\t" +
             numberDying + "\t" +
             population.getLivingPeople().getNumberOfPeople() + "\t" +
@@ -307,14 +306,14 @@ public class OBDModel {
     // Progress the simulation until initialisation is finished
     private void initialisePopulation() throws InsufficientNumberOfPeopleException {
 
-        while (!initialisationFinished()) {
+        while (!currentDate.isAfter(endOfInitPeriod)) {
 
             final int numberBorn = createBirths();
             final int shortFallInBirths = adjustPopulationNumbers(numberBorn);
             final int numberDying = createDeaths(SexOption.MALE) + createDeaths(SexOption.FEMALE);
 
-            migrationModel.performMigration(currentTime, this);
-            occupationChangeModel.performOccupationChange(currentTime);
+            migrationModel.performMigration(currentDate, this);
+            occupationChangeModel.performOccupationChange(currentDate);
 
             logTimeStep(numberBorn, shortFallInBirths, numberDying);
             countBirthsAndDeaths(numberBorn, numberDying);
@@ -330,13 +329,13 @@ public class OBDModel {
 
     private void simulatePopulationUntilStart() {
 
-        while (currentTime.isBefore(config.getT0())) {
+        while (currentDate.isBefore(config.getT0())) {
 
             final int numberBorn = createBirths();
             final int numberDying = createDeaths(SexOption.MALE) + createDeaths(SexOption.FEMALE);
 
-            migrationModel.performMigration(currentTime, this);
-            occupationChangeModel.performOccupationChange(currentTime);
+            migrationModel.performMigration(currentDate, this);
+            occupationChangeModel.performOccupationChange(currentDate);
 
             logTimeStep(numberBorn, 0, numberDying);
             countBirthsAndDeaths(numberBorn, numberDying);
@@ -349,13 +348,13 @@ public class OBDModel {
 
     private void simulatePopulationUntilEnd() {
 
-        while (!simulationFinished()) {
+        while (!currentDate.isAfter(config.getTE())) {
 
             final int numberBorn = createBirths();
             final int numberDying = createDeaths(SexOption.MALE) + createDeaths(SexOption.FEMALE);
 
-            migrationModel.performMigration(currentTime, this);
-            occupationChangeModel.performOccupationChange(currentTime);
+            migrationModel.performMigration(currentDate, this);
+            occupationChangeModel.performOccupationChange(currentDate);
 
             logTimeStep(numberBorn, 0, numberDying);
             countBirthsAndDeaths(numberBorn, numberDying);
@@ -388,7 +387,7 @@ public class OBDModel {
 
     private void advanceSimulationTime() {
 
-        currentTime = currentTime.plus(config.getSimulationTimeStep());
+        currentDate = currentDate.plus(config.getSimulationTimeStep());
     }
 
     private void resetSimulation(final ProgramTimer simTimer) {
@@ -432,11 +431,11 @@ public class OBDModel {
 
         // TODO why is this a loop? Seems to try to remove n people n times...
         for (int i = 0; i < numberOfMalesToRemove; i++) {
-            population.getLivingPeople().removeMales(numberOfMalesToRemove, currentTime, timeStep, true, geography, moveDistanceSelector, config);
+            population.getLivingPeople().removeMales(numberOfMalesToRemove, currentDate, timeStep, true, geography, moveDistanceSelector, config);
         }
 
         for (int i = 0; i < numberOfFemalesToRemove; i++) {
-            population.getLivingPeople().removeFemales(numberOfFemalesToRemove, currentTime, timeStep, true, geography, moveDistanceSelector, config);
+            population.getLivingPeople().removeFemales(numberOfFemalesToRemove, currentDate, timeStep, true, geography, moveDistanceSelector, config);
         }
     }
 
@@ -444,7 +443,7 @@ public class OBDModel {
 
         for (int i = 0; i < shortFallInBirths; i++) {
 
-            final IPerson person = personFactory.makePersonWithRandomBirthDate(currentTime, null, false);
+            final IPerson person = personFactory.makePersonWithRandomBirthDate(currentDate, null, false);
             population.getLivingPeople().add(person);
         }
     }
@@ -459,7 +458,7 @@ public class OBDModel {
 
         // For each division in the population data store up to the current date
         for (final LocalDate divisionDate : divisionDates) {
-            if (divisionDate.isAfter(currentTime)) break;
+            if (divisionDate.isAfter(currentDate)) break;
             count += getBornAtTS(femalesLiving, divisionDate);
         }
 
@@ -470,11 +469,11 @@ public class OBDModel {
 
         final Period consideredTimePeriod = config.getSimulationTimeStep();
 
-        final int age = Period.between(divisionDate.plus(consideredTimePeriod), currentTime).getYears();
+        final int age = Period.between(divisionDate.plus(consideredTimePeriod), currentDate).getYears();
         Collection<IPerson> femalesBornInTimePeriod = femalesLiving.getPeopleBornInTimePeriod(divisionDate, consideredTimePeriod);
         final int cohortSize = femalesBornInTimePeriod.size();
 
-        final Set<IntegerRange> birthOrders = desired.getOrderedBirthRates(Year.of(currentTime.getYear())).getColumnLabels();
+        final Set<IntegerRange> birthOrders = desired.getOrderedBirthRates(Year.of(currentDate.getYear())).getColumnLabels();
 
         int count = 0;
 
@@ -493,7 +492,7 @@ public class OBDModel {
         // TODO already retrieved women for this period in calling method.
         final List<IPerson> people = new ArrayList<>(femalesLiving.getByDatePeriodAndBirthOrder(divisionDate, consideredTimePeriod, birthOrder));
 
-        final BirthStatsKey key = new BirthStatsKey(age, birthOrder.getValue(), cohortSize, consideredTimePeriod, currentTime);
+        final BirthStatsKey key = new BirthStatsKey(age, birthOrder.getValue(), cohortSize, consideredTimePeriod, currentDate);
         final SingleDeterminedCount determinedCount = (SingleDeterminedCount) desired.getDeterminedCount(key, config);
 
         final int numberOfChildren = determinedCount.getDeterminedCount();
@@ -523,7 +522,7 @@ public class OBDModel {
         // For each division in the population data store up to the current date
         for (final LocalDate divisionDate : divisionDates) {
 
-            if (divisionDate.isAfter(currentTime)) break;
+            if (divisionDate.isAfter(currentDate)) break;
             killedAtTS += getKilledAtTS(sex, ofSexLiving, divisionDate);
         }
 
@@ -534,11 +533,11 @@ public class OBDModel {
 
         final Period consideredTimePeriod = config.getSimulationTimeStep();
 
-        final int age = Period.between(divisionDate, currentTime).getYears();
+        final int age = Period.between(divisionDate, currentDate).getYears();
         final int peopleOfAge = ofSexLiving.getNumberOfPeople(divisionDate, consideredTimePeriod);
 
         // gets death rate for people of age at the current date
-        final StatsKey<Integer,Integer> key = new DeathStatsKey(age, peopleOfAge, consideredTimePeriod, currentTime, sex);
+        final StatsKey<Integer,Integer> key = new DeathStatsKey(age, peopleOfAge, consideredTimePeriod, currentDate, sex);
         @SuppressWarnings("unchecked")
         final DeterminedCount<Integer, Double, Integer, Integer> determinedCount = (DeterminedCount<Integer, Double, Integer, Integer>) desired.getDeterminedCount(key, config);
 
@@ -562,9 +561,9 @@ public class OBDModel {
 
         final LinkedList<NewMother> women = new LinkedList<>(mothersNeedingPartners);
 
-        final int age = ageOnDate(women.getFirst().newMother, currentTime);
+        final int age = ageOnDate(women.getFirst().newMother, currentDate);
 
-        final PartneringStatsKey key = new PartneringStatsKey(age, mothersNeedingPartners.size(), config.getSimulationTimeStep(), currentTime);
+        final PartneringStatsKey key = new PartneringStatsKey(age, mothersNeedingPartners.size(), config.getSimulationTimeStep(), currentDate);
 
         final MultipleDeterminedCountByIR determinedCounts = (MultipleDeterminedCountByIR) desired.getDeterminedCount(key, config);
 
@@ -612,10 +611,10 @@ public class OBDModel {
         final int numChildrenInPartnership = partnership.numberOfChildren;
 
         // Decide on marriage
-        final MarriageStatsKey marriageKey = new MarriageStatsKey(ageOnDate(mother, currentTime), numChildrenInPartnership, config.getSimulationTimeStep(), currentTime);
+        final MarriageStatsKey marriageKey = new MarriageStatsKey(ageOnDate(mother, currentDate), numChildrenInPartnership, config.getSimulationTimeStep(), currentDate);
         final SingleDeterminedCount marriageCounts = (SingleDeterminedCount) desired.getDeterminedCount(marriageKey, config);
 
-        final boolean isIllegitimate = !needsNewPartner(father, currentTime);
+        final boolean isIllegitimate = !needsNewPartner(father, currentDate);
         final boolean marriedAtBirth = !isIllegitimate && (int) Math.round(marriageCounts.getDeterminedCount() / (double) numChildrenInPartnership) == 1;
 
         final IPartnership marriage = createNewPartnership(numChildrenInPartnership, father, mother, isIllegitimate, marriedAtBirth);
@@ -623,7 +622,7 @@ public class OBDModel {
         marriageCounts.setFulfilledCount(marriage.getMarriageDate() != null ? numChildrenInPartnership : 0);
         desired.returnAchievedCount(marriageCounts);
 
-        final IntegerRange maleAgeRange = resolveAgeToIntegerRange(father, partnerCounts.getLabels(), currentTime);
+        final IntegerRange maleAgeRange = resolveAgeToIntegerRange(father, partnerCounts.getLabels(), currentDate);
         partnerCounts.update(maleAgeRange, partnerCounts.getValue(maleAgeRange) + 1);
     }
 
@@ -793,7 +792,7 @@ public class OBDModel {
         final Map<IntegerRange, LinkedList<IPerson>> allMen = new TreeMap<>();
         for (final IntegerRange range : partnerCounts.getLabels()) {
 
-            final LocalDate yobOfOlderEndOfIR = getYearOfBirthOfOlderEndOfRange(range, currentTime);
+            final LocalDate yobOfOlderEndOfIR = getYearOfBirthOfOlderEndOfRange(range, currentDate);
             final Period rangeLength = getRangeLength(range);
 
             final LinkedList<IPerson> men = new LinkedList<>(population.getLivingPeople().getMales().getPeopleBornInTimePeriod(yobOfOlderEndOfIR, rangeLength));
@@ -939,7 +938,7 @@ public class OBDModel {
 
             if (birthDate == null) {
 
-                child = personFactory.makePersonWithRandomBirthDate(currentTime, partnership, isIllegitimate);
+                child = personFactory.makePersonWithRandomBirthDate(currentDate, partnership, isIllegitimate);
                 birthDate = child.getBirthDate();
 
             } else {
@@ -968,7 +967,7 @@ public class OBDModel {
         for (int i = 0; i < numberOfChildren; i++) {
 
             final IPerson child = childrenBirthDate == null ?
-                    personFactory.makePersonWithRandomBirthDate(currentTime, partnership, adulterousBirth) :
+                    personFactory.makePersonWithRandomBirthDate(currentDate, partnership, adulterousBirth) :
                     personFactory.makePerson(childrenBirthDate, partnership, adulterousBirth);
 
             population.getLivingPeople().add(child);
@@ -1044,11 +1043,11 @@ public class OBDModel {
         return population.getLivingPeople().getPeople().size() < MINIMUM_POPULATION_SIZE;
     }
 
-    // When the time is after the end of init period
-    private boolean initialisationFinished() {
-
-        return !inInitPeriod(currentTime);
-    }
+//    // When the time is after the end of init period
+//    private boolean initialisationFinished() {
+//
+//        return !inInitPeriod(currentDate);
+//    }
 
     private boolean inInitPeriod(final LocalDate currentTime) {
 
@@ -1056,7 +1055,7 @@ public class OBDModel {
     }
 
     private boolean simulationFinished() {
-        return currentTime.isAfter(config.getTE());
+        return currentDate.isAfter(config.getTE());
     }
 
     // TODO adjust this to also permit age variations
@@ -1064,7 +1063,7 @@ public class OBDModel {
 
         if (females.isEmpty()) return new MothersNeedingPartners();
 
-        final int ageOfMothers = ageOnDate(females.getFirst(), currentTime);
+        final int ageOfMothers = ageOnDate(females.getFirst(), currentDate);
 
         final MultipleDeterminedCountByIR requiredBirths = calcNumberOfPregnanciesOfMultipleBirth(ageOfMothers, numberOfChildren);
         final LabelledValueSet<IntegerRange, Integer> motherCountsByMaternities = new IntegerRangeToIntegerSet(requiredBirths.getDeterminedCount().getLabels(), 0, randomNumberGenerator);
@@ -1130,7 +1129,7 @@ public class OBDModel {
 
     private void addChildrenForMother(final IPerson mother, final int numberOfChildrenForThisMother, final List<NewMother> newMothers, final Map<Integer, List<IPerson>> continuingPartneredFemalesByChildren) {
 
-        if (needsNewPartner(mother, currentTime)) {
+        if (needsNewPartner(mother, currentDate)) {
             newMothers.add(new NewMother(mother, numberOfChildrenForThisMother));
 
         } else {
@@ -1147,7 +1146,7 @@ public class OBDModel {
 
     private MultipleDeterminedCountByIR calcNumberOfPregnanciesOfMultipleBirth(final int ageOfMothers, final int numberOfChildren) {
 
-        final MultipleBirthStatsKey key = new MultipleBirthStatsKey(ageOfMothers, numberOfChildren, config.getSimulationTimeStep(), currentTime);
+        final MultipleBirthStatsKey key = new MultipleBirthStatsKey(ageOfMothers, numberOfChildren, config.getSimulationTimeStep(), currentDate);
         return (MultipleDeterminedCountByIR) desired.getDeterminedCount(key, config);
     }
 
@@ -1157,7 +1156,7 @@ public class OBDModel {
         if (potentialMother.getPartnerships().isEmpty()) return true;
 
         // if last partnership has not ended in separation and the spouse has emigrated then this women cannot produce a child (now or at any future point in the simulation)
-        if (!needsNewPartner(potentialMother, currentTime) &&
+        if (!needsNewPartner(potentialMother, currentDate) &&
                 potentialMother.getLastPartnership().getMalePartner().hasEmigrated()) {
             return false;
         }
@@ -1169,7 +1168,7 @@ public class OBDModel {
             final LocalDate earliestDateOfNextChild = lastChild.getBirthDate().plus(desired.getMinBirthSpacing());
 
             // Returns true if last child was born far enough in the past for another child to be born at currentTime
-            return earliestDateOfNextChild.isBefore(currentTime);
+            return earliestDateOfNextChild.isBefore(currentDate);
         }
 
         // i.e. there is no previous child and thus no limitation to birth
@@ -1286,19 +1285,20 @@ public class OBDModel {
 
         // if the man has immigrated this year, was he present early enough in the year to be the father?
         if (man.getImmigrationDate() != null &&
-            man.getImmigrationDate().plus(desired.getMinGestationPeriod()).isAfter(currentTime.plusYears(1).minusDays(1)))
+            man.getImmigrationDate().plus(desired.getMinGestationPeriod()).isAfter(currentDate.plusYears(1).minusDays(1)))
                 return false;
 
-        // in the initialisation period any partnering is allowed
-        if (inInitPeriod(currentTime))
+        // during the initialisation phase any partnering is allowed
+
+        if (!currentDate.isAfter(endOfInitPeriod))
             return true;
 
         // Get adulterous birth rates
-        final AdulterousBirthStatsKey adulterousBirthKey = new AdulterousBirthStatsKey(ageOnDate(man, currentTime), childrenInPregnancy, config.getSimulationTimeStep(), currentTime);
+        final AdulterousBirthStatsKey adulterousBirthKey = new AdulterousBirthStatsKey(ageOnDate(man, currentDate), childrenInPregnancy, config.getSimulationTimeStep(), currentDate);
         final SingleDeterminedCount adulterousBirthCounts = (SingleDeterminedCount) desired.getDeterminedCount(adulterousBirthKey, config);
         final int permitted = (int) Math.round(adulterousBirthCounts.getDeterminedCount() / (double) childrenInPregnancy);
 
-        if (needsNewPartner(man, currentTime)) {
+        if (needsNewPartner(man, currentDate)) {
             // record the legitimate birth
             adulterousBirthCounts.setFulfilledCount(0);
             desired.returnAchievedCount(adulterousBirthCounts);
@@ -1355,10 +1355,10 @@ public class OBDModel {
             final List<IPerson> mothers = entry.getValue();
 
             if (!mothers.isEmpty())
-                ageOfMothers = ageOnDate(mothers.getFirst(), currentTime);
+                ageOfMothers = ageOnDate(mothers.getFirst(), currentDate);
 
             // Get determined count for separations for this group of mothers
-            final SeparationStatsKey key = new SeparationStatsKey(numberOfChildren, ageOfMothers, mothers.size(), config.getSimulationTimeStep(), currentTime);
+            final SeparationStatsKey key = new SeparationStatsKey(numberOfChildren, ageOfMothers, mothers.size(), config.getSimulationTimeStep(), currentDate);
             final SingleDeterminedCount dC = (SingleDeterminedCount) desired.getDeterminedCount(key, config);
 
             int count = 0;
@@ -1389,7 +1389,7 @@ public class OBDModel {
         for (final IPerson person : people) {
 
             // choose date of death
-            final LocalDate deathDate = deathDateSelector.selectDate(person, desired, currentTime, config.getSimulationTimeStep());
+            final LocalDate deathDate = deathDateSelector.selectDate(person, desired, currentDate, config.getSimulationTimeStep());
 
             final int ageAtDeath = Period.between(person.getBirthDate(), deathDate).getYears();
             final String deathCause = desired.getDeathCauseRates(Year.of(deathDate.getYear()), person.getSex(), ageAtDeath).getSample();
