@@ -208,7 +208,8 @@ public class MarriageSourceRecord extends SourceRecord {
             }
         } else {
 
-            final IPartnership lastPartnership = partnerships.getLast();
+            final IPartnership lastPartnership = partnerships.get(partnerships.size() - 1);
+//            final IPartnership lastPartnership = partnerships.getLast();
 
             if (lastPartnership.getSeparationDate(PopulationStatistics.randomGenerator) == null) {
                 // not separated from last partner

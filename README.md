@@ -3,7 +3,8 @@
 [![Build and test](https://github.com/stacs-srg/valipop/actions/workflows/push-jobs.yml/badge.svg)](https://github.com/stacs-srg/valipop/actions/workflows/push-jobs.yml)
 
 _ValiPop_ is a micro-simulation model for generating synthetic genealogical populations
-from a set of desired statistics. _ValiPop_ also verifies that the 
+from a set of desired statistics, developed during [Tom Dalton](https://github.com/tomsdalton)'s
+[PhD research](https://doi.org/10.17630/sta/247). _ValiPop_ verifies that the 
 desired properties exist in the generated populations. It is reasonably scalable and 
 customisable, and able to create populations for a wide range of purposes. The intended
 purpose is to enable generation of multiple synthetic genealogical populations to evaluate and 

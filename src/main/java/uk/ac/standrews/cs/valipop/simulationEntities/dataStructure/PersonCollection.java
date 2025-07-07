@@ -52,7 +52,7 @@ public abstract class PersonCollection implements Iterable<IPerson> {
      * @param startDate the start date
      * @param endDate   the end date
      */
-    PersonCollection(LocalDate startDate, LocalDate endDate, Period divisionSize, String description) {
+    PersonCollection(final LocalDate startDate, final LocalDate endDate, final Period divisionSize, final String description) {
 
         this.startDate = startDate;
         this.endDate = endDate;
@@ -100,9 +100,7 @@ public abstract class PersonCollection implements Iterable<IPerson> {
      *
      * @return the number of persons
      */
-    public int getNumberOfPeople() {
-        return size;
-    }
+    public abstract int getNumberOfPeople();
 
     /**
      * Gets all the people in the PersonCollection who were alive in the given years.
@@ -112,15 +110,13 @@ public abstract class PersonCollection implements Iterable<IPerson> {
      */
     Collection<IPerson> getPeopleAliveInTimePeriod(final LocalDate firstDate, final Period timePeriod, final Period maxAge) {
 
-        Collection<IPerson> peopleAlive = new ArrayList<>();
+        final Collection<IPerson> peopleAlive = new ArrayList<>();
 
-        Collection<IPerson> peopleBorn = getPeopleBornInTimePeriod(firstDate.minus(maxAge), timePeriod.plus(maxAge));
+        final Collection<IPerson> peopleBorn = getPeopleBornInTimePeriod(firstDate.minus(maxAge), timePeriod.plus(maxAge));
 
-        for (IPerson person : peopleBorn) {
-            if (diedAfter(person, firstDate)) {
+        for (final IPerson person : peopleBorn)
+            if (diedAfter(person, firstDate))
                 peopleAlive.add(person);
-            }
-        }
 
         return peopleAlive;
     }
@@ -137,11 +133,10 @@ public abstract class PersonCollection implements Iterable<IPerson> {
      */
     public TreeSet<IPerson> removeNPersons(final int numberToRemove, final LocalDate firstDate, final Period timePeriod, final boolean bestAttempt) throws InsufficientNumberOfPeopleException {
 
-        final int divisionsInPeriod = DateUtils.calcSubTimeUnitsInTimeUnit(divisionSize, timePeriod);
+        final int divisionsInPeriod = DateUtils.divideYieldingInt(timePeriod, divisionSize);
 
-        if (divisionsInPeriod <= 0) {
+        if (divisionsInPeriod <= 0)
             throw new MisalignedTimeDivisionException();
-        }
 
         final TreeSet<IPerson> people = new TreeSet<>();
         LocalDate divisionDate = firstDate;
@@ -155,7 +150,7 @@ public abstract class PersonCollection implements Iterable<IPerson> {
         }
 
         // this by design rounds down
-        int numberToRemoveFromDivision = (numberToRemove - people.size()) / reusableDivisions.size();
+        int numberToRemoveFromDivision = numberToRemove / reusableDivisions.size();
 
         // check variables to decide when to recalculate number to remove from each division at the current iteration
         int numberOfReusableDivisions = reusableDivisions.size();
@@ -167,7 +162,7 @@ public abstract class PersonCollection implements Iterable<IPerson> {
                 if (bestAttempt) {
                     return people;
                 } else {
-                    throw new InsufficientNumberOfPeopleException("Not enought people in time period to meet request of " +
+                    throw new InsufficientNumberOfPeopleException("Not enough people in time period to meet request of " +
                             numberToRemove + " females from " + firstDate + " and following time period " + timePeriod);
                 }
             }
@@ -217,7 +212,7 @@ public abstract class PersonCollection implements Iterable<IPerson> {
 
         final Collection<IPerson> people = new ArrayList<>();
 
-        final int divisionsInPeriod = DateUtils.calcSubTimeUnitsInTimeUnit(getDivisionSize(), timePeriod);
+        final int divisionsInPeriod = DateUtils.divideYieldingInt(timePeriod, getDivisionSize());
 
         if (divisionsInPeriod <= 0) {
             throw new MisalignedTimeDivisionException();
@@ -290,22 +285,20 @@ public abstract class PersonCollection implements Iterable<IPerson> {
 
     public Set<LocalDate> getDivisionDates(final Period forTimeStep) {
 
-        final int jump = DateUtils.calcSubTimeUnitsInTimeUnit(getDivisionSize(), forTimeStep);
+        final int jump = DateUtils.divideYieldingInt(forTimeStep, divisionSize);
 
-        if (jump == -1) {
+        if (jump == -1)
             throw new MisalignedTimeDivisionException();
-        }
 
-        if (jump == 1) {
+        if (jump == 1)
             return getDivisionDates();
-        }
 
         int count = jump;
 
         final Set<LocalDate> allDivisionDates = getDivisionDates();
         final Set<LocalDate> selectedDivisionDates = new TreeSet<>();
 
-        for (LocalDate date : allDivisionDates) {
+        for (final LocalDate date : allDivisionDates) {
 
             if (count == jump) {
                 selectedDivisionDates.add(date);
@@ -319,31 +312,32 @@ public abstract class PersonCollection implements Iterable<IPerson> {
     }
 
     boolean checkDateAlignmentToDivisions(final LocalDate date) {
-        return DateUtils.matchesInterval(date, divisionSize, startDate);
+
+        return Period.between(startDate, date).toTotalMonths() % divisionSize.toTotalMonths() == 0;
     }
 
     LocalDate resolveDateToCorrectDivisionDate(final LocalDate date) {
 
         // TODO clarify
 
-        int dM = date.getMonth().getValue();
-        int dY = date.getYear();
+        final int dM = date.getMonth().getValue();
+        final int dY = date.getYear();
 
-        int sM = startDate.getMonth().getValue();
-        int sY = startDate.getYear();
+        final int sM = startDate.getMonth().getValue();
+        final int sY = startDate.getYear();
 
         // Time unit in months
-        int tsc = (int) divisionSize.toTotalMonths();
+        final int tsc = (int) divisionSize.toTotalMonths();
 
-        int adm = (12 * ((dY - sY) % tsc)) + dM;
+        final int adm = (12 * ((dY - sY) % tsc)) + dM;
 
-        int cm = (sM % tsc) + tsc * (int) Math.floor((adm - (sM % tsc)) / tsc);
+        final int cm = (sM % tsc) + tsc * (int) Math.floor((adm - (sM % tsc)) / tsc);
 
-        int absm = cm - 12 * ((dY - sY) % tsc);
+        final int absm = cm - 12 * ((dY - sY) % tsc);
 
-        int iM = 12 + absm - 12 * (int) Math.ceil((absm / 12.0D));
+        final int iM = 12 + absm - 12 * (int) Math.ceil((absm / 12.0D));
 
-        int iY = dY + (int) Math.ceil(absm / 12.0D) - 1;
+        final int iY = dY + (int) Math.ceil(absm / 12.0D) - 1;
 
         return LocalDate.of(iY, iM, 1);
     }

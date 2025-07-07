@@ -115,12 +115,11 @@ public class FemaleCollection extends PersonCollection {
 
         final LocalDate divisionDate = resolveDateToCorrectDivisionDate(person.getBirthDate());
         final Map<Integer, Set<IPerson>> familySizeMap = byBirthYearAndNumberOfChildren.get(divisionDate);
-        int numberOfChildren = countChildren(person);
+        final int numberOfChildren = countChildren(person);
         final Collection<IPerson> people = familySizeMap.get(numberOfChildren);
 
-        if (people == null || !people.remove(person)) {
+        if (people == null || !people.remove(person))
             throw new PersonNotFoundException("Specified person not found in data structure");
-        }
 
         size--;
     }
@@ -136,19 +135,22 @@ public class FemaleCollection extends PersonCollection {
         return new TreeSet<>(byBirthYearAndNumberOfChildren.keySet());
     }
 
+    @Override
+    public int getNumberOfPeople() {
+        return size;
+    }
+
     public Collection<IPerson> getByDatePeriodAndBirthOrder(final LocalDate date, final Period period, final IntegerRange birthOrder) {
 
         int highestBirthOrder = getHighestBirthOrder(date, period);
 
-        if (!birthOrder.isPlus()) {
+        if (!birthOrder.isPlus())
             highestBirthOrder = birthOrder.getMax();
-        }
 
         final Collection<IPerson> people = new ArrayList<>();
 
-        for (int i = birthOrder.getMin(); i <= highestBirthOrder; i++) {
+        for (int i = birthOrder.getMin(); i <= highestBirthOrder; i++)
             people.addAll(getByDatePeriodAndBirthOrder(date, period, i));
-        }
 
         return people;
     }
@@ -161,11 +163,7 @@ public class FemaleCollection extends PersonCollection {
      */
     private int getHighestBirthOrder(final LocalDate dateOfBirth, final Period period) {
 
-        final int divisionsInPeriod = DateUtils.calcSubTimeUnitsInTimeUnit(getDivisionSize(), period);
-
-        if (divisionsInPeriod == -1) {
-            throw new MisalignedTimeDivisionException();
-        }
+        final int divisionsInPeriod = DateUtils.divideYieldingInt(period, getDivisionSize());
 
         LocalDate divisionDate = dateOfBirth;
 
@@ -197,11 +195,7 @@ public class FemaleCollection extends PersonCollection {
      */
     Collection<IPerson> getByDatePeriodAndBirthOrder(final LocalDate date, final Period period, final int birthOrder) {
 
-        int divisionsInPeriod = DateUtils.calcSubTimeUnitsInTimeUnit(getDivisionSize(), period);
-
-        if (divisionsInPeriod == -1) {
-            throw new MisalignedTimeDivisionException();
-        }
+        final int divisionsInPeriod = DateUtils.divideYieldingInt(period, getDivisionSize());
 
         final ArrayList<IPerson> people = new ArrayList<>();
         LocalDate divisionDate = date;

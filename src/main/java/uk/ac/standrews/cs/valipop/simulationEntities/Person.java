@@ -121,9 +121,8 @@ public class Person implements IPerson {
 
     @Override
     public void setParents(final IPartnership parents) {
-        if(this.parents == null) {
+        if (this.parents == null)
             this.parents = parents;
-        }
     }
 
     @Override
@@ -392,10 +391,8 @@ public class Person implements IPerson {
 
     @Override
     public IPartnership getLastPartnership() {
-        if (!partnerships.isEmpty()) {
-            return partnerships.getLast();
-        }
-        return null;
+        
+        return partnerships.isEmpty() ? null : partnerships.getLast();
     }
 
     @Override
@@ -405,28 +402,28 @@ public class Person implements IPerson {
 
     private static boolean containsFamily(final Address address, final Person person) {
 
-        final Collection<IPerson> family = PopulationNavigation.imidiateFamilyOf(person);
+        final Collection<IPerson> family = PopulationNavigation.immediateFamilyOf(person);
 
         for (final IPerson inhabitant : address.getInhabitants()) {
-            if (family.contains(inhabitant)) {
+            if (family.contains(inhabitant))
                 return true;
-            }
+            
         }
 
         return false;
     }
 
-    private static int getNewId() {
+    private synchronized static int getNewId() {
         return nextId++;
     }
 
-    public static void resetIds() {
+    public synchronized static void resetIds() {
         nextId = 0;
     }
 
     private String getForename(final PopulationStatistics statistics, final boolean immigrant) {
 
-        if(immigrant) {
+        if (immigrant) {
             return statistics.getMigrantForenameDistribution(Year.of(birthDate.getYear()), getSex()).getSample();
         } else {
             return statistics.getForenameDistribution(Year.of(birthDate.getYear()), getSex()).getSample();

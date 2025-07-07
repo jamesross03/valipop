@@ -50,7 +50,7 @@ public class PopulationNavigation {
         return siblings;
     }
 
-    public static Collection<IPerson> imidiateFamilyOf(final IPerson root) {
+    public static Collection<IPerson> immediateFamilyOf(final IPerson root) {
 
         final Collection<IPerson> family = new ArrayList<>();
 

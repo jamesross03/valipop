@@ -19,7 +19,6 @@ package uk.ac.standrews.cs.valipop.simulationEntities.dataStructure;
 
 import uk.ac.standrews.cs.valipop.Config;
 import uk.ac.standrews.cs.valipop.simulationEntities.*;
-import uk.ac.standrews.cs.valipop.utils.specialTypes.dates.DateUtils;
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -95,8 +94,11 @@ public class Population {
 
     private PeopleCollection combine(final PeopleCollection collection1, final PeopleCollection collection2) {
 
-        final LocalDate start = DateUtils.earlierOf(collection1.getStartDate(), collection2.getStartDate());
-        final LocalDate end = DateUtils.laterOf(collection1.getStartDate(), collection2.getStartDate());
+        final LocalDate date1 = collection1.getStartDate();
+        final LocalDate date2 = collection2.getStartDate();
+
+        final LocalDate start = date1.isAfter(date2) ? date2 : date1;
+        final LocalDate end = date1.isAfter(date2) ? date1 : date2;
 
         final PeopleCollection cloned1 = collection1.clone();
         final PeopleCollection cloned2 = collection2.clone();

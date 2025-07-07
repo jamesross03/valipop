@@ -65,15 +65,15 @@ public class PeopleCollection extends PersonCollection implements Cloneable, IPe
 
         final PeopleCollection clone = new PeopleCollection(getStartDate(), getEndDate(), getDivisionSize(), description);
 
-        for (IPerson person : males.getPeople()) {
+        for (final IPerson person : males.getPeople()) {
             clone.add(person);
         }
 
-        for (IPerson person : females.getPeople()) {
+        for (final IPerson person : females.getPeople()) {
             clone.add(person);
         }
 
-        for (IPartnership partnership : partnershipIndex.values()) {
+        for (final IPartnership partnership : partnershipIndex.values()) {
             clone.add(partnership);
         }
 
@@ -93,19 +93,15 @@ public class PeopleCollection extends PersonCollection implements Cloneable, IPe
         partnershipIndex.put(partnership.getId(), partnership);
     }
 
-    public void removeMales(final int numberToRemove, final LocalDate firstDate, final Period timePeriod, final boolean bestAttempt, Geography geography, DistanceSelector moveDistanceSelector, Config config) throws InsufficientNumberOfPeopleException {
+    public void removeMales(final int numberToRemove, final LocalDate firstDate, final Period timePeriod, final boolean bestAttempt, final Geography geography, final DistanceSelector moveDistanceSelector, final Config config) throws InsufficientNumberOfPeopleException {
 
         removePeople(males, numberToRemove, firstDate, timePeriod, bestAttempt, geography, moveDistanceSelector, config);
     }
 
-    public void removeFemales(final int numberToRemove, final LocalDate firstDate, final Period timePeriod, final boolean bestAttempt, Geography geography, DistanceSelector moveDistanceSelector, Config config) throws InsufficientNumberOfPeopleException {
+    public void removeFemales(final int numberToRemove, final LocalDate firstDate, final Period timePeriod, final boolean bestAttempt, final Geography geography, final DistanceSelector moveDistanceSelector, final Config config) throws InsufficientNumberOfPeopleException {
 
         removePeople(females, numberToRemove, firstDate, timePeriod, bestAttempt, geography, moveDistanceSelector, config);
     }
-
-    /*
-    -------------------- PersonCollection abstract methods --------------------
-     */
 
     @Override
     public Collection<IPerson> getPeople() {
@@ -129,7 +125,7 @@ public class PeopleCollection extends PersonCollection implements Cloneable, IPe
     public Collection<IPerson> getPeopleAliveInTimePeriod(final LocalDate firstDate, final Period timePeriod, final Period maxAge) {
 
         // TODO try to reduce amount of copying.
-        Collection<IPerson> people = females.getPeopleAliveInTimePeriod(firstDate, timePeriod, maxAge);
+        final Collection<IPerson> people = females.getPeopleAliveInTimePeriod(firstDate, timePeriod, maxAge);
         people.addAll(males.getPeopleAliveInTimePeriod(firstDate, timePeriod, maxAge));
 
         return people;
@@ -184,18 +180,18 @@ public class PeopleCollection extends PersonCollection implements Cloneable, IPe
     @Override
     public IPerson findPerson(final int id) {
 
-        for (IPerson person : males.getPeople()) {
+        for (final IPerson person : males.getPeople()) {
             if (person.getId() == id) return person;
         }
 
-        for (IPerson person : females.getPeople()) {
+        for (final IPerson person : females.getPeople()) {
             if (person.getId() == id) return person;
         }
         return null;
     }
 
     @Override
-    public IPartnership findPartnership(int id) {
+    public IPartnership findPartnership(final int id) {
         return partnershipIndex.get(id);
     }
 
@@ -213,43 +209,42 @@ public class PeopleCollection extends PersonCollection implements Cloneable, IPe
         return description;
     }
 
-    private void removePeople(final PersonCollection collection, final int numberToRemove, final LocalDate firstDate, final Period timePeriod, final boolean bestAttempt, Geography geography, DistanceSelector moveDistanceSelector, Config config) throws InsufficientNumberOfPeopleException {
+    private void removePeople(final PersonCollection collection, final int numberToRemove, final LocalDate firstDate, final Period timePeriod, final boolean bestAttempt, final Geography geography, final DistanceSelector moveDistanceSelector, final Config config) throws InsufficientNumberOfPeopleException {
 
         final TreeSet<IPerson> removed = collection.removeNPersons(numberToRemove, firstDate, timePeriod, true);
-        for (IPerson person : removed) {
+
+        for (final IPerson person : removed) {
             removeChildFromParentsPartnership(person, geography, moveDistanceSelector, config);
 
-            for(Address address : person.getAllAddresses()) {
+            for (final Address address : person.getAllAddresses())
                 address.removeInhabitant(person);
-            }
-
         }
     }
 
-    private void removeChildFromParentsPartnership(final IPerson person, Geography geography, DistanceSelector moveDistanceSelector, Config config) {
+    private void removeChildFromParentsPartnership(final IPerson person, final Geography geography, final DistanceSelector moveDistanceSelector, final Config config) {
 
         final IPartnership parents = person.getParents();
 
         if (parents != null) {
             final IPerson mother = parents.getFemalePartner();
 
-            if(!nonImmigratingMotherOfImmigrantPerson(mother, person)) {
+            if (!nonImmigratingMotherOfImmigrantPerson(mother, person))
                 remove(mother);
-            }
 
             parents.getChildren().remove(person);
 
             person.cancelLastMove(geography);
 
-            if(parents.getChildren().size() == 0) {
+            if (parents.getChildren().isEmpty()) {
+
                 cancelPartnership(parents);
 
+                final IPartnership mothersLastPartnership = PopulationNavigation.getLastPartnership(mother);
 
-                IPartnership mothersLastPartnership = PopulationNavigation.getLastPartnership(mother);
-
-                if(mothersLastPartnership == null) {//  || !mothersLastPartnership.isFinalised()
+                if (mothersLastPartnership == null) {
                     parents.getFemalePartner().rollbackLastMove(geography);
-                } else if (!person.isAdulterousBirth()) {
+                }
+                else if (!person.isAdulterousBirth()) {
                     parents.getMalePartner().rollbackLastMove(geography);
                     parents.getFemalePartner().rollbackLastMove(geography);
 
@@ -257,12 +252,12 @@ public class PeopleCollection extends PersonCollection implements Cloneable, IPe
                     if(parents.getFemalePartner().getAllAddresses().isEmpty()) {
                         // we need to provide an address for her and (adulterousBirth - only way this scenario can arise) child
 
-                        IPerson adulterousBirth = mothersLastPartnership.getChildren().get(0);
+                        final IPerson adulterousBirth = mothersLastPartnership.getChildren().getFirst();
 
                         if(adulterousBirth.getParents().getMalePartner().getPartnerships().size() > 1) {
                             // we should make it at a distance from the childs father
 
-                            Address newAddress;
+                            final Address newAddress;
 
                             if(adulterousBirth.getParents().getMalePartner().getAddress(adulterousBirth.getBirthDate().minus(config.getMinGestationPeriod())) == null) {
                                 // in this case the nature of assigning N birth events to a time period means it appears the father did not have an address at the time of birth
@@ -284,7 +279,7 @@ public class PeopleCollection extends PersonCollection implements Cloneable, IPe
                             }
                             parents.getFemalePartner().setAddress(adulterousBirth.getBirthDate(), newAddress);
 
-                            for (IPerson child : mothersLastPartnership.getChildren())
+                            for (final IPerson child : mothersLastPartnership.getChildren())
                                 child.setAddress(child.getBirthDate(), newAddress);
                         } else {
                             // In this case the mother in currently having her just created ligitimate partnership rolled back
@@ -298,7 +293,7 @@ public class PeopleCollection extends PersonCollection implements Cloneable, IPe
 
                             adulterousBirth.setAdulterousBirth(false);
 
-                            Address newAddress = geography.getRandomEmptyAddress();
+                            final Address newAddress = geography.getRandomEmptyAddress();
                             adulterousBirth.setAddress(adulterousBirth.getBirthDate(), newAddress);
                             adulterousBirth.getParents().getMalePartner().setAddress(adulterousBirth.getBirthDate(), newAddress);
                             adulterousBirth.getParents().getFemalePartner().setAddress(adulterousBirth.getBirthDate(), newAddress);
@@ -311,15 +306,14 @@ public class PeopleCollection extends PersonCollection implements Cloneable, IPe
         }
     }
 
-    private boolean nonImmigratingMotherOfImmigrantPerson(IPerson mother, IPerson person) {
+    private boolean nonImmigratingMotherOfImmigrantPerson(final IPerson mother, final IPerson person) {
 
-        if(person.getImmigrationDate() == null) {
+        if (person.getImmigrationDate() == null) {
             return false;
         } else return mother.getImmigrationDate() == null;
-
     }
 
-    private void cancelPartnership(IPartnership partnership) {
+    private void cancelPartnership(final IPartnership partnership) {
 
         // remove from parents partnership history
         partnership.getMalePartner().getPartnerships().remove(partnership);
@@ -327,7 +321,5 @@ public class PeopleCollection extends PersonCollection implements Cloneable, IPe
 
         // remove partnership from index
         partnershipIndex.remove(partnership.getId());
-
     }
-
 }

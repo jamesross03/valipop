@@ -1,4 +1,4 @@
-# This checks every 24 hours for new commits, and runs a test build if there are any.
+# This checks every 24 hours for new commits, and runs a test build (including slow tests) if there are any.
 
 name: Build and test (scheduled)
 
@@ -15,7 +15,7 @@ jobs:
       contents: write
     steps:
       - name: Check out project
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683                                        # @v4.2.2
+        uses: actions/checkout@v4.2.2
 
       - name: Count recent commits
         run: echo "NEW_COMMIT_COUNT=$(git log --oneline --since '24 hours ago' | wc -l)" >> $GITHUB_ENV

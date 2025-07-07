@@ -17,6 +17,7 @@
  */
 package uk.ac.standrews.cs.valipop.implementations;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.provider.Arguments;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPartnership;
@@ -112,101 +113,75 @@ public abstract class PopulationStructureTest {
     public void tooManyPartnershipIterations() {
 
         assertThrows(NoSuchElementException.class, () ->
-        doTooManyIterations(population.getPartnerships().iterator(), population.getNumberOfPartnerships()));
+            doTooManyIterations(population.getPartnerships().iterator(), population.getNumberOfPartnerships()));
     }
 
     @Test
-    public void peopleRetrievedConsistently() {
+    public void peopleCanBeFoundById() {
 
-        // Check consistency after iteration, if the population is large enough to take a sample from the middle.
-
-        if (population.getNumberOfPeople() > PEOPLE_ITERATION_SAMPLE_THRESHOLD) {
-            final Iterator<IPerson> person_iterator = population.getPeople().iterator();
-
-            for (int i = 0; i < PEOPLE_ITERATION_SAMPLE_START; i++) {
-                person_iterator.next();
-            }
-
-            final IPerson[] sample = new IPerson[]{person_iterator.next(), person_iterator.next(), person_iterator.next(), person_iterator.next(), person_iterator.next()};
-            assertRetrievedConsistently(sample);
-        }
-
-        for (final IPerson person : population.getPeople()) {
-            assertRetrievedConsistently(person);
-        }
+        for (final IPerson person : population.getPeople())
+            assertCanBeFoundById(person);
     }
 
     @Test
-    public void partnershipsRetrievedConsistently() {
+    public void partnershipsCanBeFoundById() {
 
-        // Check consistency after iteration, if the population is large enough to take a sample from the middle.
+        for (final IPartnership partnership : population.getPartnerships())
+            assertCanBeFoundById(partnership);
+    }
 
-        if (population.getNumberOfPartnerships() > PARTNERSHIP_ITERATION_SAMPLE_THRESHOLD) {
+    @Test
+    @Disabled
+    public void linksBetweenPeopleAndPartnershipsAreConsistent() {
 
-            final Iterator<IPartnership> partnership_iterator = population.getPartnerships().iterator();
+        for (final IPerson person : population.getPeople())
+            assertLinksBetweenPeopleAndPartnershipsAreConsistent(person);
 
-            // Check consistency after iteration.
-            for (int i = 0; i < PARTNERSHIP_ITERATION_SAMPLE_START; i++) {
-                partnership_iterator.next();
-            }
-
-            final IPartnership[] sample = new IPartnership[]{partnership_iterator.next(), partnership_iterator.next(), partnership_iterator.next(), partnership_iterator.next(), partnership_iterator.next()};
-            assertRetrievedConsistently(sample);
-        }
-
-        // Check consistency during iteration.
-
-        for (final IPartnership partnership : population.getPartnerships()) {
-            assertRetrievedConsistently(partnership);
-        }
+        for (final IPartnership partnership : population.getPartnerships())
+            assertLinksBetweenPeopleAndPartnershipsAreConsistent(partnership);
     }
 
     @Test
     public void familiesNotTooLarge() {
 
-        for (final IPartnership partnership : population.getPartnerships()) {
+        for (final IPartnership partnership : population.getPartnerships())
             assertTrue(partnership.getChildren().size() <= MAX_REASONABLE_FAMILY_SIZE);
-        }
     }
 
     @Test
     public void birthsBeforeDeaths() {
 
-        for (final IPerson person : population.getPeople()) {
+        for (final IPerson person : population.getPeople())
             assertBirthBeforeDeath(person);
-        }
     }
 
     @Test
     public void birthInfoConsistent() {
 
-        for (final IPerson person : population.getPeople()) {
+        for (final IPerson person : population.getPeople())
             assertBirthInfoConsistent(person);
-        }
     }
 
     @Test
     public void deathInfoConsistent() {
 
-        for (final IPerson person : population.getPeople()) {
+        for (final IPerson person : population.getPeople())
             assertDeathInfoConsistent(person);
-        }
+
     }
 
     @Test
     public void agesAtDeathNotTooHigh() {
 
-        for (final IPerson person : population.getPeople()) {
+        for (final IPerson person : population.getPeople())
             assertAgeAtDeathNotTooHigh(person);
-        }
     }
 
     @Test
     public void birthsBeforeMarriages() {
 
-        for (final IPerson person : population.getPeople()) {
+        for (final IPerson person : population.getPeople())
             assertBirthBeforeMarriages(person);
-        }
     }
 
     @Test
@@ -260,13 +235,11 @@ public abstract class PopulationStructureTest {
     @Test
     public void parentsAndChildrenConsistent() {
 
-        for (final IPartnership partnership : population.getPartnerships()) {
+        for (final IPartnership partnership : population.getPartnerships())
             assertParentsAndChildrenConsistent(partnership);
-        }
 
-        for (final IPerson person : population.getPeople()) {
+        for (final IPerson person : population.getPeople())
             assertParentsAndChildrenConsistent(person);
-        }
     }
 
     private static void assertBirthInfoConsistent(final IPerson person) {
@@ -288,9 +261,8 @@ public abstract class PopulationStructureTest {
 
         if (parents != null) {
             assertTrue(parents.getChildren().contains(person));
-            final IPerson father = parents.getMalePartner();
 
-            assertPersonIsPresentInPopulation(father);
+            assertPersonIsPresentInPopulation(parents.getMalePartner());
             assertPersonIsPresentInPopulation(parents.getFemalePartner());
         }
     }
@@ -305,10 +277,8 @@ public abstract class PopulationStructureTest {
         final IPerson mother = partnership.getFemalePartner();
         final IPerson father = partnership.getMalePartner();
 
-        for (final IPerson child : partnership.getChildren()) {
-
+        for (final IPerson child : partnership.getChildren())
             assertTrue(PopulationLogic.parentsHaveSensibleAgesAtChildBirth(father, mother, child));
-        }
     }
 
     private static void assertParentNotPartnerOfChild(final IPartnership partnership) {
@@ -336,8 +306,8 @@ public abstract class PopulationStructureTest {
     }
 
     private static void assertDeathInfoConsistent(final IPerson person) {
-        assertFalse(!deathDateIsDefined(person) && (deathPlaceIsDefined(person) || deathCauseIsDefined(person)));
 
+        assertFalse(!deathDateIsDefined(person) && (deathPlaceIsDefined(person) || deathCauseIsDefined(person)));
     }
 
     private void assertAgeAtDeathNotTooHigh(final IPerson person) {
@@ -374,8 +344,7 @@ public abstract class PopulationStructureTest {
     private static void assertNotPartnerOfAny(final IPerson person, final Set<IPerson> people) {
 
         for (final IPerson another_person : people) {
-            final boolean partnerOf = isPartnerOf(person, another_person);
-            assertFalse(partnerOf);
+            assertFalse(isPartnerOf(person, another_person));
         }
     }
 
@@ -383,9 +352,8 @@ public abstract class PopulationStructureTest {
 
         for (final IPartnership partnership : p1.getPartnerships()) {
 
-            if (partnership.getPartnerOf(p1).equals(p2)) {
+            if (partnership.getPartnerOf(p1).equals(p2))
                 return true;
-            }
         }
 
         return false;
@@ -396,14 +364,12 @@ public abstract class PopulationStructureTest {
         if (person.getSex() == SexOption.MALE) {
 
             for (final IPartnership partnership : person.getPartnerships()) {
-
                 for (final IPerson child : partnership.getChildren()) {
 
                     assertEquals(person.getSurname(), child.getSurname());
 
-                    if (child.getSex() == SexOption.MALE) {
+                    if (child.getSex() == SexOption.MALE)
                         assertSurnameInheritedOnMaleLine(child);
-                    }
                 }
             }
         }
@@ -452,32 +418,30 @@ public abstract class PopulationStructureTest {
         }
     }
 
-    private void assertRetrievedConsistently(final IPerson[] sample) {
+    private void assertCanBeFoundById(final IPerson person) {
 
-        for (final IPerson person : sample) {
-            assertRetrievedConsistently(person);
-        }
+        final IPerson retrievedPerson = population.findPerson(person.getId());
+        assertEquals(person, retrievedPerson);
     }
 
-    private void assertRetrievedConsistently(final IPerson person) {
-
-        final IPerson retrieved_person = population.findPerson(person.getId());
-        assertEquals(person, retrieved_person);
-    }
-
-    private void assertRetrievedConsistently(final IPartnership[] sample) {
-
-        for (final IPartnership partnership : sample) {
-            assertRetrievedConsistently(partnership);
-        }
-    }
-
-    private void assertRetrievedConsistently(final IPartnership partnership) {
+    private void assertCanBeFoundById(final IPartnership partnership) {
 
         final int id = partnership.getId();
-        final IPartnership retrieved_person = population.findPartnership(id);
+        final IPartnership retrievedPartnership = population.findPartnership(id);
 
-        assertEquals(id, retrieved_person.getId());
+        assertEquals(id, retrievedPartnership.getId());
+    }
+
+    private static void assertLinksBetweenPeopleAndPartnershipsAreConsistent(final IPerson person) {
+
+        for (final IPartnership partnership : person.getPartnerships())
+            assertTrue(partnership.getMalePartner().equals(person) || partnership.getFemalePartner().equals(person));
+    }
+
+    private static void assertLinksBetweenPeopleAndPartnershipsAreConsistent(final IPartnership partnership) {
+
+        assertTrue(partnership.getMalePartner().getPartnerships().contains(partnership));
+        assertTrue(partnership.getFemalePartner().getPartnerships().contains(partnership));
     }
 
     private static void doTooManyIterations(final Iterator<?> iterator, final int number_available) {

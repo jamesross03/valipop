@@ -43,8 +43,8 @@ public class GEDCOMPopulationWriter extends AbstractFilePopulationWriter {
     private static final String CHAR_SET = "UTF-8";
     private static final String GEDCOM_FORM = "LINEAGE-LINKED";
     private static final String GEDCOM_VERSION = "5.5.1";
-    private static final String SOURCE_SOFTWARE = "Digitising_Scotland";
-    private static final String SUBMITTER = "Digitising Scotland Project";
+    private static final String SOURCE_SOFTWARE = "ValiPop";
+    private static final String SUBMITTER = "ValiPop (https://github.com/stacs-srg/valipop)";
     private static final String SUBMITTER_ID = "@S1@";
 
     private static final String HEADER_TAG = "HEAD";
@@ -90,7 +90,7 @@ public class GEDCOMPopulationWriter extends AbstractFilePopulationWriter {
         MONTH_ABBREVIATIONS.put(11L, "NOV");
         MONTH_ABBREVIATIONS.put(12L, "DEC");
 
-        DateTimeFormatterBuilder formatterBuilder = new DateTimeFormatterBuilder();
+        final DateTimeFormatterBuilder formatterBuilder = new DateTimeFormatterBuilder();
 
         formatterBuilder.appendValue(ChronoField.DAY_OF_MONTH, 2);
         formatterBuilder.appendLiteral(" ");
@@ -185,7 +185,6 @@ public class GEDCOMPopulationWriter extends AbstractFilePopulationWriter {
     private void writeIndividualLabel(final IPerson person) {
 
         write(makeIndividualReference(person.getId()) + ' ' + INDIVIDUAL_TAG);
-
     }
 
     private void writeFamilyLabel(final IPartnership partnership) {
@@ -278,9 +277,8 @@ public class GEDCOMPopulationWriter extends AbstractFilePopulationWriter {
 
     private void checkAndWrite(final String tag, final String data) {
 
-        if (data != null && !data.isBlank()) {
+        if (data != null && !data.isBlank())
             write(tag, data);
-        }
     }
 
     private void writeOccupation(final IPerson person) {
@@ -292,24 +290,22 @@ public class GEDCOMPopulationWriter extends AbstractFilePopulationWriter {
 
         final List<IPartnership> partnership_ids = person.getPartnerships();
 
-        for (final IPartnership partnership : partnership_ids) {
+        for (final IPartnership partnership : partnership_ids)
             write(FAMILY_AS_SPOUSE_TAG, makeFamilyReference(partnership.getId()));
-        }
     }
 
     private void writeParentsPartnership(final IPerson person) {
 
-        IPartnership parents = person.getParents();
-        if (parents != null) {
+        final IPartnership parents = person.getParents();
+
+        if (parents != null)
             write(FAMILY_AS_CHILD_TAG, makeFamilyReference(parents.getId()));
-        }
     }
 
     private void writeChildren(final IPartnership partnership) {
 
-        for (final IPerson child : partnership.getChildren()) {
+        for (final IPerson child : partnership.getChildren())
             writeChild(child.getId());
-        }
     }
 
     private void writeWife(final IPartnership partnership) {

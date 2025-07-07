@@ -40,7 +40,7 @@ import java.util.List;
  */
 public class GEDCOMPopulationAdapter implements IPersonCollection {
 
-    // TODO update to GEDCOM 7
+    // TODO option to load whole population at initialisation.
 
     private final GedcomParser parser;
     private String description;

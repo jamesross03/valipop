@@ -17,6 +17,8 @@
  */
 package uk.ac.standrews.cs.valipop.export;
 
+import gedinline.main.GedInlineValidator;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -26,14 +28,16 @@ import uk.ac.standrews.cs.valipop.simulationEntities.IPartnership;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPerson;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPersonCollection;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * E2E tests of GEDCOM export.
@@ -69,6 +73,21 @@ public abstract class GEDCOMTest extends PopulationExportTest {
         }
 
         assertThatFilesHaveSameContent(generated_output_file1, expected_output_file);
+    }
+
+    @Test
+    @Disabled
+    public void GEDCOMIsValid() throws Exception {
+
+        final IPopulationWriter population_writer = new GEDCOMPopulationWriter(generated_output_file1);
+
+        try (final PopulationConverter converter = new PopulationConverter(population, population_writer)) {
+            converter.convert();
+        }
+
+        final GedInlineValidator validator = new GedInlineValidator(new File(generated_output_file1.toString()), new PrintWriter("/Users/gnck/Desktop/validation-output.txt"));
+        assertTrue(validator.validate());
+        assertEquals(0, validator.getNumberOfWarnings(), "GEDCOM validation warnings count");
     }
 
     @Test

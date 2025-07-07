@@ -1,0 +1,40 @@
+name: Build and Test
+
+on:
+  pull_request:
+    branches: ['main']
+
+concurrency:
+  group: "build deploy"
+  cancel-in-progress: true
+
+jobs:
+  build-and-test-linux:
+    name: Build and test (Linux)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check out project
+        uses: actions/checkout@v4.2.2
+
+      - name: Build and run tests
+        uses: ./.github/actions/build-and-test
+        with:
+          maven-target: 'package'
+          maven-params: '-DexcludedGroups=slow'
+          upload-dependencies: 'true'
+
+  build-and-test-windows:
+    name: Build and test (Windows)
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check out project
+        uses: actions/checkout@v4.2.2
+
+      - uses: ./.github/actions/build-and-test
+        with:
+          maven-target: 'test'
+          maven-params: '-DexcludedGroups=slow'

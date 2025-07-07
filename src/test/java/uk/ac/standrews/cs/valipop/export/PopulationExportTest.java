@@ -19,7 +19,6 @@ package uk.ac.standrews.cs.valipop.export;
 
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.provider.Arguments;
-import uk.ac.standrews.cs.valipop.config.TestCases;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPersonCollection;
 
 import java.io.BufferedReader;
@@ -38,8 +37,8 @@ import static uk.ac.standrews.cs.valipop.config.TestCases.getTestConfigurations;
  */
 public abstract class PopulationExportTest {
 
-    public static final List<Integer> FAST_TEST_CASE_INITIAL_POPULATION_SIZES = List.of(200, 300);
-    public static final List<Integer> SLOW_TEST_CASE_INITIAL_POPULATION_SIZES = List.of(1000, 5000);
+    public static final List<Integer> FAST_TEST_CASE_INITIAL_POPULATION_SIZES = List.of(200);
+    public static final List<Integer> SLOW_TEST_CASE_INITIAL_POPULATION_SIZES = List.of(300, 1000, 5000);
 
     static final String TEST_DIRECTORY_PATH_STRING = "src/test/resources/valipop/";
 

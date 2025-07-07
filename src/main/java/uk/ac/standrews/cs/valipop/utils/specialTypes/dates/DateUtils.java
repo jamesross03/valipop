@@ -17,7 +17,6 @@
  */
 package uk.ac.standrews.cs.valipop.utils.specialTypes.dates;
 
-import java.time.LocalDate;
 import java.time.Period;
 
 /**
@@ -27,37 +26,39 @@ import java.time.Period;
  */
 public class DateUtils {
 
-    public static final int MONTHS_IN_YEAR = 12;
-
-    public static boolean matchesInterval(final LocalDate currentDate, final Period interval, final LocalDate startDate) {
-
-        return Period.between(startDate, currentDate).toTotalMonths() % interval.toTotalMonths() == 0;
-    }
-
-    public static LocalDate earlierOf(final LocalDate date1, final LocalDate date2) {
-
-        return date1.isAfter(date2) ? date2 : date1;
-    }
-
-    public static LocalDate laterOf(final LocalDate date1, final LocalDate date2) {
-
-        return date1.isAfter(date2) ? date1 : date2;
-    }
+//    public static final int MONTHS_IN_YEAR = 12;
 
     public static double stepsInYear(final Period timeStep) {
 
-        return MONTHS_IN_YEAR / (double) timeStep.toTotalMonths();
+//        return MONTHS_IN_YEAR / (double) timeStep.toTotalMonths();
+        return divideYieldingInt(Period.ofYears(1), timeStep);
     }
 
-    public static int calcSubTimeUnitsInTimeUnit(final Period subTimeUnit, final Period timeUnit) {
+    public static int divideYieldingInt(final Period dividend, final Period divisor) {
 
-        // div by 0?
-        double n = timeUnit.toTotalMonths() / (double) subTimeUnit.toTotalMonths();
+        final long divisor_months = divisor.toTotalMonths();
+        final long dividend_months = dividend.toTotalMonths();
 
-        if (n % 1 == 0) {
-            return (int) Math.floor(n);
-        }
+        if (dividend_months % divisor_months != 0)
+            throw new MisalignedTimeDivisionException();
 
-        return -1;
+        return (int)(dividend_months / divisor_months);
+
+
+//        // div by 0?
+//        double n = timeUnit.toTotalMonths() / (double) subTimeUnit.toTotalMonths();
+//
+//
+//        if (n % 1 == 0) {
+//            return (int) Math.floor(n);
+//        }
+//
+//        return -1;
+    }
+
+    public static double divideYieldingDouble(final Period dividend, final Period divisor) {
+
+        //        return period.toTotalMonths() / (double) DateUtils.MONTHS_IN_YEAR;
+        return dividend.toTotalMonths() / (double) divisor.toTotalMonths();
     }
 }

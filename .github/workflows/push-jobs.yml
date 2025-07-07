@@ -1,14 +1,7 @@
-# All jobs defined within single workflow file to allow control of job concurrency.
-# Actions bind to specific action commits to reduce risk of action repos being compromised.
-# It would be nice to define the commit hashes and version numbers as environment variables to
-# reduce repetition, but actions can't be resolved dynamically.
-
 name: Build and Test
 
 on:
   push:
-    branches: ['main']
-  pull_request:
     branches: ['main']
   workflow_dispatch:
 
@@ -24,7 +17,7 @@ jobs:
       contents: write
     steps:
       - name: Check out project
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683                                        # @v4.2.2
+        uses: actions/checkout@v4.2.2
 
       - name: Build and run tests
         uses: ./.github/actions/build-and-test
@@ -40,7 +33,7 @@ jobs:
       contents: write
     steps:
       - name: Check out project
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683                                        # @v4.2.2
+        uses: actions/checkout@v4.2.2
 
       - uses: ./.github/actions/build-and-test
         with:
@@ -57,19 +50,19 @@ jobs:
       id-token: write
     steps:
       - name: Checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683                                        # @v4.2.2
+        uses: actions/checkout@v4.2.2
 
       - name: Setup Pages
-        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b                                 # @v5.0.0
+        uses: actions/configure-pages@v5.0.0
 
       - name: Build with Jekyll
-        uses: actions/jekyll-build-pages@44a6e6beabd48582f863aeeb6cb2151cc1716697                             # @v1.0.13
+        uses: actions/jekyll-build-pages@v1.0.13
         with:
           source: ./docs
           destination: ./_site
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa                           # @v3.0.1
+        uses: actions/upload-pages-artifact@v3.0.1
 
   deploy-pages:
     name: Deploy website
@@ -85,7 +78,7 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e                                    # @v4.0.5
+        uses: actions/deploy-pages@v4.0.5
 
   build-and-push-model-image:
     name: Build Docker image (model)
@@ -101,10 +94,10 @@ jobs:
       id-token: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683                                        # @v4.2.2
+        uses: actions/checkout@v4.2.2
 
       - name: Log in to the Container registry
-        uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772                                     # @v3.4.0
+        uses: docker/login-action@v3.4.0
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
@@ -118,13 +111,13 @@ jobs:
 
       - name: Extract metadata (tags, labels) for ValiPop image
         id: meta
-        uses: docker/metadata-action@902fa8ec7d6ecbf8d84d538b9b233a880e428804                                  # @v5.7.0
+        uses: docker/metadata-action@v5.7.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
       - name: Build and push the ValiPop image
         id: push
-        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83                               # @v6.18.0
+        uses: docker/build-push-action@v6.18.0
         with:
           file: docker/model/Dockerfile
           context: .
@@ -134,7 +127,7 @@ jobs:
           ulimit: nofile=65536:65536
 
       - name: Generate artifact attestation for ValiPop image
-        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be                         # @v2.4.0
+        uses: actions/attest-build-provenance@v2.4.0
         with:
           subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
           subject-digest: ${{ steps.push.outputs.digest }}
@@ -156,10 +149,10 @@ jobs:
       id-token: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683                                        # @v4.2.2
+        uses: actions/checkout@v4.2.2
 
       - name: Log in to the Container registry
-        uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772                                     # @v3.4.0
+        uses: docker/login-action@v3.4.0
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
@@ -173,13 +166,13 @@ jobs:
 
       - name: Extract metadata (tags, labels) for ValiPop leader image
         id: meta-leader
-        uses: docker/metadata-action@902fa8ec7d6ecbf8d84d538b9b233a880e428804                                  # @v5.7.0
+        uses: docker/metadata-action@v5.7.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.LEADER_IMAGE_NAME }}
 
       - name: Build and push the ValiPop leader image
         id: push-leader
-        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83                               # @v6.18.0
+        uses: docker/build-push-action@v6.18.0
         with:
           file: docker/model/Dockerfile
           context: .
@@ -189,7 +182,7 @@ jobs:
           ulimit: nofile=65536:65536
 
       - name: Generate artifact attestation for ValiPop leader image
-        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be                         # @v2.4.0
+        uses: actions/attest-build-provenance@v2.4.0
         with:
           subject-name: ${{ env.REGISTRY }}/${{ env.LEADER_IMAGE_NAME}}
           subject-digest: ${{ steps.push-leader.outputs.digest }}
@@ -197,13 +190,13 @@ jobs:
 
       - name: Extract metadata (tags, labels) for ValiPop worker image
         id: meta-worker
-        uses: docker/metadata-action@902fa8ec7d6ecbf8d84d538b9b233a880e428804                                  # @v5.7.0
+        uses: docker/metadata-action@v5.7.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.WORKER_IMAGE_NAME }}
 
       - name: Build and push the ValiPop worker image
         id: push-worker
-        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83                               # @v6.18.0
+        uses: docker/build-push-action@v6.18.0
         with:
           file: docker/model/Dockerfile
           context: .
@@ -213,7 +206,7 @@ jobs:
           ulimit: nofile=65536:65536
 
       - name: Generate artifact attestation for ValiPop worker image
-        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be                         # @v2.4.0
+        uses: actions/attest-build-provenance@v2.4.0
         with:
           subject-name: ${{ env.REGISTRY }}/${{ env.WORKER_IMAGE_NAME}}
           subject-digest: ${{ steps.push-worker.outputs.digest }}
@@ -221,13 +214,13 @@ jobs:
 
       - name: Extract metadata (tags, labels) for ValiPop search image
         id: meta-search
-        uses: docker/metadata-action@902fa8ec7d6ecbf8d84d538b9b233a880e428804                                  # @v5.7.0
+        uses: docker/metadata-action@v5.7.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.SEARCH_IMAGE_NAME }}
 
       - name: Build and push the ValiPop search image
         id: push-search
-        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83                               # @v6.18.0
+        uses: docker/build-push-action@v6.18.0
         with:
           file: docker/model/Dockerfile
           context: .
@@ -237,7 +230,7 @@ jobs:
           ulimit: nofile=65536:65536
 
       - name: Generate artifact attestation for ValiPop search image
-        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be                         # @v2.4.0
+        uses: actions/attest-build-provenance@v2.4.0
         with:
           subject-name: ${{ env.REGISTRY }}/${{ env.SEARCH_IMAGE_NAME}}
           subject-digest: ${{ steps.push-search.outputs.digest }}

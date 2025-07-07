@@ -74,7 +74,8 @@ public class PersonCharacteristicsIdentifier {
         } else if (partnershipsInYear.isEmpty()) {
             return null;
         } else {
-            return partnershipsInYear.getFirst();
+//            return partnershipsInYear.getFirst();
+            return partnershipsInYear.get(0);
         }
     }
 
@@ -111,7 +112,8 @@ public class PersonCharacteristicsIdentifier {
         }
 
         final List<IPerson> children = activePartnership.getChildren();
-        final IPerson lastChild = children.getLast();
+        final IPerson lastChild = children.get(children.size() - 1);
+//        final IPerson lastChild = children.getLast();
 
         if (!bornInYear(lastChild, year)) {
             return SeparationOption.NO;

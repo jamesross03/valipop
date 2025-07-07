@@ -47,7 +47,6 @@ import uk.ac.standrews.cs.valipop.utils.addressLookup.*;
 import uk.ac.standrews.cs.valipop.utils.sourceEventRecords.RecordFormat;
 import uk.ac.standrews.cs.valipop.utils.sourceEventRecords.RecordGenerationFactory;
 import uk.ac.standrews.cs.valipop.utils.specialTypes.dates.DateSelector;
-import uk.ac.standrews.cs.valipop.utils.specialTypes.dates.DateUtils;
 import uk.ac.standrews.cs.valipop.utils.specialTypes.dates.DeathDateSelector;
 import uk.ac.standrews.cs.valipop.utils.specialTypes.dates.MarriageDateSelector;
 import uk.ac.standrews.cs.valipop.utils.specialTypes.labeledValueSets.*;
@@ -57,11 +56,11 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.Year;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.logging.*;
 
 import static uk.ac.standrews.cs.valipop.simulationEntities.PopulationNavigation.*;
+import static uk.ac.standrews.cs.valipop.utils.specialTypes.dates.DateUtils.divideYieldingDouble;
 
 /**
  * @author Tom Dalton (tsd4@st-andrews.ac.uk)
@@ -305,16 +304,14 @@ public class OBDModel {
     private void logTimeStep(final int numberBorn, final int shortFallInBirths, final int numberDying) {
 
         MemoryUsageAnalysis.log();
-        final StringBuilder logEntry = new StringBuilder(currentTime + "\t" + MemoryUsageAnalysis.getMaxSimUsage() / 1e6 + "\tMB");
 
-        logEntry.append(numberBorn).append("\t");
-        logEntry.append(shortFallInBirths).append("\t");
-        logEntry.append(numberDying).append("\t");
+        final String logEntry = currentTime + "\t" + MemoryUsageAnalysis.getMaxSimUsage() / 1e6 + "MB\t" + numberBorn + "\t" +
+            shortFallInBirths + "\t" +
+            numberDying + "\t" +
+            population.getLivingPeople().getNumberOfPeople() + "\t" +
+            population.getDeadPeople().getNumberOfPeople();
 
-        logEntry.append(population.getLivingPeople().getNumberOfPeople()).append("\t");
-        logEntry.append(population.getDeadPeople().getNumberOfPeople());
-
-        log.info(logEntry.toString());
+        log.info(logEntry);
     }
 
     // Progress the simulation until initialisation is finished
@@ -342,7 +339,9 @@ public class OBDModel {
     }
 
     private void simulatePopulationUntilStart() {
+
         while (currentTime.isBefore(config.getT0())) {
+
             final int numberBorn = createBirths();
             final int numberDying = createDeaths(SexOption.MALE) + createDeaths(SexOption.FEMALE);
 
@@ -359,7 +358,9 @@ public class OBDModel {
     }
 
     private void simulatePopulationUntilEnd() {
+
         while (!simulationFinished()) {
+
             final int numberBorn = createBirths();
             final int numberDying = createDeaths(SexOption.MALE) + createDeaths(SexOption.FEMALE);
 
@@ -387,7 +388,6 @@ public class OBDModel {
         summary.setPeakPop(population.getPopulationCounts().getPeakPopulationSize());
 
         closeLogFile();
-//        birthOrders.close();
     }
 
     private int calculateStartingPopulationSize() {
@@ -411,32 +411,23 @@ public class OBDModel {
         birthsCount = 0;
     }
 
-    private double toDecimalRepresentation(final Period period) {
-
-        return period.toTotalMonths() / (double) DateUtils.MONTHS_IN_YEAR;
-    }
-
     private int adjustPopulationNumbers(final int birthsInTimeStp) {
 
-        // calculate hypothetical number of expected births
         final Period initTimeStep = config.getSimulationTimeStep();
 
-        final int hypotheticalBirths = calculateNumberToHaveEvent(config.getSetUpBR() * toDecimalRepresentation(initTimeStep));
+        // calculate hypothetical number of expected births
+        final int hypotheticalBirths = calculateNumberToHaveEvent(config.getSetUpBR() * divideYieldingDouble(initTimeStep, Period.ofYears(1)));
 
         final int shortFallInBirths = hypotheticalBirths - birthsInTimeStp;
 
         // calculate hypothetical number of expected deaths
-        final int hypotheticalDeaths = calculateNumberToHaveEvent(config.getSetUpDR() * toDecimalRepresentation(initTimeStep));
+        final int hypotheticalDeaths = calculateNumberToHaveEvent(config.getSetUpDR() * divideYieldingDouble(initTimeStep, Period.ofYears(1)));
 
         // update hypothetical population
         currentHypotheticalPopulationSize += hypotheticalBirths - hypotheticalDeaths;
 
-        if (shortFallInBirths >= 0) {
+        if (shortFallInBirths >= 0)
             createOrphanChildren(shortFallInBirths);
-        } else {
-            // REMOVED BY TOM - CHECKING THIS - but think this should rather be later handled by self correction mechanisms
-            //  removePeople(-shortFallInBirths);
-        }
 
         return shortFallInBirths;
     }
@@ -471,7 +462,8 @@ public class OBDModel {
     private int createBirths() {
 
         final FemaleCollection femalesLiving = population.getLivingPeople().getFemales();
-        final Set<LocalDate> divisionDates = femalesLiving.getDivisionDates(config.getSimulationTimeStep());
+        final Period timeStep = config.getSimulationTimeStep();
+        final Set<LocalDate> divisionDates = femalesLiving.getDivisionDates(timeStep);
 
         int count = 0;
 
@@ -489,14 +481,16 @@ public class OBDModel {
         final Period consideredTimePeriod = config.getSimulationTimeStep();
 
         final int age = Period.between(divisionDate.plus(consideredTimePeriod), currentTime).getYears();
-        final int cohortSize = femalesLiving.getPeopleBornInTimePeriod(divisionDate, consideredTimePeriod).size();
+        Collection<IPerson> femalesBornInTimePeriod = femalesLiving.getPeopleBornInTimePeriod(divisionDate, consideredTimePeriod);
+        final int cohortSize = femalesBornInTimePeriod.size();
 
         final Set<IntegerRange> birthOrders = desired.getOrderedBirthRates(Year.of(currentTime.getYear())).getColumnLabels();
 
         int count = 0;
 
         for (final IntegerRange birthOrder : birthOrders) {
-            count += getBornInRange(femalesLiving, divisionDate, age, cohortSize, birthOrder);
+            int bornInRange = getBornInRange(femalesLiving, divisionDate, age, cohortSize, birthOrder);
+            count += bornInRange;
         }
 
         return count;
@@ -506,6 +500,7 @@ public class OBDModel {
 
         final Period consideredTimePeriod = config.getSimulationTimeStep();
 
+        // TODO already retrieved women for this period in calling method.
         final List<IPerson> people = new ArrayList<>(femalesLiving.getByDatePeriodAndBirthOrder(divisionDate, consideredTimePeriod, birthOrder));
 
         final BirthStatsKey key = new BirthStatsKey(age, birthOrder.getValue(), cohortSize, consideredTimePeriod, currentTime);
@@ -523,9 +518,6 @@ public class OBDModel {
         final int fulfilled = mothersNeedingPartners.newlyProducedChildren - cancelledChildren;
 
         determinedCount.setFulfilledCount(fulfilled);
-
-//        // TODO Does this output get used? TD: If I remember correctly it allows us to explain why it takes longer to generate small populations - may be useful to talk about in thesis...
-//        birthOrders.println(currentTime.getYear() + "," + age + "," + birthOrder + "," + fulfilled + "," + numberOfChildren);
 
         desired.returnAchievedCount(determinedCount);
         return fulfilled;
@@ -576,7 +568,7 @@ public class OBDModel {
 
     private int createPartnerships(final Collection<NewMother> mothersNeedingPartners) {
 
-        if (mothersNeedingPartners.size() == 0) return 0;
+        if (mothersNeedingPartners.isEmpty()) return 0;
 
         final LinkedList<NewMother> women = new LinkedList<>(mothersNeedingPartners);
 
@@ -658,14 +650,14 @@ public class OBDModel {
 
         final Address newAddress;
 
-        if(lastMaleAddress == null || lastMaleAddress.getArea() == null) {
+        if (lastMaleAddress == null || lastMaleAddress.getArea() == null) {
             if(lastFemaleAddress == null || lastFemaleAddress.getArea() == null) {
                 newAddress = geography.getRandomEmptyAddress();
             } else {
                 newAddress = geography.getNearestEmptyAddressAtDistance(lastFemaleAddress.getArea().getCentroid(), moveDistance);
             }
         } else {
-            if(lastFemaleAddress == null || lastFemaleAddress.getArea() == null) {
+            if (lastFemaleAddress == null || lastFemaleAddress.getArea() == null) {
                 newAddress = geography.getNearestEmptyAddressAtDistance(lastMaleAddress.getArea().getCentroid(), moveDistance);
             } else {
                 // both already have address, so flip coin to decide who acts as origin for move
@@ -674,7 +666,6 @@ public class OBDModel {
                 } else {
                     newAddress = geography.getNearestEmptyAddressAtDistance(lastFemaleAddress.getArea().getCentroid(), moveDistance);
                 }
-
             }
         }
 
@@ -812,7 +803,7 @@ public class OBDModel {
         final Map<IntegerRange, LinkedList<IPerson>> allMen = new TreeMap<>();
         for (final IntegerRange range : partnerCounts.getLabels()) {
 
-            final LocalDate yobOfOlderEndOfIR = getYobOfOlderEndOfIR(range, currentTime);
+            final LocalDate yobOfOlderEndOfIR = getYearOfBirthOfOlderEndOfRange(range, currentTime);
             final Period rangeLength = getRangeLength(range);
 
             final LinkedList<IPerson> men = new LinkedList<>(population.getLivingPeople().getMales().getPeopleBornInTimePeriod(yobOfOlderEndOfIR, rangeLength));
@@ -852,20 +843,19 @@ public class OBDModel {
         if (!adulterousBirth) {
             handleSeparationMoves(fatherLastPartnership, father);
             handleAddressChanges(partnership);
-        } else if(motherLastPartnership == null) {
+        }
+        else if(motherLastPartnership == null) {
             if (father.getAddress(LocalDate.MAX) != null)
                 mother.setAddress(partnership.getPartnershipDate(), geography.getNearestEmptyAddressAtDistance(father.getAddress(LocalDate.MAX).getArea().getCentroid(), moveDistanceSelector.selectRandomDistance()));
             else
                 mother.setAddress(partnership.getPartnershipDate(), geography.getRandomEmptyAddress());
         }
 
-        for (final IPerson child : partnership.getChildren()) {
+        for (final IPerson child : partnership.getChildren())
             child.setAddress(child.getBirthDate(), partnership.getFemalePartner().getAddress(child.getBirthDate()));
-        }
 
-        if (partnership.getMarriageDate() != null && partnership.getMarriagePlace() == null) {
+        if (partnership.getMarriageDate() != null && partnership.getMarriagePlace() == null)
             partnership.setMarriagePlace(mother.getAddress(partnership.getMarriageDate()).toShortForm());
-        }
 
         // re-insert parents into population, this allows their position in the data structure to be updated
         population.getLivingPeople().add(mother);
@@ -1010,16 +1000,15 @@ public class OBDModel {
             final LocalDate motherLastPrevPartneringEvent = getDateOfLastLegitimatePartnershipEventBefore(partnership.getFemalePartner(), childrenBirthDate);
             final LocalDate fatherLastPrevPartneringEvent = getDateOfLastLegitimatePartnershipEventBefore(partnership.getMalePartner(), childrenBirthDate);
 
-            final LocalDate earliestPossibleMarriageDate = DateUtils.laterOf(motherLastPrevPartneringEvent, fatherLastPrevPartneringEvent);
+            final LocalDate earliestPossibleMarriageDate = motherLastPrevPartneringEvent.isAfter(fatherLastPrevPartneringEvent) ? motherLastPrevPartneringEvent : fatherLastPrevPartneringEvent;
 
-            if (earliestPossibleMarriageDate.isBefore(childrenBirthDate)) {
+            if (earliestPossibleMarriageDate.isBefore(childrenBirthDate))
                 marriageDate = marriageDateSelector.selectRandomDate(earliestPossibleMarriageDate, childrenBirthDate);
-            }
         }
         partnership.setMarriageDate(marriageDate);
     }
 
-    private LocalDate getDateOfLastLegitimatePartnershipEventBefore(final IPerson person, final LocalDate date) {
+    private static LocalDate getDateOfLastLegitimatePartnershipEventBefore(final IPerson person, final LocalDate date) {
 
         LocalDate latestDate = getEarliestPossibleMarriageDate(person);
 
@@ -1028,21 +1017,18 @@ public class OBDModel {
 
                 final List<IPerson> children = partnership.getChildren();
 
-                if (children.isEmpty()) {
+                if (children.isEmpty())
                     throw new UnsupportedOperationException("Childless marriages not supported");
-                }
 
                 if (hasLegitimateChildren(partnership)) {
 
                     final LocalDate separationDate = partnership.getEarliestPossibleSeparationDate();
-                    if (separationDate != null && latestDate.isBefore(separationDate)) {
+                    if (separationDate != null && latestDate.isBefore(separationDate))
                         latestDate = separationDate;
-                    }
 
                     final LocalDate partnerDeathDate = partnership.getPartnerOf(person).getDeathDate();
-                    if (partnerDeathDate != null && latestDate.isBefore(partnerDeathDate)) {
+                    if (partnerDeathDate != null && latestDate.isBefore(partnerDeathDate))
                         latestDate = partnerDeathDate;
-                    }
                 }
             }
         }
@@ -1050,17 +1036,17 @@ public class OBDModel {
         return latestDate;
     }
 
-    private boolean hasLegitimateChildren(final IPartnership partnership) {
+    private static boolean hasLegitimateChildren(final IPartnership partnership) {
 
-        for (final IPerson child : partnership.getChildren()) {
+        for (final IPerson child : partnership.getChildren())
             if (!child.isAdulterousBirth()) return true;
-        }
+
         return false;
     }
 
-    private LocalDate getEarliestPossibleMarriageDate(final IPerson person) {
+    private static LocalDate getEarliestPossibleMarriageDate(final IPerson person) {
 
-        return person.getBirthDate().plus(EARLIEST_AGE_OF_MARRIAGE, ChronoUnit.YEARS);
+        return person.getBirthDate().plusYears(EARLIEST_AGE_OF_MARRIAGE);
     }
 
     private boolean populationTooSmall() {
@@ -1086,9 +1072,9 @@ public class OBDModel {
     // TODO adjust this to also permit age variations
     private MothersNeedingPartners selectMothers(final List<IPerson> females, final int numberOfChildren) {
 
-        if (females.size() == 0) return new MothersNeedingPartners();
+        if (females.isEmpty()) return new MothersNeedingPartners();
 
-        final int ageOfMothers = ageOnDate(females.get(0), currentTime);
+        final int ageOfMothers = ageOnDate(females.getFirst(), currentTime);
 
         final MultipleDeterminedCountByIR requiredBirths = calcNumberOfPregnanciesOfMultipleBirth(ageOfMothers, numberOfChildren);
         final LabelledValueSet<IntegerRange, Integer> motherCountsByMaternities = new IntegerRangeToIntegerSet(requiredBirths.getDeterminedCount().getLabels(), 0, randomNumberGenerator);
@@ -1177,11 +1163,11 @@ public class OBDModel {
 
     private boolean eligible(final IPerson potentialMother) {
 
-        // No previus partners or children - thus eligible
-        if(potentialMother.getPartnerships().size() == 0) return true;
+        // No previous partners or children - thus eligible
+        if (potentialMother.getPartnerships().isEmpty()) return true;
 
         // if last partnership has not ended in separation and the spouse has emigrated then this women cannot produce a child (now or at any future point in the simulation)
-        if(!needsNewPartner(potentialMother, currentTime) &&
+        if (!needsNewPartner(potentialMother, currentTime) &&
                 potentialMother.getLastPartnership().getMalePartner().hasEmigrated()) {
             return false;
         }
@@ -1255,7 +1241,7 @@ public class OBDModel {
         desired.returnAchievedCount(marriageCounts);
     }
 
-    private void addMotherToMap(final ProposedPartnership partnership, final Map<Integer, List<IPerson>> partneredFemalesByChildren) {
+    private static void addMotherToMap(final ProposedPartnership partnership, final Map<Integer, List<IPerson>> partneredFemalesByChildren) {
 
         final IPerson mother = partnership.female;
         final int numChildrenInPartnership = partnership.numberOfChildren;
@@ -1266,7 +1252,7 @@ public class OBDModel {
         partneredFemalesByChildren.get(numChildrenInPartnership).add(mother);
     }
 
-    private int removeLastPartners(final Population population, final List<NewMother> women) {
+    private static int removeLastPartners(final Population population, final List<NewMother> women) {
 
         int cancelledChildren = 0;
 
@@ -1286,44 +1272,38 @@ public class OBDModel {
         return cancelledChildren;
     }
 
-    private IntegerRange resolveAgeToIntegerRange(final IPerson male, final Set<IntegerRange> labels, final LocalDate currentDate) {
+    private static IntegerRange resolveAgeToIntegerRange(final IPerson male, final Set<IntegerRange> labels, final LocalDate currentDate) {
 
         final int age = ageOnDate(male, currentDate);
 
-        for (final IntegerRange range : labels) {
-            if (range.contains(age)) {
+        for (final IntegerRange range : labels)
+            if (range.contains(age))
                 return range;
-            }
-        }
 
         throw new InvalidRangeException("Male does not fit in expected ranges...");
     }
 
-    private boolean inPartnerships(final IPerson person, final List<ProposedPartnership> partnerships) {
+    private static boolean inPartnerships(final IPerson person, final List<ProposedPartnership> partnerships) {
 
-        for (final ProposedPartnership partnership : partnerships) {
-            if (partnership.male == person || partnership.female == person) {
+        for (final ProposedPartnership partnership : partnerships)
+            if (partnership.male == person || partnership.female == person)
                 return true;
-            }
-        }
+
         return false;
     }
 
     private boolean maleAvailable(final IPerson man, final int childrenInPregnancy) {
 
-        if(man.getImmigrationDate() != null) {
-            // if the man has immigrated this year, was he present early enough in the year to be involved with a conception event?
-            if(man.getImmigrationDate().plus(desired.getMinGestationPeriod()).isAfter(currentTime.plus(1, ChronoUnit.YEARS).minus(1, ChronoUnit.DAYS)))
+        // if the man has immigrated this year, was he present early enough in the year to be the father?
+        if (man.getImmigrationDate() != null &&
+            man.getImmigrationDate().plus(desired.getMinGestationPeriod()).isAfter(currentTime.plusYears(1).minusDays(1)))
                 return false;
-        }
 
-        // in the init period any partnering is allowed
-        // TODO shouldn't be hard wired
-        if (inInitPeriod(currentTime)) {
+        // in the initialisation period any partnering is allowed
+        if (inInitPeriod(currentTime))
             return true;
-        }
 
-        // Get access to adulterousBirth rates
+        // Get adulterous birth rates
         final AdulterousBirthStatsKey adulterousBirthKey = new AdulterousBirthStatsKey(ageOnDate(man, currentTime), childrenInPregnancy, config.getSimulationTimeStep(), currentTime);
         final SingleDeterminedCount adulterousBirthCounts = (SingleDeterminedCount) desired.getDeterminedCount(adulterousBirthKey, config);
         final int permitted = (int) Math.round(adulterousBirthCounts.getDeterminedCount() / (double) childrenInPregnancy);
@@ -1336,48 +1316,39 @@ public class OBDModel {
         }
 
         if (permitted == 1) {
-            // record the adulterousBirth birth
+            // record the adulterous birth
             adulterousBirthCounts.setFulfilledCount(childrenInPregnancy);
             desired.returnAchievedCount(adulterousBirthCounts);
             return true;
         }
 
-        // no birth is to happen on account of this man - therefore we don't report any achieved count for the statistic
+        // the man is not a father - therefore we don't report any achieved count for the statistic
         return false;
     }
 
-    private boolean legallyEligibleToMarry(final IPerson man, final IPerson woman) {
+    private static boolean legallyEligibleToMarry(final IPerson man, final IPerson woman) {
 
-        try {
-            exclude(femaleAncestorsOf(man), woman);
-            exclude(femaleDescendantsOf(man), woman);
-            exclude(sistersOf(man), woman);
-            exclude(femaleAncestorsOf(descendantsOf(man)), woman);
-            exclude(femaleDescendantsOf(ancestorsOf(man)), woman);
-            exclude(partnersOf(maleAncestorsOf(man)), woman);
-            exclude(partnersOf(maleDescendantsOf(man)), woman);
-            exclude(partnersOf(brothersOf(man)), woman);
-            exclude(femaleDescendantsOf(siblingsOf(man)), woman);
-            exclude(femaleAncestorsOf(partnersOf(man)), woman);
-            exclude(femaleDescendantsOf(partnersOf(man)), woman);
-
-        } catch (final RuntimeException e) {
-            return false;
-        }
-
-        return true;
+        return
+            !femaleAncestorsOf(man).contains(woman) &&
+            !femaleAncestorsOf(man).contains(woman) &&
+            !femaleDescendantsOf(man).contains(woman) &&
+            !sistersOf(man).contains(woman) &&
+            !femaleAncestorsOf(descendantsOf(man)).contains(woman) &&
+            !femaleDescendantsOf(ancestorsOf(man)).contains(woman) &&
+            !partnersOf(maleAncestorsOf(man)).contains(woman) &&
+            !partnersOf(maleDescendantsOf(man)).contains(woman) &&
+            !partnersOf(brothersOf(man)).contains(woman) &&
+            !femaleDescendantsOf(siblingsOf(man)).contains(woman) &&
+            !femaleAncestorsOf(partnersOf(man)).contains(woman) &&
+            !femaleDescendantsOf(partnersOf(man)).contains(woman);
     }
 
-    private void exclude(final Collection<IPerson> collection, final IPerson person) {
-        if (collection.contains(person)) throw new RuntimeException();
-    }
-
-    private Period getRangeLength(final IntegerRange range) {
+    private static Period getRangeLength(final IntegerRange range) {
 
         return Period.ofYears(range.getMax() - range.getMin() + 1);
     }
 
-    private LocalDate getYobOfOlderEndOfIR(final IntegerRange range, final LocalDate currentDate) {
+    private static LocalDate getYearOfBirthOfOlderEndOfRange(final IntegerRange range, final LocalDate currentDate) {
 
         return currentDate.minusYears(range.getMax() + 1);
     }
@@ -1393,9 +1364,8 @@ public class OBDModel {
             // Get mothers with given number of children in current partnership
             final List<IPerson> mothers = entry.getValue();
 
-            if (mothers.size() != 0) {
-                ageOfMothers = ageOnDate(mothers.get(0), currentTime);
-            }
+            if (!mothers.isEmpty())
+                ageOfMothers = ageOnDate(mothers.getFirst(), currentTime);
 
             // Get determined count for separations for this group of mothers
             final SeparationStatsKey key = new SeparationStatsKey(numberOfChildren, ageOfMothers, mothers.size(), config.getSimulationTimeStep(), currentTime);
@@ -1407,9 +1377,8 @@ public class OBDModel {
             for (final IPerson mother : mothers) {
 
                 // If enough mothers have been separated then break
-                if (count >= dC.getDeterminedCount()) {
+                if (count >= dC.getDeterminedCount())
                     break;
-                }
 
                 // else mark partnership for separation
                 separate(getLastPartnership(mother), getLastChild(mother).getBirthDate());
@@ -1464,7 +1433,7 @@ public class OBDModel {
 
     private boolean needsNewPartner(final IPerson person, final LocalDate currentDate) {
 
-        return person.getPartnerships().size() == 0 || partnersToSeparate.contains(person) || lastPartnerDied(person, currentDate);
+        return person.getPartnerships().isEmpty() || partnersToSeparate.contains(person) || lastPartnerDied(person, currentDate);
     }
 
     private void separate(final IPartnership partnership, final LocalDate earliestPossibleSeperationDate) {
@@ -1542,7 +1511,7 @@ public class OBDModel {
         }
     }
 
-    private class NewMother {
+    private static class NewMother {
 
         private final IPerson newMother;
         private final int numberOfChildrenInMaternity;
@@ -1554,7 +1523,7 @@ public class OBDModel {
         }
     }
 
-    private class MothersNeedingPartners {
+    private static class MothersNeedingPartners {
 
         private final List<NewMother> mothers;
 
@@ -1566,6 +1535,7 @@ public class OBDModel {
         }
 
         MothersNeedingPartners(final List<NewMother> mothers, final int newlyProducedChildren) {
+
             this.mothers = mothers;
             this.newlyProducedChildren = newlyProducedChildren;
         }
