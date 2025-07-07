@@ -24,10 +24,37 @@ public class Randomness {
 
     private static RandomGenerator randomGenerator = null;
 
+    static int debug_count = 0;
+
     public synchronized static RandomGenerator getRandomGenerator() {
 
         if (randomGenerator == null) {
-            randomGenerator = new JDKRandomGenerator();
+            randomGenerator = new JDKRandomGenerator() {
+                @Override
+                public boolean nextBoolean() {
+                    boolean b = super.nextBoolean();
+                    if (debug_count++ < 20) {
+                        System.out.println(">>>>>>>>>>>> " + b);
+                    }
+                    return b;
+                }
+
+                @Override
+                public double nextDouble() {
+                    double v = super.nextDouble();
+                    if (debug_count++ < 20) {
+                        System.out.println(">>>>>>>>>>>> " + v);
+                    }                    return v;
+                }
+
+                public int nextInt(int bound) {
+                    int i = super.nextInt(bound);
+                    if (debug_count++ < 20) {
+                        System.out.println(">>>>>>>>>>>> " + i);
+                    }
+                    return i;
+                }
+            };
         }
 
         return randomGenerator;
