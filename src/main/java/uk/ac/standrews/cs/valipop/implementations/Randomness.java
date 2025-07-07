@@ -24,7 +24,8 @@ public class Randomness {
 
     private static RandomGenerator randomGenerator = null;
 
-    static int debug_count = 0;
+    public static int debug_count = 0;
+    public static boolean do_debug = false;
 
     public synchronized static RandomGenerator getRandomGenerator() {
 
@@ -33,7 +34,7 @@ public class Randomness {
                 @Override
                 public boolean nextBoolean() {
                     boolean b = super.nextBoolean();
-                    if (debug_count++ < 20) {
+                    if (do_debug && debug_count++ < 20) {
                         System.out.println(">>>>>>>>>>>> " + b);
                     }
                     return b;
@@ -42,14 +43,14 @@ public class Randomness {
                 @Override
                 public double nextDouble() {
                     double v = super.nextDouble();
-                    if (debug_count++ < 20) {
+                    if (do_debug && debug_count++ < 20) {
                         System.out.println(">>>>>>>>>>>> " + v);
                     }                    return v;
                 }
 
                 public int nextInt(int bound) {
                     int i = super.nextInt(bound);
-                    if (debug_count++ < 20) {
+                    if (do_debug && debug_count++ < 20) {
                         System.out.println(">>>>>>>>>>>> " + i);
                     }
                     return i;

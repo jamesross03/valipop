@@ -23,6 +23,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.FieldSource;
 import uk.ac.standrews.cs.valipop.Config;
 import uk.ac.standrews.cs.valipop.implementations.OBDModel;
+import uk.ac.standrews.cs.valipop.implementations.Randomness;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -82,6 +83,7 @@ public class RecordExportTest {
 
     private static void runTest(final Path configPath, final String expectedBirthHash, final String expectedDeathHash, final String expectedMarriageHash) throws IOException, NoSuchAlgorithmException {
 
+        Randomness.do_debug = true;
         final Config config = new Config(configPath);
         final OBDModel model = new OBDModel(config);
         model.runSimulation();
