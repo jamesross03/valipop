@@ -18,10 +18,6 @@
 package uk.ac.standrews.cs.valipop.implementations;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.nio.charset.StandardCharsets;
-
-import org.apache.commons.math3.random.RandomGenerator;
 import uk.ac.standrews.cs.valipop.Config;
 import uk.ac.standrews.cs.valipop.export.ExportFormat;
 import uk.ac.standrews.cs.valipop.export.IPopulationWriter;
@@ -35,7 +31,6 @@ import uk.ac.standrews.cs.valipop.statistics.analysis.populationAnalytics.Analyt
 import uk.ac.standrews.cs.valipop.statistics.analysis.simulationSummaryLogging.SummaryRow;
 import uk.ac.standrews.cs.valipop.statistics.analysis.validation.contingencyTables.ContingencyTableFactory;
 import uk.ac.standrews.cs.valipop.statistics.analysis.validation.contingencyTables.TreeStructure.SexOption;
-import uk.ac.standrews.cs.valipop.statistics.populationStatistics.statsKeys.MarriageStatsKey;
 import uk.ac.standrews.cs.valipop.statistics.populationStatistics.PopulationStatistics;
 import uk.ac.standrews.cs.valipop.statistics.populationStatistics.determinedCounts.DeterminedCount;
 import uk.ac.standrews.cs.valipop.statistics.populationStatistics.determinedCounts.MultipleDeterminedCountByIR;
@@ -43,7 +38,10 @@ import uk.ac.standrews.cs.valipop.statistics.populationStatistics.determinedCoun
 import uk.ac.standrews.cs.valipop.statistics.populationStatistics.statsKeys.*;
 import uk.ac.standrews.cs.valipop.utils.CollectionUtils;
 import uk.ac.standrews.cs.valipop.utils.ProgramTimer;
-import uk.ac.standrews.cs.valipop.utils.addressLookup.*;
+import uk.ac.standrews.cs.valipop.utils.addressLookup.Address;
+import uk.ac.standrews.cs.valipop.utils.addressLookup.Area;
+import uk.ac.standrews.cs.valipop.utils.addressLookup.DistanceSelector;
+import uk.ac.standrews.cs.valipop.utils.addressLookup.Geography;
 import uk.ac.standrews.cs.valipop.utils.sourceEventRecords.RecordFormat;
 import uk.ac.standrews.cs.valipop.utils.sourceEventRecords.RecordGenerationFactory;
 import uk.ac.standrews.cs.valipop.utils.specialTypes.dates.DateSelector;
@@ -51,13 +49,19 @@ import uk.ac.standrews.cs.valipop.utils.specialTypes.dates.DeathDateSelector;
 import uk.ac.standrews.cs.valipop.utils.specialTypes.dates.MarriageDateSelector;
 import uk.ac.standrews.cs.valipop.utils.specialTypes.labeledValueSets.*;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.Year;
 import java.util.*;
-import java.util.logging.*;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 import static uk.ac.standrews.cs.valipop.simulationEntities.PopulationNavigation.*;
 import static uk.ac.standrews.cs.valipop.utils.specialTypes.dates.DateUtils.divideYieldingDouble;
@@ -89,7 +93,6 @@ public class OBDModel {
     private SummaryRow summary;
     private final PopulationStatistics desired;
     private final Population population;
-    private final RandomGenerator randomNumberGenerator;
     private final LocalDate endOfInitPeriod;
     private final Collection<IPerson> partnersToSeparate;
 
@@ -120,17 +123,16 @@ public class OBDModel {
             population = new Population(config);
             desired = new PopulationStatistics(config);
 
-            randomNumberGenerator = desired.getRandomGenerator();
-            geography = new Geography(readAreaList(config), randomNumberGenerator, config.getOverSizedGeographyFactor());
+            geography = new Geography(readAreaList(config), Randomness.getRandomGenerator(), config.getOverSizedGeographyFactor());
 
             currentHypotheticalPopulationSize = calculateStartingPopulationSize();
 
-            deathDateSelector = new DeathDateSelector(randomNumberGenerator);
-            marriageDateSelector = new MarriageDateSelector(randomNumberGenerator);
-            moveDistanceSelector = new DistanceSelector(randomNumberGenerator);
+            deathDateSelector = new DeathDateSelector(Randomness.getRandomGenerator());
+            marriageDateSelector = new MarriageDateSelector(Randomness.getRandomGenerator());
+            moveDistanceSelector = new DistanceSelector(Randomness.getRandomGenerator());
 
-            personFactory = new PersonFactory(population, desired, config.getSimulationTimeStep(), randomNumberGenerator);
-            migrationModel = new BalancedMigrationModel(population, randomNumberGenerator, geography, personFactory, desired);
+            personFactory = new PersonFactory(population, desired, config.getSimulationTimeStep(), Randomness.getRandomGenerator());
+            migrationModel = new BalancedMigrationModel(population, Randomness.getRandomGenerator(), geography, personFactory, desired);
             occupationChangeModel = new OccupationChangeModel(population, desired, config);
 
             log.info("Random seed: " + config.getSeed());
@@ -567,9 +569,9 @@ public class OBDModel {
 
         final MultipleDeterminedCountByIR determinedCounts = (MultipleDeterminedCountByIR) desired.getDeterminedCount(key, config);
 
-        final OperableLabelledValueSet<IntegerRange, Integer> partnerCounts = new IntegerRangeToIntegerSet(determinedCounts.getDeterminedCount(), randomNumberGenerator);
-        final LabelledValueSet<IntegerRange, Integer> achievedPartnerCounts = new IntegerRangeToIntegerSet(partnerCounts.getLabels(), 0, randomNumberGenerator);
-        final LabelledValueSet<IntegerRange, Integer> availableMen = new IntegerRangeToIntegerSet(partnerCounts.getLabels(), 0, randomNumberGenerator);
+        final OperableLabelledValueSet<IntegerRange, Integer> partnerCounts = new IntegerRangeToIntegerSet(determinedCounts.getDeterminedCount(), Randomness.getRandomGenerator());
+        final LabelledValueSet<IntegerRange, Integer> achievedPartnerCounts = new IntegerRangeToIntegerSet(partnerCounts.getLabels(), 0, Randomness.getRandomGenerator());
+        final LabelledValueSet<IntegerRange, Integer> availableMen = new IntegerRangeToIntegerSet(partnerCounts.getLabels(), 0, Randomness.getRandomGenerator());
 
         final Map<IntegerRange, LinkedList<IPerson>> menMap = getAllMen(partnerCounts, availableMen);
         final OperableLabelledValueSet<IntegerRange, Integer> redistributedPartnerCounts = redistributePartnerCounts(partnerCounts, availableMen);
@@ -589,7 +591,7 @@ public class OBDModel {
 
     private Map<Integer, List<IPerson>> getPartneredFemalesByChildren(final MultipleDeterminedCountByIR determinedCounts, final List<ProposedPartnership> proposedPartnerships) {
 
-        final LabelledValueSet<IntegerRange, Integer> returnPartnerCounts = determinedCounts.getZeroedCountsTemplate(randomNumberGenerator);
+        final LabelledValueSet<IntegerRange, Integer> returnPartnerCounts = determinedCounts.getZeroedCountsTemplate(Randomness.getRandomGenerator());
         final Map<Integer, List<IPerson>> partneredFemalesByChildren = new HashMap<>();
 
         for (final ProposedPartnership partnership : proposedPartnerships) {
@@ -650,7 +652,7 @@ public class OBDModel {
                 newAddress = geography.getNearestEmptyAddressAtDistance(lastMaleAddress.getArea().getCentroid(), moveDistance);
             } else {
                 // both already have address, so flip coin to decide who acts as origin for move
-                if(randomNumberGenerator.nextBoolean()) {
+                if (Randomness.getRandomGenerator().nextBoolean()) {
                     newAddress = geography.getNearestEmptyAddressAtDistance(lastMaleAddress.getArea().getCentroid(), moveDistance);
                 } else {
                     newAddress = geography.getNearestEmptyAddressAtDistance(lastFemaleAddress.getArea().getCentroid(), moveDistance);
@@ -772,7 +774,7 @@ public class OBDModel {
 
         // this section redistributes the determined partner counts based on the number of available men in each age range
         do {
-            shortfallCounts = new IntegerRangeToDoubleSet(partnerCounts.valuesSubtractValues(availableMen), randomNumberGenerator);
+            shortfallCounts = new IntegerRangeToDoubleSet(partnerCounts.valuesSubtractValues(availableMen), Randomness.getRandomGenerator());
 
             final LabelledValueSet<IntegerRange, Double> zeroedNegShortfalls = shortfallCounts.zeroNegativeValues();
             final int numberOfRangesWithSpareMen = shortfallCounts.countNegativeValues();
@@ -780,7 +782,7 @@ public class OBDModel {
             final double shortfallToShare = totalShortfall / (double) numberOfRangesWithSpareMen;
 
             partnerCounts = new IntegerRangeToDoubleSet(partnerCounts.valuesAddNWhereCorrespondingLabelNegativeInLVS(shortfallToShare, shortfallCounts)
-                    .valuesSubtractValues(zeroedNegShortfalls), randomNumberGenerator).controlledRoundingMaintainingSum();
+                    .valuesSubtractValues(zeroedNegShortfalls), Randomness.getRandomGenerator()).controlledRoundingMaintainingSum();
 
         } while (shortfallCounts.countPositiveValues() != 0);
 
@@ -797,7 +799,7 @@ public class OBDModel {
 
             final LinkedList<IPerson> men = new LinkedList<>(population.getLivingPeople().getMales().getPeopleBornInTimePeriod(yobOfOlderEndOfIR, rangeLength));
 
-            CollectionUtils.shuffle(men, randomNumberGenerator);
+            CollectionUtils.shuffle(men, Randomness.getRandomGenerator());
 
             allMen.put(range, men);
             availableMen.update(range, men.size());
@@ -858,7 +860,7 @@ public class OBDModel {
         if (lastPartnership != null && !lastPartnership.isFinalised()) {
 
             // the getting process forces these to be set - they can only be set once the next partnership has been set up - i.e. now!
-            final LocalDate sepDate = lastPartnership.getSeparationDate(randomNumberGenerator);
+            final LocalDate sepDate = lastPartnership.getSeparationDate(Randomness.getRandomGenerator());
 
             if (sepDate != null) {
                 final IPerson ex = lastPartnership.getPartnerOf(rePartneringPartner);
@@ -866,10 +868,10 @@ public class OBDModel {
                 if (!ex.hasEmigrated() && !rePartneringPartner.hasEmigrated()) { // if neither has emigrated then we need to make these separtaion decisions - otherwise the house and kids stay with who is still in the country (the sim will have already handled this)
 
                     // flip coin for who gets the house
-                    final boolean keepHouse = ex.isPhantom() || ex.getDeathDate() != null || randomNumberGenerator.nextBoolean();
+                    final boolean keepHouse = ex.isPhantom() || ex.getDeathDate() != null || Randomness.getRandomGenerator().nextBoolean();
 
                     // flip coin for who gets the kids
-                    final boolean keepKids = ex.isPhantom() || ex.getDeathDate() != null || randomNumberGenerator.nextBoolean();
+                    final boolean keepKids = ex.isPhantom() || ex.getDeathDate() != null || Randomness.getRandomGenerator().nextBoolean();
 
                     final Address oldFamilyAddress = rePartneringPartner.getAddress(sepDate);
 
@@ -1066,8 +1068,8 @@ public class OBDModel {
         final int ageOfMothers = ageOnDate(females.getFirst(), currentDate);
 
         final MultipleDeterminedCountByIR requiredBirths = calcNumberOfPregnanciesOfMultipleBirth(ageOfMothers, numberOfChildren);
-        final LabelledValueSet<IntegerRange, Integer> motherCountsByMaternities = new IntegerRangeToIntegerSet(requiredBirths.getDeterminedCount().getLabels(), 0, randomNumberGenerator);
-        final OperableLabelledValueSet<IntegerRange, Integer> remainingMothersToFind = new IntegerRangeToIntegerSet(requiredBirths.getDeterminedCount().clone(), randomNumberGenerator);
+        final LabelledValueSet<IntegerRange, Integer> motherCountsByMaternities = new IntegerRangeToIntegerSet(requiredBirths.getDeterminedCount().getLabels(), 0, Randomness.getRandomGenerator());
+        final OperableLabelledValueSet<IntegerRange, Integer> remainingMothersToFind = new IntegerRangeToIntegerSet(requiredBirths.getDeterminedCount().clone(), Randomness.getRandomGenerator());
 
         try {
             return getMothersNeedingPartners(females, numberOfChildren, requiredBirths, motherCountsByMaternities, remainingMothersToFind);
@@ -1080,7 +1082,7 @@ public class OBDModel {
     private MothersNeedingPartners getMothersNeedingPartners(final List<IPerson> females, final int numberOfChildren, final MultipleDeterminedCountByIR requiredBirths,
                                                              final LabelledValueSet<IntegerRange, Integer> motherCountsByMaternities, final OperableLabelledValueSet<IntegerRange, Integer> remainingMothersToFind) {
 
-        CollectionUtils.shuffle(females, randomNumberGenerator);
+        CollectionUtils.shuffle(females, Randomness.getRandomGenerator());
 
         IntegerRange highestBirthOption = remainingMothersToFind.getLargestLabelOfNonZeroValue();
 
@@ -1477,7 +1479,7 @@ public class OBDModel {
 
         // this is a random dice roll to see if the fraction of a has the event or not
 
-        if (randomNumberGenerator.nextInt(100) < toHaveEvent * 100) {
+        if (Randomness.getRandomGenerator().nextInt(100) < toHaveEvent * 100) {
             flooredToHaveEvent++;
         }
 

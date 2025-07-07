@@ -17,9 +17,8 @@
  */
 package uk.ac.standrews.cs.valipop.statistics.populationStatistics;
 
-import org.apache.commons.math3.random.JDKRandomGenerator;
-import org.apache.commons.math3.random.RandomGenerator;
 import uk.ac.standrews.cs.valipop.Config;
+import uk.ac.standrews.cs.valipop.implementations.Randomness;
 import uk.ac.standrews.cs.valipop.statistics.analysis.validation.contingencyTables.TreeStructure.SexOption;
 import uk.ac.standrews.cs.valipop.statistics.distributions.EnumeratedDistribution;
 import uk.ac.standrews.cs.valipop.statistics.distributions.InconsistentWeightException;
@@ -27,8 +26,8 @@ import uk.ac.standrews.cs.valipop.statistics.populationStatistics.determinedCoun
 import uk.ac.standrews.cs.valipop.statistics.populationStatistics.statsKeys.*;
 import uk.ac.standrews.cs.valipop.statistics.populationStatistics.statsTables.EventRateTables;
 import uk.ac.standrews.cs.valipop.statistics.populationStatistics.statsTables.dataDistributions.*;
-import uk.ac.standrews.cs.valipop.statistics.populationStatistics.statsTables.dataDistributions.selfCorrecting.SelfCorrectingOneDimensionDataDistribution;
 import uk.ac.standrews.cs.valipop.statistics.populationStatistics.statsTables.dataDistributions.selfCorrecting.SelfCorrecting2DIntegerRangeProportionalDistribution;
+import uk.ac.standrews.cs.valipop.statistics.populationStatistics.statsTables.dataDistributions.selfCorrecting.SelfCorrectingOneDimensionDataDistribution;
 import uk.ac.standrews.cs.valipop.statistics.populationStatistics.statsTables.dataDistributions.selfCorrecting.SelfCorrectingTwoDimensionDataDistribution;
 import uk.ac.standrews.cs.valipop.utils.InputFileReader;
 import uk.ac.standrews.cs.valipop.utils.InvalidInputFileException;
@@ -39,7 +38,8 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Path;
 import java.time.Period;
 import java.time.Year;
-import java.util.*;
+import java.util.Arrays;
+import java.util.TreeMap;
 import java.util.logging.Logger;
 
 /**
@@ -85,17 +85,6 @@ public class PopulationStatistics implements EventRateTables {
     private TreeMap<Year, SelfCorrecting2DEnumeratedProportionalDistribution> maleOccupationChange;
     private TreeMap<Year, SelfCorrecting2DEnumeratedProportionalDistribution> femaleOccupationChange;
 
-    // TODO make non-static.
-    public static RandomGenerator randomGenerator;
-
-    public static void resetRandomGenerator(final int seed) {
-
-        synchronized(PopulationStatistics.class) {
-
-            randomGenerator = new JDKRandomGenerator(seed);
-        }
-    }
-
     public PopulationStatistics(final Config config) {
 
         try {
@@ -104,7 +93,7 @@ public class PopulationStatistics implements EventRateTables {
                 config.setSeed((int) System.nanoTime());
             }
 
-            resetRandomGenerator(config.getSeed());
+            Randomness.getRandomGenerator().setSeed(config.getSeed());
 
             final TreeMap<Year, SelfCorrectingOneDimensionDataDistribution> maleDeath = readInSC1DDataFiles(config.getVarMaleLifetablePaths(), config);
             final TreeMap<Year, AgeDependantEnumeratedDistribution> maleDeathCauses = readInAgeDependantEnumeratedDistributionDataFiles(config.getVarMaleDeathCausesPaths(), config);
@@ -141,43 +130,6 @@ public class PopulationStatistics implements EventRateTables {
             throw new RuntimeException(e);
         }
     }
-
-//    public PopulationStatistics(final RandomGenerator randomGenerator) {
-//        this.randomGenerator = randomGenerator;
-//    }
-//
-//    public PopulationStatistics(final TreeMap<Year, SelfCorrectingOneDimensionDataDistribution> maleDeath,
-//                                final TreeMap<Year, AgeDependantEnumeratedDistribution> maleDeathCauses,
-//                                final TreeMap<Year, SelfCorrectingOneDimensionDataDistribution> femaleDeath,
-//                                final TreeMap<Year, AgeDependantEnumeratedDistribution> femaleDeathCauses,
-//                                final TreeMap<Year, SelfCorrecting2DIntegerRangeProportionalDistribution> partnering,
-//                                final TreeMap<Year, SelfCorrectingTwoDimensionDataDistribution> orderedBirth,
-//                                final TreeMap<Year, SelfCorrectingProportionalDistribution<IntegerRange, Integer, Integer>> multipleBirth,
-//                                final TreeMap<Year, SelfCorrectingOneDimensionDataDistribution> adulterousBirth,
-//                                final TreeMap<Year, SelfCorrectingOneDimensionDataDistribution> marriage,
-//                                final TreeMap<Year, SelfCorrectingTwoDimensionDataDistribution> separation,
-//                                final TreeMap<Year, Double> sexRatioBirths,
-//                                final TreeMap<Year, ValiPopEnumeratedDistribution> maleForenames,
-//                                final TreeMap<Year, ValiPopEnumeratedDistribution> femaleForenames,
-//                                final TreeMap<Year, ValiPopEnumeratedDistribution> surnames,
-//                                final TreeMap<Year, ValiPopEnumeratedDistribution> migrantMaleForename,
-//                                final TreeMap<Year, ValiPopEnumeratedDistribution> migrantFemaleForename,
-//                                final TreeMap<Year, ValiPopEnumeratedDistribution> migrantSurname,
-//                                final TreeMap<Year, SelfCorrectingOneDimensionDataDistribution> migrationRate,
-//                                final TreeMap<Year, AgeDependantEnumeratedDistribution> maleOccupation,
-//                                final TreeMap<Year, AgeDependantEnumeratedDistribution> femaleOccupation,
-//                                final TreeMap<Year, SelfCorrecting2DEnumeratedProportionalDistribution> maleOccupationChange,
-//                                final TreeMap<Year, SelfCorrecting2DEnumeratedProportionalDistribution> femaleOccupationChange,
-//                                final Period minBirthSpacing,
-//                                final Period minGestationPeriod,
-//                                final RandomGenerator randomGenerator) {
-//
-//        this.randomGenerator = randomGenerator;
-//        init(maleDeath, maleDeathCauses, femaleDeath, femaleDeathCauses, partnering, orderedBirth, multipleBirth,
-//                adulterousBirth, marriage, separation, sexRatioBirths, maleForenames, femaleForenames, surnames,
-//                migrantMaleForename, migrantFemaleForename, migrantSurname, migrationRate, maleOccupation, femaleOccupation,
-//                maleOccupationChange, femaleOccupationChange, minBirthSpacing, minGestationPeriod);
-//    }
 
     private void init(final TreeMap<Year, SelfCorrectingOneDimensionDataDistribution> maleDeath, final TreeMap<Year, AgeDependantEnumeratedDistribution> maleDeathCauses, final TreeMap<Year, SelfCorrectingOneDimensionDataDistribution> femaleDeath,
                       final TreeMap<Year, AgeDependantEnumeratedDistribution> femaleDeathCauses, final TreeMap<Year, SelfCorrecting2DIntegerRangeProportionalDistribution> partnering, final TreeMap<Year, SelfCorrectingTwoDimensionDataDistribution> orderedBirth,
@@ -228,35 +180,35 @@ public class PopulationStatistics implements EventRateTables {
     public DeterminedCount<?,?,?,?> getDeterminedCount(final StatsKey<?, ?> key, final Config config) {
 
         if (key instanceof final DeathStatsKey k) {
-            return getDeathRates(k.getYear(), k.getSex()).determineCount(k, config, randomGenerator);
+            return getDeathRates(k.getYear(), k.getSex()).determineCount(k, config, Randomness.getRandomGenerator());
         }
 
         if (key instanceof final BirthStatsKey k) {
-            return getOrderedBirthRates(k.getYear()).determineCount(k, config, randomGenerator);
+            return getOrderedBirthRates(k.getYear()).determineCount(k, config, Randomness.getRandomGenerator());
         }
 
         if (key instanceof final MultipleBirthStatsKey k) {
-            return getMultipleBirthRates(k.getYear()).determineCount(k, config, randomGenerator);
+            return getMultipleBirthRates(k.getYear()).determineCount(k, config, Randomness.getRandomGenerator());
         }
 
         if (key instanceof final AdulterousBirthStatsKey k) {
-            return getAdulterousBirthRates(k.getYear()).determineCount(k, config, randomGenerator);
+            return getAdulterousBirthRates(k.getYear()).determineCount(k, config, Randomness.getRandomGenerator());
         }
 
         if (key instanceof final MarriageStatsKey k) {
-            return getMarriageRates(k.getYear()).determineCount(k, config, randomGenerator);
+            return getMarriageRates(k.getYear()).determineCount(k, config, Randomness.getRandomGenerator());
         }
 
         if (key instanceof final SeparationStatsKey k) {
-            return getSeparationByChildCountRates(k.getYear()).determineCount(k, config, randomGenerator);
+            return getSeparationByChildCountRates(k.getYear()).determineCount(k, config, Randomness.getRandomGenerator());
         }
 
         if (key instanceof final PartneringStatsKey k) {
-            return getPartneringProportions(k.getYear()).determineCount(k, config, randomGenerator);
+            return getPartneringProportions(k.getYear()).determineCount(k, config, Randomness.getRandomGenerator());
         }
 
         if(key instanceof final OccupationChangeStatsKey k) {
-            return getOccupationChangeProportions(k.getYear(), k.getSex()).determineCount(k, config, randomGenerator);
+            return getOccupationChangeProportions(k.getYear(), k.getSex()).determineCount(k, config, Randomness.getRandomGenerator());
         }
 
         throw new Error("Key based access not implemented for key class: " + key.getClass().toGenericString());
@@ -266,42 +218,42 @@ public class PopulationStatistics implements EventRateTables {
     public void returnAchievedCount(final DeterminedCount achievedCount) {
 
         if (achievedCount.getKey() instanceof final DeathStatsKey k) {
-            getDeathRates(k.getYear(), k.getSex()).returnAchievedCount(achievedCount, randomGenerator);
+            getDeathRates(k.getYear(), k.getSex()).returnAchievedCount(achievedCount, Randomness.getRandomGenerator());
             return;
         }
 
         if (achievedCount.getKey() instanceof final BirthStatsKey k) {
-            getOrderedBirthRates(k.getYear()).returnAchievedCount(achievedCount, randomGenerator);
+            getOrderedBirthRates(k.getYear()).returnAchievedCount(achievedCount, Randomness.getRandomGenerator());
             return;
         }
 
         if (achievedCount.getKey() instanceof final MultipleBirthStatsKey k) {
-            getMultipleBirthRates(k.getYear()).returnAchievedCount(achievedCount, randomGenerator);
+            getMultipleBirthRates(k.getYear()).returnAchievedCount(achievedCount, Randomness.getRandomGenerator());
             return;
         }
 
         if (achievedCount.getKey() instanceof final AdulterousBirthStatsKey k) {
-            getAdulterousBirthRates(k.getYear()).returnAchievedCount(achievedCount, randomGenerator);
+            getAdulterousBirthRates(k.getYear()).returnAchievedCount(achievedCount, Randomness.getRandomGenerator());
             return;
         }
 
         if (achievedCount.getKey() instanceof final MarriageStatsKey k) {
-            getMarriageRates(k.getYear()).returnAchievedCount(achievedCount, randomGenerator);
+            getMarriageRates(k.getYear()).returnAchievedCount(achievedCount, Randomness.getRandomGenerator());
             return;
         }
 
         if (achievedCount.getKey() instanceof final SeparationStatsKey k) {
-            getSeparationByChildCountRates(k.getYear()).returnAchievedCount(achievedCount, randomGenerator);
+            getSeparationByChildCountRates(k.getYear()).returnAchievedCount(achievedCount, Randomness.getRandomGenerator());
             return;
         }
 
         if (achievedCount.getKey() instanceof final PartneringStatsKey k) {
-            getPartneringProportions(k.getYear()).returnAchievedCount(achievedCount, randomGenerator);
+            getPartneringProportions(k.getYear()).returnAchievedCount(achievedCount, Randomness.getRandomGenerator());
             return;
         }
 
         if (achievedCount.getKey() instanceof final OccupationChangeStatsKey k) {
-            getOccupationChangeProportions(k.getYear(), k.getSex()).returnAchievedCount(achievedCount, randomGenerator);
+            getOccupationChangeProportions(k.getYear(), k.getSex()).returnAchievedCount(achievedCount, Randomness.getRandomGenerator());
             return;
         }
 
@@ -443,10 +395,6 @@ public class PopulationStatistics implements EventRateTables {
         return minGestationPeriod;
     }
 
-    public RandomGenerator getRandomGenerator() {
-        return randomGenerator;
-    }
-
     private static TreeMap<Year, Double> readInSingleInputDataFile(final DirectoryStream<Path> paths) throws IOException, InvalidInputFileException {
 
         int c = 0;
@@ -473,13 +421,13 @@ public class PopulationStatistics implements EventRateTables {
         return data;
     }
 
-    private TreeMap<Year, SelfCorrectingOneDimensionDataDistribution> readInSC1DDataFiles(final DirectoryStream<Path> paths, final Config config) throws IOException, InvalidInputFileException {
+    private static TreeMap<Year, SelfCorrectingOneDimensionDataDistribution> readInSC1DDataFiles(final DirectoryStream<Path> paths, final Config config) throws IOException, InvalidInputFileException {
 
         final TreeMap<Year, SelfCorrectingOneDimensionDataDistribution> data = new TreeMap<>();
 
         for (final Path path : paths) {
             // read in each file
-            final SelfCorrectingOneDimensionDataDistribution tempData = InputFileReader.readInSC1DDataFile(path, config, randomGenerator);
+            final SelfCorrectingOneDimensionDataDistribution tempData = InputFileReader.readInSC1DDataFile(path, config, Randomness.getRandomGenerator());
             data.put(tempData.getYear(), tempData);
         }
 
@@ -488,26 +436,26 @@ public class PopulationStatistics implements EventRateTables {
         return insertDistributionsToMeetInputWidth(config, data);
     }
 
-    private TreeMap<Year, ValiPopEnumeratedDistribution> readInNamesDataFiles(final DirectoryStream<Path> paths, final Config config) throws IOException, InvalidInputFileException, InconsistentWeightException {
+    private static TreeMap<Year, ValiPopEnumeratedDistribution> readInNamesDataFiles(final DirectoryStream<Path> paths, final Config config) throws IOException, InvalidInputFileException, InconsistentWeightException {
 
         final TreeMap<Year, ValiPopEnumeratedDistribution> data = new TreeMap<>();
 
         for (final Path path : paths) {
             // read in each file
-            final ValiPopEnumeratedDistribution tempData = InputFileReader.readInNameDataFile(path, randomGenerator);
+            final ValiPopEnumeratedDistribution tempData = InputFileReader.readInNameDataFile(path, Randomness.getRandomGenerator());
             data.put(tempData.getYear(), tempData);
         }
         paths.close();
         return insertDistributionsToMeetInputWidth(config, data);
     }
 
-    private TreeMap<Year, AgeDependantEnumeratedDistribution> readInAgeDependantEnumeratedDistributionDataFiles(final DirectoryStream<Path> paths, final Config config) throws IOException, InvalidInputFileException, InconsistentWeightException {
+    private static TreeMap<Year, AgeDependantEnumeratedDistribution> readInAgeDependantEnumeratedDistributionDataFiles(final DirectoryStream<Path> paths, final Config config) throws IOException, InvalidInputFileException, InconsistentWeightException {
 
         final TreeMap<Year, AgeDependantEnumeratedDistribution> data = new TreeMap<>();
 
         for (final Path path : paths) {
             // read in each file
-            final AgeDependantEnumeratedDistribution tempData = InputFileReader.readInDeathCauseDataFile(path, randomGenerator);
+            final AgeDependantEnumeratedDistribution tempData = InputFileReader.readInDeathCauseDataFile(path, Randomness.getRandomGenerator());
             data.put(tempData.getYear(), tempData);
         }
 
@@ -515,13 +463,13 @@ public class PopulationStatistics implements EventRateTables {
         return insertDistributionsToMeetInputWidth(config, data);
     }
 
-    private TreeMap<Year, SelfCorrectingTwoDimensionDataDistribution> readInSC2DDataFiles(final DirectoryStream<Path> paths, final Config config) throws IOException, InvalidInputFileException {
+    private static TreeMap<Year, SelfCorrectingTwoDimensionDataDistribution> readInSC2DDataFiles(final DirectoryStream<Path> paths, final Config config) throws IOException, InvalidInputFileException {
 
         final TreeMap<Year, SelfCorrectingTwoDimensionDataDistribution> data = new TreeMap<>();
 
         for (final Path path : paths) {
             // read in each file
-            final SelfCorrectingTwoDimensionDataDistribution tempData = InputFileReader.readInSC2DDataFile(path, config, randomGenerator);
+            final SelfCorrectingTwoDimensionDataDistribution tempData = InputFileReader.readInSC2DDataFile(path, config, Randomness.getRandomGenerator());
             data.put(tempData.getYear(), tempData);
         }
 
@@ -530,39 +478,39 @@ public class PopulationStatistics implements EventRateTables {
         return insertDistributionsToMeetInputWidth(config, data);
     }
 
-    private TreeMap<Year, SelfCorrecting2DIntegerRangeProportionalDistribution> readInAgeAndProportionalStatsInputFiles(final DirectoryStream<Path> paths, final Config config) throws IOException, InvalidInputFileException {
+    private static TreeMap<Year, SelfCorrecting2DIntegerRangeProportionalDistribution> readInAgeAndProportionalStatsInputFiles(final DirectoryStream<Path> paths, final Config config) throws IOException, InvalidInputFileException {
 
         final TreeMap<Year, SelfCorrecting2DIntegerRangeProportionalDistribution> data = new TreeMap<>();
 
         for (final Path path : paths) {
             // read in each file
-            final SelfCorrecting2DIntegerRangeProportionalDistribution tempData = InputFileReader.readInAgeAndProportionalStatsInput(path, randomGenerator);
+            final SelfCorrecting2DIntegerRangeProportionalDistribution tempData = InputFileReader.readInAgeAndProportionalStatsInput(path, Randomness.getRandomGenerator());
             data.put(tempData.getYear(), tempData);
         }
         paths.close();
         return insertDistributionsToMeetInputWidth(config, data);
     }
 
-    private TreeMap<Year, SelfCorrecting2DEnumeratedProportionalDistribution> readInStringAndProportionalStatsInputFiles(final DirectoryStream<Path> paths, final Config config) throws IOException, InvalidInputFileException {
+    private static TreeMap<Year, SelfCorrecting2DEnumeratedProportionalDistribution> readInStringAndProportionalStatsInputFiles(final DirectoryStream<Path> paths, final Config config) throws IOException, InvalidInputFileException {
 
         final TreeMap<Year, SelfCorrecting2DEnumeratedProportionalDistribution> data = new TreeMap<>();
 
         for (final Path path : paths) {
             // read in each file
-            final SelfCorrecting2DEnumeratedProportionalDistribution tempData = InputFileReader.readInStringAndProportionalStatsInput(path, randomGenerator);
+            final SelfCorrecting2DEnumeratedProportionalDistribution tempData = InputFileReader.readInStringAndProportionalStatsInput(path, Randomness.getRandomGenerator());
             data.put(tempData.getYear(), tempData);
         }
         paths.close();
         return insertDistributionsToMeetInputWidth(config, data);
     }
 
-    private TreeMap<Year, SelfCorrectingProportionalDistribution<IntegerRange, Integer, Integer>> readInAndAdaptAgeAndProportionalStatsInputFiles(final DirectoryStream<Path> paths, final Config config) throws IOException, InvalidInputFileException {
+    private static TreeMap<Year, SelfCorrectingProportionalDistribution<IntegerRange, Integer, Integer>> readInAndAdaptAgeAndProportionalStatsInputFiles(final DirectoryStream<Path> paths, final Config config) throws IOException, InvalidInputFileException {
 
         final TreeMap<Year, SelfCorrectingProportionalDistribution<IntegerRange, Integer, Integer>> data = new TreeMap<>();
 
         for (final Path path : paths) {
             // read in each file
-            final SelfCorrectingProportionalDistribution<IntegerRange, Integer, Integer> tempData = InputFileReader.readInAndAdaptAgeAndProportionalStatsInput(path, randomGenerator);
+            final SelfCorrectingProportionalDistribution<IntegerRange, Integer, Integer> tempData = InputFileReader.readInAndAdaptAgeAndProportionalStatsInput(path, Randomness.getRandomGenerator());
             data.put(tempData.getYear(), tempData);
         }
         paths.close();
@@ -576,9 +524,6 @@ public class PopulationStatistics implements EventRateTables {
         final int diff = config.getT0().getYear() - config.getTS().getYear();
         final int stepBack = (int) (inputWidth.getYears() * Math.ceil(diff / (double) inputWidth.getYears()));
 
-//        config.getT0().minus(Period.ofYears(stepBack)).getYear()
-
-//        MonthDate monthDate = config.getT0().advanceTime(new CompoundTimeUnit(stepBack, TimeUnit.YEAR).negative());
         Year prevInputDate = Year.of(config.getT0().minus(Period.ofYears(stepBack)).getYear());
 
         int c = 1;
@@ -599,21 +544,9 @@ public class PopulationStatistics implements EventRateTables {
             c++;
         }
 
-//        while (DateUtils.dateBeforeOrEqual(curDate = prevInputDate.plus(makePeriod(new CompoundTimeUnit(inputWidth.getCount() * c, inputWidth.getUnit())))), years[0])) {
-//            inputs.put(curDate.getYear(), inputs.get(years[0]));
-//            c++;
-//        }
-
         prevInputDate = years[0];
 
         for (final Year curInputDate : years) {
-
-
-//            while (DateUtils.dateBeforeOrEqual(curDate = prevInputDate.advanceTime(new CompoundTimeUnit(inputWidth.getCount() * c, inputWidth.getUnit())), curInputDate)) {
-//                Year duplicateFrom = getNearestDate(curDate, prevInputDate, curInputDate);
-//                inputs.put(curDate.getYear(), inputs.get(duplicateFrom));
-//                c++;
-//            }
 
             while (true) {
                 curDate = prevInputDate.plus(Period.ofYears(inputWidth.getYears() * c));
@@ -627,29 +560,14 @@ public class PopulationStatistics implements EventRateTables {
             prevInputDate = curInputDate;
         }
 
-//        while (DateUtils.dateBeforeOrEqual(curDate = prevInputDate.advanceTime(new CompoundTimeUnit(inputWidth.getCount() * c, inputWidth.getUnit())), config.getTE())) {
-//            inputs.put(curDate.getYear(), inputs.get(prevInputDate));
-//            c++;
-//        }
-
         while (true) {
             curDate = prevInputDate.plus(Period.ofYears(inputWidth.getYears() * c));
             if (curDate.isAfter(Year.of(config.getTE().getYear()))) break;
-//            inputs.put(curDate.getYear(), inputs.get(prevInputDate));
             c++;
         }
 
         return inputs;
     }
-
-//    private static Period makePeriod(CompoundTimeUnit compoundTimeUnit) {
-//
-//        if (compoundTimeUnit.getUnit() == TimeUnit.MONTH) {
-//            return Period.ofMonths(compoundTimeUnit.getCount());
-//        } else {
-//            return Period.ofYears(compoundTimeUnit.getCount());
-//        }
-//    }
 
     private static Year getNearestDate(final Year referenceDate, final Year option1, final Year option2) {
 

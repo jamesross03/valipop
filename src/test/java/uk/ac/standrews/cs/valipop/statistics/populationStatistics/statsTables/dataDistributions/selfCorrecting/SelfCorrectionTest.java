@@ -18,6 +18,7 @@
 package uk.ac.standrews.cs.valipop.statistics.populationStatistics.statsTables.dataDistributions.selfCorrecting;
 
 import org.junit.jupiter.api.Test;
+import uk.ac.standrews.cs.valipop.implementations.Randomness;
 import uk.ac.standrews.cs.valipop.statistics.analysis.validation.contingencyTables.TreeStructure.SexOption;
 import uk.ac.standrews.cs.valipop.statistics.populationStatistics.PopulationStatistics;
 import uk.ac.standrews.cs.valipop.statistics.populationStatistics.determinedCounts.DeterminedCount;
@@ -42,7 +43,7 @@ public class SelfCorrectionTest {
 
     private SelfCorrectingOneDimensionDataDistribution createSC1DDD() {
 
-        Map<IntegerRange, Double> data = new TreeMap<>();
+        final Map<IntegerRange, Double> data = new TreeMap<>();
         data.put(new IntegerRange(0), 0.1);
         data.put(new IntegerRange(1), 0.000037);
         data.put(new IntegerRange(2), 0D);
@@ -50,30 +51,28 @@ public class SelfCorrectionTest {
         data.put(new IntegerRange(4), 0.5);
         data.put(new IntegerRange(5), 0.01);
 
-        return new SelfCorrectingOneDimensionDataDistribution(Year.of(0), "test", "test", data, false, PopulationStatistics.randomGenerator);
+        return new SelfCorrectingOneDimensionDataDistribution(Year.of(0), "test", "test", data, false, Randomness.getRandomGenerator());
     }
 
     @Test
     public void firstAccessSC1DDD() {
 
-        SelfCorrectingOneDimensionDataDistribution sc1DDD = createSC1DDD();
-        OneDimensionDataDistribution sc1DDDCopy = sc1DDD.clone();
+        final SelfCorrectingOneDimensionDataDistribution sc1DDD = createSC1DDD();
+        final OneDimensionDataDistribution sc1DDDCopy = sc1DDD.clone();
 
-        Period y = Period.ofYears(1);
+        final Period y = Period.ofYears(1);
 
-        for (IntegerRange iR : sc1DDD.getRate().keySet()) {
+        for (final IntegerRange iR : sc1DDD.getRate().keySet()) {
 
-            double check = sc1DDDCopy.getRate(iR.getValue());
+            final double check = sc1DDDCopy.getRate(iR.getValue());
 
             // Basic first retrieval tests
-            StatsKey<Integer,Integer> k1 = new DeathStatsKey(iR.getValue(), 100, y, null, SexOption.MALE);
-            @SuppressWarnings("rawtypes")
-            DeterminedCount r1 = sc1DDD.determineCount(k1, null, PopulationStatistics.randomGenerator);
+            final StatsKey<Integer,Integer> k1 = new DeathStatsKey(iR.getValue(), 100, y, null, SexOption.MALE);
+            @SuppressWarnings("rawtypes") final DeterminedCount r1 = sc1DDD.determineCount(k1, null, Randomness.getRandomGenerator());
             assertEquals((int) Math.round(check * 100), (int) r1.getDeterminedCount(), DELTA);
 
-            StatsKey<Integer, Integer> k2 = new DeathStatsKey(iR.getValue(), 1000, y, null, SexOption.MALE);
-            @SuppressWarnings("rawtypes")
-            DeterminedCount r2 = sc1DDD.determineCount(k2, null, PopulationStatistics.randomGenerator);
+            final StatsKey<Integer, Integer> k2 = new DeathStatsKey(iR.getValue(), 1000, y, null, SexOption.MALE);
+            @SuppressWarnings("rawtypes") final DeterminedCount r2 = sc1DDD.determineCount(k2, null, Randomness.getRandomGenerator());
             assertEquals((int) Math.round(check * 1000), (int) r2.getDeterminedCount(), DELTA);
         }
     }
@@ -82,34 +81,33 @@ public class SelfCorrectionTest {
     @Test
     public void correctingChecksSC1DDD() {
 
-        SelfCorrectingOneDimensionDataDistribution sc1DDD = createSC1DDD();
-        OneDimensionDataDistribution sc1DDDCopy = sc1DDD.clone();
+        final SelfCorrectingOneDimensionDataDistribution sc1DDD = createSC1DDD();
+        final OneDimensionDataDistribution sc1DDDCopy = sc1DDD.clone();
 
-        Period y = Period.ofYears(1);
+        final Period y = Period.ofYears(1);
 
-        Period[] tps = {y};
+        final Period[] tps = {y};
 
-        for (Period tp : tps) {
+        for (final Period tp : tps) {
 
-            for (IntegerRange iR : sc1DDD.getRate().keySet()) {
+            for (final IntegerRange iR : sc1DDD.getRate().keySet()) {
 
-                StatsKey<Integer, Integer> k1 = new DeathStatsKey(iR.getValue(), 100, tp, null, SexOption.MALE);
+                final StatsKey<Integer, Integer> k1 = new DeathStatsKey(iR.getValue(), 100, tp, null, SexOption.MALE);
 
-                double c1 = sc1DDDCopy.getRate(iR.getValue());
+                final double c1 = sc1DDDCopy.getRate(iR.getValue());
 
-                @SuppressWarnings("rawtypes")
-                DeterminedCount r1 = sc1DDD.determineCount(k1, null, PopulationStatistics.randomGenerator);
+                @SuppressWarnings("rawtypes") final DeterminedCount r1 = sc1DDD.determineCount(k1, null, Randomness.getRandomGenerator());
                 assertEquals((int) Math.round(c1 * r1.getKey().getForNPeople()), r1.getDeterminedCount());
 
-                int rr2 = (int) Math.round(1.5 * (int) r1.getDeterminedCount());
+                final int rr2 = (int) Math.round(1.5 * (int) r1.getDeterminedCount());
                 r1.setFulfilledCount(rr2);
-                sc1DDD.returnAchievedCount(r1, PopulationStatistics.randomGenerator);
+                sc1DDD.returnAchievedCount(r1, Randomness.getRandomGenerator());
             }
         }
     }
 
     @SuppressWarnings({ "unused", "rawtypes" })
-    private int calcExpectedCount(DeterminedCount applied, StatsKey corrective, double targetRate) {
+    private int calcExpectedCount(final DeterminedCount applied, final StatsKey corrective, final double targetRate) {
 
         int count = calcUnfetteredExpectedCount(applied, corrective, targetRate);
 
@@ -125,21 +123,21 @@ public class SelfCorrectionTest {
     }
 
     @SuppressWarnings("rawtypes")
-    private int calcUnfetteredExpectedCount(DeterminedCount applied, StatsKey corrective, double targetRate) {
+    private static int calcUnfetteredExpectedCount(final DeterminedCount applied, final StatsKey corrective, final double targetRate) {
 
         return (int) Math.ceil(targetRate * (applied.getKey().getForNPeople() + corrective.getForNPeople()) - (int) applied.getFulfilledCount());
     }
 
     @SuppressWarnings({ "unused", "rawtypes" })
-    private double calcAdditiveRate(StatsKey k1, double r1, StatsKey k2, double r2) {
+    private static double calcAdditiveRate(final StatsKey k1, final double r1, final StatsKey k2, final double r2) {
 
         return (r1 * k1.getForNPeople() + r2 * k2.getForNPeople()) / (k1.getForNPeople() + k2.getForNPeople());
     }
 
     @SuppressWarnings({ "unused", "rawtypes" })
-    private double calcExpectedCorrectiveRate(double targetRate, double returnedRate, StatsKey returnedKey, StatsKey checkKey) {
+    private static double calcExpectedCorrectiveRate(final double targetRate, final double returnedRate, final StatsKey returnedKey, final StatsKey checkKey) {
 
-        double expectedCorrectiveRate = (targetRate * (returnedKey.getForNPeople() + checkKey.getForNPeople()) - (returnedRate * returnedKey.getForNPeople())) / checkKey.getForNPeople();
+        final double expectedCorrectiveRate = (targetRate * (returnedKey.getForNPeople() + checkKey.getForNPeople()) - (returnedRate * returnedKey.getForNPeople())) / checkKey.getForNPeople();
 
         if (expectedCorrectiveRate > 1) {
             return 1;
@@ -153,7 +151,7 @@ public class SelfCorrectionTest {
     }
 
     @SuppressWarnings({ "unused", "rawtypes" })
-    private double calcUnfetteredExpectedCorrectiveRate(double targetRate, double returnedRate, StatsKey returnedKey, StatsKey checkKey) {
+    private static double calcUnfetteredExpectedCorrectiveRate(final double targetRate, final double returnedRate, final StatsKey returnedKey, final StatsKey checkKey) {
 
         return (targetRate * (returnedKey.getForNPeople() + checkKey.getForNPeople()) - (returnedRate * returnedKey.getForNPeople())) / checkKey.getForNPeople();
     }
@@ -161,21 +159,21 @@ public class SelfCorrectionTest {
     @Test
     public void variedTimeStepTest() {
 
-        SelfCorrectingOneDimensionDataDistribution data = createSC1DDD();
+        final SelfCorrectingOneDimensionDataDistribution data = createSC1DDD();
 
-        int age = 5;
+        final int age = 5;
 
         int popSize = 1000000;
-        Period y = Period.ofYears(1);
-        Period m2 = Period.ofMonths(2);
+        final Period y = Period.ofYears(1);
+        final Period m2 = Period.ofMonths(2);
 
-        StatsKey<Integer, Integer> yearK = new DeathStatsKey(age, popSize, y, null, SexOption.MALE);
-        int expPopSize = popSize - data.determineCount(yearK, null, PopulationStatistics.randomGenerator).getDeterminedCount();
+        final StatsKey<Integer, Integer> yearK = new DeathStatsKey(age, popSize, y, null, SexOption.MALE);
+        final int expPopSize = popSize - data.determineCount(yearK, null, Randomness.getRandomGenerator()).getDeterminedCount();
 
         for (int m = 1; m <= 12; m += 2) {
-            StatsKey<Integer, Integer> k = new DeathStatsKey(age, popSize, m2, null, SexOption.MALE);
+            final StatsKey<Integer, Integer> k = new DeathStatsKey(age, popSize, m2, null, SexOption.MALE);
 
-            int count = data.determineCount(k, null, PopulationStatistics.randomGenerator).getDeterminedCount();
+            final int count = data.determineCount(k, null, Randomness.getRandomGenerator()).getDeterminedCount();
 
             popSize -= count;
         }

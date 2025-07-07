@@ -27,12 +27,14 @@ import uk.ac.standrews.cs.valipop.utils.RCaller;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.InvalidParameterException;
 import java.time.LocalDate;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
+import org.apache.commons.math3.random.JDKRandomGenerator;
+import org.apache.commons.math3.random.RandomGenerator;
 
 /**
  * @author Tom Dalton (tsd4@st-andrews.ac.uk)
@@ -172,26 +174,18 @@ public class MinimaSearch {
     }
 
     public static double getV(Minimise minimiseFor, int maxBirthingAge, Control controlBy, Config config) throws IOException, StatsException {
-        switch(minimiseFor) {
-            case GEEGLM:
-                return RCaller.getGeeglmV(config.getRunPath(), maxBirthingAge);
-            default:
-                throw new StatsException(minimiseFor + " - minimisation for this test is not implemented");
+        if (Objects.requireNonNull(minimiseFor) == Minimise.GEEGLM) {
+            return RCaller.getGeeglmV(config.getRunPath(), maxBirthingAge);
         }
+        throw new StatsException(minimiseFor + " - minimisation for this test is not implemented");
     }
 
     public static double getControllingFactor(Control controlBy) {
 
-        switch (controlBy) {
-
-            case RF:
-                return recoveryFactor;
-
-            case PRF:
-                return proportionalRecoveryFactor;
-        }
-
-        throw new InvalidParameterException(controlBy.toString() + " did not resolve to a known parameter");
+        return switch (controlBy) {
+            case RF -> recoveryFactor;
+            case PRF -> proportionalRecoveryFactor;
+        };
     }
 
     public static void setControllingFactor(Control controlBy, double startFactor) {
@@ -226,6 +220,7 @@ public class MinimaSearch {
     }
 
     private static boolean jumpingPhase = false;
+    private static RandomGenerator randomGenerator = new JDKRandomGenerator(35255);
 
     private static double jumpOut() throws SpaceExploredException {
         // called when minima found
@@ -248,7 +243,7 @@ public class MinimaSearch {
             System.out.println(bottomSearchBoundFactor);
             System.out.println(initStep);
             System.out.println(options);
-            int chosen = PopulationStatistics.randomGenerator.nextInt(options);
+            int chosen = randomGenerator.nextInt(options);
 
             chosenFactor = chosen * (initStep / 2) + bottomSearchBoundFactor;
 

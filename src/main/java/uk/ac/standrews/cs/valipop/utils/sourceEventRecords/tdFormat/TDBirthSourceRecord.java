@@ -17,6 +17,7 @@
  */
 package uk.ac.standrews.cs.valipop.utils.sourceEventRecords.tdFormat;
 
+import uk.ac.standrews.cs.valipop.implementations.Randomness;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPartnership;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPerson;
 import uk.ac.standrews.cs.valipop.statistics.analysis.validation.contingencyTables.TableStructure.PersonCharacteristicsIdentifier;
@@ -58,7 +59,7 @@ public class TDBirthSourceRecord extends BirthSourceRecord {
     private String IMMIGRATION_GENERATION = "NA";
 
 
-    public TDBirthSourceRecord(IPerson person) {
+    public TDBirthSourceRecord(final IPerson person) {
 
         super(person);
 
@@ -69,19 +70,18 @@ public class TDBirthSourceRecord extends BirthSourceRecord {
             mothersOccupation = person.getParents().getFemalePartner().getOccupation(birthDate);
             fathers_surname = person.getParents().getMalePartner().getSurname();
 
-            IPartnership parents = person.getParents();
+            final IPartnership parents = person.getParents();
             MOTHER_IDENTITY = String.valueOf(parents.getFemalePartner().getId());
             FATHER_IDENTITY = String.valueOf(parents.getMalePartner().getId());
             FATHER_BIRTH_RECORD_IDENTITY = String.valueOf(parents.getMalePartner().getId());
             MOTHER_BIRTH_RECORD_IDENTITY = String.valueOf(parents.getFemalePartner().getId());
 
-            if(parents.getMarriageDate() != null)
+            if (parents.getMarriageDate() != null)
                 PARENT_MARRIAGE_RECORD_IDENTITY = String.valueOf(parents.getId());
-
         }
 
-        int registrationDay = PopulationStatistics.randomGenerator.nextInt(43);
-        registrationDate = birthDate.plus(registrationDay, ChronoUnit.DAYS);
+        final int registrationDay = Randomness.getRandomGenerator().nextInt(43);
+        registrationDate = birthDate.plusDays(registrationDay);
 
         illegitimate = person.isAdulterousBirth() || (person.getParents() != null && person.getParents().getMarriageDate() == null) ? "illegitimate" : "";
 
@@ -92,9 +92,9 @@ public class TDBirthSourceRecord extends BirthSourceRecord {
 
         CHILD_IDENTITY = uid;
 
-        ArrayList<IPartnership> marriages = new ArrayList<>();
+        final ArrayList<IPartnership> marriages = new ArrayList<>();
 
-        for(IPartnership p : person.getPartnerships()) {
+        for(final IPartnership p : person.getPartnerships()) {
             if(p.getMarriageDate() != null)
                 marriages.add(p);
         }
@@ -124,16 +124,12 @@ public class TDBirthSourceRecord extends BirthSourceRecord {
             MARRIAGE_RECORD_IDENTITY8 = String.valueOf(marriages.get(7).getId());
 
 
-        int immigantGen = PersonCharacteristicsIdentifier.getImmigrantGeneration(person);
+        final int immigantGen = PersonCharacteristicsIdentifier.getImmigrantGeneration(person);
 
         if(immigantGen == -1)
             IMMIGRATION_GENERATION = "NA";
         else
             IMMIGRATION_GENERATION = String.valueOf(immigantGen);
-
-
-
-
     }
 
     @Override

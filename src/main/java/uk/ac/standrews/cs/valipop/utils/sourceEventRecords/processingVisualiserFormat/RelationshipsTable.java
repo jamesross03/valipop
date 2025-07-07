@@ -18,6 +18,7 @@
 package uk.ac.standrews.cs.valipop.utils.sourceEventRecords.processingVisualiserFormat;
 
 import uk.ac.standrews.cs.valipop.Config;
+import uk.ac.standrews.cs.valipop.implementations.Randomness;
 import uk.ac.standrews.cs.valipop.statistics.populationStatistics.PopulationStatistics;
 
 import java.io.IOException;
@@ -84,7 +85,7 @@ public class RelationshipsTable {
         ArrayList<String[]> used = new ArrayList<>();
 
         for (int i = 0; i < relations.size() - 1; i++) {
-            int r = PopulationStatistics.randomGenerator.nextInt(relations.size());
+            int r = Randomness.getRandomGenerator().nextInt(relations.size());
 
             String[] swap = relations.remove(r);
 
@@ -94,8 +95,8 @@ public class RelationshipsTable {
             line[position] = swap[position];
             swap[position] = principle;
 
-            swap[3] = String.valueOf(PopulationStatistics.randomGenerator.nextInt(81));
-            line[3] = String.valueOf(PopulationStatistics.randomGenerator.nextInt(81));
+            swap[3] = String.valueOf(Randomness.getRandomGenerator().nextInt(81));
+            line[3] = String.valueOf(Randomness.getRandomGenerator().nextInt(81));
 
             used.add(swap);
         }

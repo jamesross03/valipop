@@ -17,6 +17,7 @@
  */
 package uk.ac.standrews.cs.valipop.utils.sourceEventRecords.egSkyeFormat;
 
+import uk.ac.standrews.cs.valipop.implementations.Randomness;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPartnership;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPerson;
 import uk.ac.standrews.cs.valipop.simulationEntities.PopulationNavigation;
@@ -67,7 +68,7 @@ public class EGSkyeDeathSourceRecord extends DeathSourceRecord {
             }
         }
 
-        int registrationDay = PopulationStatistics.randomGenerator.nextInt(9);
+        int registrationDay = Randomness.getRandomGenerator().nextInt(9);
         registrationDate = deathDate.plus(registrationDay, ChronoUnit.DAYS);
 
         setMaritalStatus(identifyMaritalStatus(person));
@@ -88,7 +89,7 @@ public class EGSkyeDeathSourceRecord extends DeathSourceRecord {
                 return "S"; // single/spinster
             }
         } else {
-            if (getLastPartnership(deceased).getSeparationDate(PopulationStatistics.randomGenerator) == null) {
+            if (getLastPartnership(deceased).getSeparationDate(Randomness.getRandomGenerator()) == null) {
                 // not separated from last partner
 
                 IPerson lastPartner = getLastPartnership(deceased).getPartnerOf(deceased);

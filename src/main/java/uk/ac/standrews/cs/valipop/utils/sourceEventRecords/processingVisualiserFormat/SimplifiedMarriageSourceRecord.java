@@ -17,6 +17,7 @@
  */
 package uk.ac.standrews.cs.valipop.utils.sourceEventRecords.processingVisualiserFormat;
 
+import uk.ac.standrews.cs.valipop.implementations.Randomness;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPartnership;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPerson;
 import uk.ac.standrews.cs.valipop.statistics.populationStatistics.PopulationStatistics;
@@ -185,7 +186,7 @@ public class SimplifiedMarriageSourceRecord extends SourceRecord {
         final StringBuilder builder = new StringBuilder();
 
         if (groom_id != null && bride_id != null) {
-            int rnd = PopulationStatistics.randomGenerator.nextInt(101);
+            int rnd = Randomness.getRandomGenerator().nextInt(101);
             RelationshipsTable.relationshipsMarriage.add(new String[]{"Marriage", String.valueOf(groom_id), String.valueOf(bride_id), String.valueOf(rnd), marriage_date.getDayOfMonth() + "." + marriage_date.getMonth() + "." + marriage_date.getYear()});
         }
         append(builder,

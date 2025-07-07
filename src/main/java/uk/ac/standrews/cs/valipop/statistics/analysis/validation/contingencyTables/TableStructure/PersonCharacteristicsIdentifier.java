@@ -17,6 +17,7 @@
  */
 package uk.ac.standrews.cs.valipop.statistics.analysis.validation.contingencyTables.TableStructure;
 
+import uk.ac.standrews.cs.valipop.implementations.Randomness;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPartnership;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPerson;
 import uk.ac.standrews.cs.valipop.statistics.analysis.validation.contingencyTables.TreeStructure.SeparationOption;
@@ -74,8 +75,7 @@ public class PersonCharacteristicsIdentifier {
         } else if (partnershipsInYear.isEmpty()) {
             return null;
         } else {
-//            return partnershipsInYear.getFirst();
-            return partnershipsInYear.get(0);
+            return partnershipsInYear.getFirst();
         }
     }
 
@@ -112,12 +112,11 @@ public class PersonCharacteristicsIdentifier {
         }
 
         final List<IPerson> children = activePartnership.getChildren();
-        final IPerson lastChild = children.get(children.size() - 1);
-//        final IPerson lastChild = children.getLast();
+        final IPerson lastChild = children.getLast();
 
         if (!bornInYear(lastChild, year)) {
             return SeparationOption.NO;
-        } else if (activePartnership.getSeparationDate(PopulationStatistics.randomGenerator) != null) { // TODO Would this be better to use earliest possible sep date?
+        } else if (activePartnership.getSeparationDate(Randomness.getRandomGenerator()) != null) { // TODO Would this be better to use earliest possible sep date?
             return SeparationOption.YES;
         } else {
             return SeparationOption.NO;

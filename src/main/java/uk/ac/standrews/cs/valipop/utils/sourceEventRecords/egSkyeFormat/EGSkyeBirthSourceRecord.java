@@ -17,6 +17,7 @@
  */
 package uk.ac.standrews.cs.valipop.utils.sourceEventRecords.egSkyeFormat;
 
+import uk.ac.standrews.cs.valipop.implementations.Randomness;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPerson;
 import uk.ac.standrews.cs.valipop.statistics.populationStatistics.PopulationStatistics;
 import uk.ac.standrews.cs.valipop.utils.sourceEventRecords.oldDSformat.BirthSourceRecord;
@@ -49,7 +50,7 @@ public class EGSkyeBirthSourceRecord extends BirthSourceRecord {
             fathers_surname = person.getParents().getMalePartner().getSurname();
         }
 
-        int registrationDay = PopulationStatistics.randomGenerator.nextInt(43);
+        int registrationDay = Randomness.getRandomGenerator().nextInt(43);
         registrationDate = birthDate.plus(registrationDay, ChronoUnit.DAYS);
 
         illegitimate = person.isAdulterousBirth() ? "illegitimate" : "";

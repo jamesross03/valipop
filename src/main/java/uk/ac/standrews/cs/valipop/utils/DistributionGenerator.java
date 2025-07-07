@@ -17,6 +17,7 @@
  */
 package uk.ac.standrews.cs.valipop.utils;
 
+import uk.ac.standrews.cs.valipop.implementations.Randomness;
 import uk.ac.standrews.cs.valipop.statistics.distributions.InconsistentWeightException;
 import uk.ac.standrews.cs.valipop.statistics.populationStatistics.PopulationStatistics;
 import uk.ac.standrews.cs.valipop.utils.specialTypes.labeledValueSets.IntegerRange;
@@ -84,8 +85,7 @@ public class DistributionGenerator {
 
         if (dataset.hasLabel(filterOn) && dataset.hasLabel(groupY) && dataset.hasLabel(groupX)) {
 
-            // TODO handle random generator consistently with main simulation.
-            TreeMap<IntegerRange, LabelledValueSet<String, Double>> dist = dataset.to2DTableOfProportions(groupX, groupY, PopulationStatistics.randomGenerator);
+            TreeMap<IntegerRange, LabelledValueSet<String, Double>> dist = dataset.to2DTableOfProportions(groupX, groupY, Randomness.getRandomGenerator());
 
             try (PrintStream ps = new PrintStream(Files.newOutputStream(outToDir.resolve(filterValue + ".txt")))) {
 

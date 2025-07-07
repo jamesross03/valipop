@@ -17,6 +17,7 @@
  */
 package uk.ac.standrews.cs.valipop.utils.sourceEventRecords.oldDSformat;
 
+import uk.ac.standrews.cs.valipop.implementations.Randomness;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPartnership;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPerson;
 import uk.ac.standrews.cs.valipop.simulationEntities.PopulationNavigation;
@@ -216,7 +217,7 @@ public class MarriageSourceRecord extends SourceRecord {
             final IPartnership lastPartnership = partnerships.get(partnerships.size() - 1);
 //            final IPartnership lastPartnership = partnerships.getLast();
 
-            if (lastPartnership.getSeparationDate(PopulationStatistics.randomGenerator) == null) {
+            if (lastPartnership.getSeparationDate(Randomness.getRandomGenerator()) == null) {
                 // not separated from last partner
                 if (PopulationNavigation.aliveOnDate(lastPartnership.getPartnerOf(spouse), marriageDate)) {
                     // last spouse alive on death date of deceased

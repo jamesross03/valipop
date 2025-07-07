@@ -17,6 +17,7 @@
  */
 package uk.ac.standrews.cs.valipop.utils.sourceEventRecords.tdFormat;
 
+import uk.ac.standrews.cs.valipop.implementations.Randomness;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPartnership;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPerson;
 import uk.ac.standrews.cs.valipop.simulationEntities.PopulationNavigation;
@@ -126,7 +127,7 @@ public class TDMarriageSourceRecord extends MarriageSourceRecord {
                 } else {
                     return "S"; // single/spinster
                 }
-            } else if(lastPartnership.getSeparationDate(PopulationStatistics.randomGenerator) == null) {
+            } else if(lastPartnership.getSeparationDate(Randomness.getRandomGenerator()) == null) {
                 // not separated from last partner
 
                 final IPerson lastPartner = PopulationNavigation.getLastPartnershipBeforeDate(deceased, marriageDate).getPartnerOf(deceased);

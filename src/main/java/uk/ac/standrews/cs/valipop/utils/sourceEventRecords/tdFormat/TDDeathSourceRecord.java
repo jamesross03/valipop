@@ -17,6 +17,7 @@
  */
 package uk.ac.standrews.cs.valipop.utils.sourceEventRecords.tdFormat;
 
+import uk.ac.standrews.cs.valipop.implementations.Randomness;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPartnership;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPerson;
 import uk.ac.standrews.cs.valipop.simulationEntities.PopulationNavigation;
@@ -101,7 +102,7 @@ public class TDDeathSourceRecord extends DeathSourceRecord {
             MOTHER_BIRTH_RECORD_IDENTITY = String.valueOf(mother.getId());;
         }
 
-        final int registrationDay = PopulationStatistics.randomGenerator.nextInt(9);
+        final int registrationDay = Randomness.getRandomGenerator().nextInt(9);
         registrationDate = deathDate.plusDays(registrationDay);
 
         setMaritalStatus(identifyMaritalStatus(person));
@@ -151,7 +152,7 @@ public class TDDeathSourceRecord extends DeathSourceRecord {
                 return "S"; // single/spinster
             }
         } else {
-            if (getLastPartnership(deceased).getSeparationDate(PopulationStatistics.randomGenerator) == null) {
+            if (getLastPartnership(deceased).getSeparationDate(Randomness.getRandomGenerator()) == null) {
                 // not separated from last partner
 
                 final IPerson lastPartner = getLastPartnership(deceased).getPartnerOf(deceased);
