@@ -83,14 +83,14 @@ public class SelfCorrectingOneDimensionDataDistribution extends OneDimensionData
         if (aC == 0) {
             final double rateToApply = calcSubRateFromYearRate(tD, key.getConsideredTimePeriod());
             SingleDeterminedCount singleDeterminedCount = resolveRateToCount(key, rateToApply, rateToApply);
-            if ((OBDModel.global_debug))
-            {
-                System.out.println("rateToApply: " + rateToApply);
-                System.out.println("getDeterminedCount: " + singleDeterminedCount.getDeterminedCount());
-                System.out.println("getFulfilledCount: " + singleDeterminedCount.getFulfilledCount());
-                System.out.println("getRawUncorrectedCount: " + singleDeterminedCount.getRawUncorrectedCount());
-                System.out.println("getRawCorrectedCount: " + singleDeterminedCount.getRawCorrectedCount());
-            }
+//            if ((OBDModel.global_debug))
+//            {
+//                System.out.println("rateToApply: " + rateToApply);
+//                System.out.println("getDeterminedCount: " + singleDeterminedCount.getDeterminedCount());
+//                System.out.println("getFulfilledCount: " + singleDeterminedCount.getFulfilledCount());
+//                System.out.println("getRawUncorrectedCount: " + singleDeterminedCount.getRawUncorrectedCount());
+//                System.out.println("getRawCorrectedCount: " + singleDeterminedCount.getRawCorrectedCount());
+//            }
             return singleDeterminedCount; // Same due to correction rate currently same as target rate
 
         }
@@ -137,11 +137,11 @@ public class SelfCorrectingOneDimensionDataDistribution extends OneDimensionData
         final double uncorrectedRate = calcSubRateFromYearRate(tD, key.getConsideredTimePeriod());
 
 
-        if ((OBDModel.global_debug))
-        {
-            System.out.println("rateToApply: " + rateToApply);
-            System.out.println("uncorrectedRate: " + uncorrectedRate);
-        }
+//        if ((OBDModel.global_debug))
+//        {
+//            System.out.println("rateToApply: " + rateToApply);
+//            System.out.println("uncorrectedRate: " + uncorrectedRate);
+//        }
 
 
 
@@ -210,27 +210,27 @@ public class SelfCorrectingOneDimensionDataDistribution extends OneDimensionData
         final double rawCorrectedCount = rate * key.getForNPeople();
         final double rawUncorrectedCount = uncorrectedRate * key.getForNPeople();
 
-        if ((OBDModel.global_debug))
-        {
-            System.out.println("rawCorrectedCount: " + rawCorrectedCount);
-            System.out.println("rawUncorrectedCount: " + rawUncorrectedCount);
-            System.out.println("binomialSampling: " + binomialSampling);
-            System.out.println("key.getForNPeople(): " + key.getForNPeople());
-        }
+//        if ((OBDModel.global_debug))
+//        {
+//            System.out.println("rawCorrectedCount: " + rawCorrectedCount);
+//            System.out.println("rawUncorrectedCount: " + rawUncorrectedCount);
+//            System.out.println("binomialSampling: " + binomialSampling);
+//            System.out.println("key.getForNPeople(): " + key.getForNPeople());
+//        }
 
         final int determinedCount;
         if (binomialSampling) {
 
 
-            if ((OBDModel.global_debug))
-            {
-                System.out.println("rng state before passing to binomial distribution: " + rng.nextDouble());
-            }
+//            if ((OBDModel.global_debug))
+//            {
+//                System.out.println("rng state before passing to binomial distribution: " + rng.nextDouble());
+//            }
             determinedCount = new BinomialDistribution(rng, (int) Math.round(key.getForNPeople()), rate).sample();
-            if ((OBDModel.global_debug))
-            {
-                System.out.println("determinedCount: " + determinedCount);
-            }
+//            if ((OBDModel.global_debug))
+//            {
+//                System.out.println("determinedCount: " + determinedCount);
+//            }
         } else {
             determinedCount = (int) Math.round(rate * key.getForNPeople());
         }

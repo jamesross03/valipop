@@ -38,8 +38,8 @@ public class Randomness {
                 public boolean nextBoolean() {
                     call_count++;
                     boolean b = super.nextBoolean();
-                    if ((OBDModel.global_debug))
-                        System.out.println("Number of rng calls: " + call_count);
+//                    if ((OBDModel.global_debug))
+//                        System.out.println("Number of rng calls: " + call_count);
 
                     return b;
                 }
@@ -48,16 +48,16 @@ public class Randomness {
                 public double nextDouble() {
                     call_count++;
                     double v = super.nextDouble();
-                    if ((OBDModel.global_debug))
-                        System.out.println("Number of rng calls: " + call_count);
+//                    if ((OBDModel.global_debug))
+//                        System.out.println("Number of rng calls: " + call_count);
                     return v;
                 }
 
                 public int nextInt(int bound) {
                     call_count++;
                     int i = super.nextInt(bound);
-                    if ((OBDModel.global_debug))
-                        System.out.println("Number of rng calls: " + call_count);
+//                    if ((OBDModel.global_debug))
+//                        System.out.println("Number of rng calls: " + call_count);
                     return i;
                 }
             };

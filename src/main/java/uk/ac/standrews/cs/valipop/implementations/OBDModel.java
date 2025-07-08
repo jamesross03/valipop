@@ -257,20 +257,28 @@ public class OBDModel {
 
     private void runSimulationAttempt() {
 
-        if (Randomness.do_debug)
+        if (Randomness.do_debug) {
             System.out.println("Population size 1: " + population.getPeople().getNumberOfPeople());
+            System.out.println("Number of rng calls: " + Randomness.call_count);
+        }
 
         initialisePopulation();
-        if (Randomness.do_debug)
+        if (Randomness.do_debug){
             System.out.println("Population size 2: " + population.getPeople().getNumberOfPeople());
+            System.out.println("Number of rng calls: " + Randomness.call_count);
+        }
 
         simulatePopulationUntilStart();
-        if (Randomness.do_debug)
+        if (Randomness.do_debug){
             System.out.println("Population size 3: " + population.getPeople().getNumberOfPeople());
+            System.out.println("Number of rng calls: " + Randomness.call_count);
+        }
 
         simulatePopulationUntilEnd();
-        if (Randomness.do_debug)
+        if (Randomness.do_debug){
             System.out.println("Population size 4: " + population.getPeople().getNumberOfPeople());
+            System.out.println("Number of rng calls: " + Randomness.call_count);
+        }
 
 
         logResults();
@@ -326,27 +334,32 @@ public class OBDModel {
         int count = 0;
         while (!currentDate.isAfter(endOfInitPeriod)) {
 
-            do_local_debug = Randomness.do_debug && currentDate.isAfter(LocalDate.of(1703, 1, 1)) && currentDate.isBefore(LocalDate.of(1711, 1, 1));
-            if (do_local_debug) {
-                System.out.println("Step date: " + currentDate);
-                System.out.println("Living population size: " + population.getLivingPeople().getNumberOfPeople());
-                System.out.println("Dead population size: " + population.getDeadPeople().getNumberOfPeople());
+            if (Randomness.do_debug) {
+                System.out.println(currentDate);
+                System.out.println("Number of rng calls: " + Randomness.call_count + "\n");
             }
+
+            do_local_debug = Randomness.do_debug && currentDate.isAfter(LocalDate.of(1703, 1, 1)) && currentDate.isBefore(LocalDate.of(1711, 1, 1));
+//            if (do_local_debug) {
+//                System.out.println("Step date: " + currentDate);
+//                System.out.println("Living population size: " + population.getLivingPeople().getNumberOfPeople());
+//                System.out.println("Dead population size: " + population.getDeadPeople().getNumberOfPeople());
+//            }
             final int numberBorn = createBirths();
-            if (do_local_debug)
-                System.out.println("Born: " + numberBorn);
+//            if (do_local_debug)
+//                System.out.println("Born: " + numberBorn);
             final int shortFallInBirths = adjustPopulationNumbers(numberBorn);
-            if (do_local_debug)
-                System.out.println("Shortfall: " + shortFallInBirths);
+//            if (do_local_debug)
+//                System.out.println("Shortfall: " + shortFallInBirths);
             global_debug = do_local_debug;
             int maleDeaths = createDeaths(SexOption.MALE);
             global_debug = false;
             int femaleDeaths = createDeaths(SexOption.FEMALE);
             final int numberDying = maleDeaths + femaleDeaths;
-            if (do_local_debug) {
-                System.out.println("Male died: " + maleDeaths);
-                System.out.println("Female died: " + femaleDeaths + "\n");
-            }
+//            if (do_local_debug) {
+//                System.out.println("Male died: " + maleDeaths);
+//                System.out.println("Female died: " + femaleDeaths + "\n");
+//            }
 
             migrationModel.performMigration(currentDate, this);
             occupationChangeModel.performOccupationChange(currentDate);
@@ -363,8 +376,8 @@ public class OBDModel {
             throw new InsufficientNumberOfPeopleException("Seed size likely too small");
         }
 
-        if (Randomness.do_debug)
-            System.out.println("Steps in initialisation: " + count);
+//        if (Randomness.do_debug)
+//            System.out.println("Steps in initialisation: " + count);
     }
 
     private void simulatePopulationUntilStart() {
@@ -564,8 +577,8 @@ public class OBDModel {
 
             if (divisionDate.isAfter(currentDate)) break;
             int killedAtTS1 = getKilledAtTS(sex, ofSexLiving, divisionDate);
-            if (do_local_debug && killedAtTS1 > 0)
-                System.out.println("Deaths in division: " + divisionDate);
+//            if (do_local_debug && killedAtTS1 > 0)
+//                System.out.println("Deaths in division: " + divisionDate);
 
             killedAtTS += killedAtTS1;
         }
@@ -605,21 +618,21 @@ public class OBDModel {
 //            System.out.println("Killed: " + killed);
 //        }
 
-        if (do_local_debug && divisionDate.isEqual(LocalDate.of(1687, 1, 1))) {
-            System.out.println();
-            System.out.println("consideredTimePeriod: " + consideredTimePeriod);
-            System.out.println("currentDate: " + currentDate);
-            System.out.println("divisionDate: " + divisionDate);
-            System.out.println("age: " + age);
-            System.out.println("sex: " + sex);
-            System.out.println("peopleOfAge: " + peopleOfAge);
-            System.out.println("rawUncorrectedCount: " + determinedCount.getRawUncorrectedCount());
-            System.out.println("rawCorrectedCount: " + determinedCount.getRawCorrectedCount());
-            System.out.println("fulfilledCount: " + determinedCount.getFulfilledCount());
-            System.out.println("NumberToKill: " + numberToKill);
-            System.out.println("Collection size: " + peopleToKill.size());
-            System.out.println("Killed: " + killed);
-        }
+//        if (do_local_debug && divisionDate.isEqual(LocalDate.of(1687, 1, 1))) {
+//            System.out.println();
+//            System.out.println("consideredTimePeriod: " + consideredTimePeriod);
+//            System.out.println("currentDate: " + currentDate);
+//            System.out.println("divisionDate: " + divisionDate);
+//            System.out.println("age: " + age);
+//            System.out.println("sex: " + sex);
+//            System.out.println("peopleOfAge: " + peopleOfAge);
+//            System.out.println("rawUncorrectedCount: " + determinedCount.getRawUncorrectedCount());
+//            System.out.println("rawCorrectedCount: " + determinedCount.getRawCorrectedCount());
+//            System.out.println("fulfilledCount: " + determinedCount.getFulfilledCount());
+//            System.out.println("NumberToKill: " + numberToKill);
+//            System.out.println("Collection size: " + peopleToKill.size());
+//            System.out.println("Killed: " + killed);
+//        }
             return killed;
     }
 
