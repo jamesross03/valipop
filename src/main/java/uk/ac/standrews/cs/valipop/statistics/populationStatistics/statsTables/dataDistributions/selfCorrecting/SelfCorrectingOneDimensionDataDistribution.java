@@ -82,7 +82,13 @@ public class SelfCorrectingOneDimensionDataDistribution extends OneDimensionData
         // if no correction data - i.e. first call to this method
         if (aC == 0) {
             final double rateToApply = calcSubRateFromYearRate(tD, key.getConsideredTimePeriod());
-            return resolveRateToCount(key, rateToApply, rateToApply); // Same due to correction rate currently same as target rate
+            SingleDeterminedCount singleDeterminedCount = resolveRateToCount(key, rateToApply, rateToApply);
+            if ((OBDModel.global_debug))
+            {
+                System.out.println("rateToApply: " + rateToApply);
+            }
+            return singleDeterminedCount; // Same due to correction rate currently same as target rate
+
         }
 
         // to apply to
@@ -94,6 +100,10 @@ public class SelfCorrectingOneDimensionDataDistribution extends OneDimensionData
         // if no N value given in StatsKey
         if (tAT == 0) {
             final double rateToApply = calcSubRateFromYearRate(tD, key.getConsideredTimePeriod());
+            if ((OBDModel.global_debug))
+            {
+                System.out.println("rateToApply: " + rateToApply);
+            }
             return resolveRateToCount(key, rateToApply, rateToApply);
         }
 
