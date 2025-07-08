@@ -163,7 +163,7 @@ public class DistributedFactorSearch {
         }
     }
 
-    // --- Distrubited Operations ---
+    // --- Distributed Operations ---
     private static ModelOutput runModel(ModelInput i) {
         Config config = new Config(i.tS, i.t0, i.tE, i.size, Paths.get(i.dataFiles), Paths.get(i.resultLocation), i.runPurpose, Paths.get(i.summaryResultsLocation));
 

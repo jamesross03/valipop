@@ -257,9 +257,21 @@ public class OBDModel {
 
     private void runSimulationAttempt() {
 
+        if (Randomness.do_debug)
+            System.out.println("Population size 1: " + population.getPeople().getNumberOfPeople());
+
         initialisePopulation();
+        if (Randomness.do_debug)
+            System.out.println("Population size 2: " + population.getPeople().getNumberOfPeople());
+
         simulatePopulationUntilStart();
+        if (Randomness.do_debug)
+            System.out.println("Population size 3: " + population.getPeople().getNumberOfPeople());
+
         simulatePopulationUntilEnd();
+        if (Randomness.do_debug)
+            System.out.println("Population size 4: " + population.getPeople().getNumberOfPeople());
+
 
         logResults();
         recordSummary();
