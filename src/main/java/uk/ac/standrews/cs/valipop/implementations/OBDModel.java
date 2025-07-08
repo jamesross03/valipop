@@ -577,6 +577,9 @@ public class OBDModel {
         final int age = Period.between(divisionDate, currentDate).getYears();
         final int peopleOfAge = ofSexLiving.getNumberOfPeople(divisionDate, consideredTimePeriod);
 
+
+
+
         // gets death rate for people of age at the current date
         final StatsKey<Integer,Integer> key = new DeathStatsKey(age, peopleOfAge, consideredTimePeriod, currentDate, sex);
         @SuppressWarnings("unchecked")
@@ -593,12 +596,21 @@ public class OBDModel {
         determinedCount.setFulfilledCount(killed);
         desired.returnAchievedCount(determinedCount);
 
-        if (do_local_debug && killed > 0) {
+//        if (do_local_debug && killed > 0) {
+//            System.out.println("NumberToKill: " + numberToKill);
+//            System.out.println("Collection size: " + peopleToKill.size());
+//            System.out.println("Killed: " + killed);
+//        }
+
+        if (do_local_debug && divisionDate.isEqual(LocalDate.of(1687, 1, 1))) {
+            System.out.println();
+            System.out.println("divisionDate: " + divisionDate);
+            System.out.println("age: " + age);
+            System.out.println("peopleOfAge: " + peopleOfAge);
             System.out.println("NumberToKill: " + numberToKill);
             System.out.println("Collection size: " + peopleToKill.size());
             System.out.println("Killed: " + killed);
         }
-
             return killed;
     }
 
