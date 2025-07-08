@@ -317,20 +317,27 @@ public class OBDModel {
         log.info(logEntry);
     }
 
+    boolean do_local_debug = false;
+
     // Progress the simulation until initialisation is finished
     private void initialisePopulation() throws InsufficientNumberOfPeopleException {
 
         int count = 0;
         while (!currentDate.isAfter(endOfInitPeriod)) {
 
+            do_local_debug = Randomness.do_debug && currentDate.isAfter(LocalDate.of(1703, 1, 1));
+            if (do_local_debug) {
+                System.out.println("Step date: " + currentDate);
+                System.out.println("Population size: " + population.getPeople().getNumberOfPeople());
+            }
             final int numberBorn = createBirths();
-            if (Randomness.do_debug)
+            if (do_local_debug)
                 System.out.println("Born: " + numberBorn);
             final int shortFallInBirths = adjustPopulationNumbers(numberBorn);
-            if (Randomness.do_debug)
+            if (do_local_debug)
                 System.out.println("Shortfall: " + shortFallInBirths);
             final int numberDying = createDeaths(SexOption.MALE) + createDeaths(SexOption.FEMALE);
-            if (Randomness.do_debug)
+            if (do_local_debug)
                 System.out.println("Died: " + numberDying + "\n");
 
             migrationModel.performMigration(currentDate, this);

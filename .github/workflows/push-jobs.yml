@@ -14,7 +14,7 @@ jobs:
     name: Build and test (Linux)
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
     steps:
       - name: Check out project
         uses: actions/checkout@v4.2.2
@@ -30,12 +30,13 @@ jobs:
     name: Build and test (Windows)
     runs-on: windows-latest
     permissions:
-      contents: write
+      contents: read
     steps:
       - name: Check out project
         uses: actions/checkout@v4.2.2
 
-      - uses: ./.github/actions/build-and-test
+      - name: Build and run tests
+        uses: ./.github/actions/build-and-test
         with:
           maven-target: 'test'
           maven-params: '-DexcludedGroups=slow'
@@ -49,7 +50,8 @@ jobs:
       - name: Check out project
         uses: actions/checkout@v4.2.2
 
-      - uses: ./.github/actions/build-and-test
+      - name: Build and run tests
+        uses: ./.github/actions/build-and-test
         with:
           maven-target: 'test'
           maven-params: '-DexcludedGroups=slow'

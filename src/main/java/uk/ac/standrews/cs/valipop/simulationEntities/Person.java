@@ -74,9 +74,9 @@ public class Person implements IPerson {
         firstName = getForename(statistics, immigrant);
         surname = getSurname(statistics, immigrant);
 
-        if (Randomness.do_debug && debug_count++ < 20) {
-            System.out.println(id + ", " + firstName);
-        }
+//        if (Randomness.do_debug && debug_count++ < 20) {
+//            System.out.println(id + ", " + firstName);
+//        }
 
         representation = firstName + " " + surname + " (" + id + ") " + birthDate;
 

@@ -31,30 +31,30 @@ public class Randomness {
 
         if (randomGenerator == null) {
             randomGenerator = new JDKRandomGenerator() {
-                @Override
-                public boolean nextBoolean() {
-                    boolean b = super.nextBoolean();
-                    if (do_debug && debug_count++ < 20) {
-                        System.out.println(">>>>>>>>>>>> " + b);
-                    }
-                    return b;
-                }
-
-                @Override
-                public double nextDouble() {
-                    double v = super.nextDouble();
-                    if (do_debug && debug_count++ < 20) {
-                        System.out.println(">>>>>>>>>>>> " + v);
-                    }                    return v;
-                }
-
-                public int nextInt(int bound) {
-                    int i = super.nextInt(bound);
-                    if (do_debug && debug_count++ < 20) {
-                        System.out.println(">>>>>>>>>>>> " + i);
-                    }
-                    return i;
-                }
+//                @Override
+//                public boolean nextBoolean() {
+//                    boolean b = super.nextBoolean();
+//                    if (do_debug && debug_count++ < 20) {
+//                        System.out.println(">>>>>>>>>>>> " + b);
+//                    }
+//                    return b;
+//                }
+//
+//                @Override
+//                public double nextDouble() {
+//                    double v = super.nextDouble();
+//                    if (do_debug && debug_count++ < 20) {
+//                        System.out.println(">>>>>>>>>>>> " + v);
+//                    }                    return v;
+//                }
+//
+//                public int nextInt(int bound) {
+//                    int i = super.nextInt(bound);
+//                    if (do_debug && debug_count++ < 20) {
+//                        System.out.println(">>>>>>>>>>>> " + i);
+//                    }
+//                    return i;
+//                }
             };
         }
 
