@@ -24,6 +24,8 @@ import org.junit.jupiter.params.provider.FieldSource;
 import uk.ac.standrews.cs.valipop.Config;
 import uk.ac.standrews.cs.valipop.implementations.OBDModel;
 import uk.ac.standrews.cs.valipop.implementations.Randomness;
+import uk.ac.standrews.cs.valipop.simulationEntities.IPerson;
+import uk.ac.standrews.cs.valipop.simulationEntities.dataStructure.PeopleCollection;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -31,6 +33,7 @@ import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
+import java.util.Collection;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -83,10 +86,24 @@ public class RecordExportTest {
 
     private static void runTest(final Path configPath, final String expectedBirthHash, final String expectedDeathHash, final String expectedMarriageHash) throws IOException, NoSuchAlgorithmException {
 
-        Randomness.do_debug = true;
+//        Randomness.do_debug = true;
         final Config config = new Config(configPath);
         final OBDModel model = new OBDModel(config);
         model.runSimulation();
+
+
+        PeopleCollection people = model.getPopulation().getPeople();
+        System.out.println("Number of people: " + people.getNumberOfPeople());
+        System.out.println("Number of partnerships: " + people.getNumberOfPartnerships());
+        Collection<IPerson> people1 = people.getPeople();
+
+        int debug_count = 0;
+        for (IPerson p : people1) {
+            if (debug_count++ < 20)
+                System.out.println(p);
+            else break;
+        }
+
         model.analyseAndOutputPopulation(true);
 
         final Path recordPath = config.getRunPath().resolve(RECORD_DIR).resolve("birth_records.csv");
