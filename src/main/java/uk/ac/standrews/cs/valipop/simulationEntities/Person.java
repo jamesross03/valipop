@@ -17,6 +17,7 @@
  */
 package uk.ac.standrews.cs.valipop.simulationEntities;
 
+import uk.ac.standrews.cs.valipop.implementations.Randomness;
 import uk.ac.standrews.cs.valipop.statistics.analysis.validation.contingencyTables.TreeStructure.SexOption;
 import uk.ac.standrews.cs.valipop.statistics.populationStatistics.PopulationStatistics;
 import uk.ac.standrews.cs.valipop.utils.addressLookup.Address;
@@ -59,6 +60,8 @@ public class Person implements IPerson {
         this(sex, birthDate, parents, statistics, adulterousBirth, false);
     }
 
+    private static int debug_count = 0;
+
     public Person(final SexOption sex, final LocalDate birthDate, final IPartnership parents, final PopulationStatistics statistics, final boolean adulterousBirth, final boolean immigrant) {
 
         id = getNewId();
@@ -70,6 +73,10 @@ public class Person implements IPerson {
 
         firstName = getForename(statistics, immigrant);
         surname = getSurname(statistics, immigrant);
+
+        if (Randomness.do_debug && debug_count++ < 20) {
+            System.out.println(id + ", " + firstName);
+        }
 
         representation = firstName + " " + surname + " (" + id + ") " + birthDate;
 
