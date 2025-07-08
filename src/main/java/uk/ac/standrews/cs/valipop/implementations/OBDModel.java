@@ -345,10 +345,14 @@ public class OBDModel {
 //                System.out.println("Living population size: " + population.getLivingPeople().getNumberOfPeople());
 //                System.out.println("Dead population size: " + population.getDeadPeople().getNumberOfPeople());
 //            }
+            if (do_local_debug) {
+                System.out.println(currentDate);
+                System.out.println("Number of rng calls before createBirths: " + Randomness.call_count + "\n");
+            }
             final int numberBorn = createBirths();
             if (do_local_debug) {
                 System.out.println(currentDate);
-                System.out.println("Number of rng calls: " + Randomness.call_count + "\n");
+                System.out.println("Number of rng calls after createBirths: " + Randomness.call_count + "\n");
             }
 //            if (do_local_debug)
 //                System.out.println("Born: " + numberBorn);
