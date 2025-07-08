@@ -324,8 +324,14 @@ public class OBDModel {
         while (!currentDate.isAfter(endOfInitPeriod)) {
 
             final int numberBorn = createBirths();
+            if (Randomness.do_debug)
+                System.out.println("Born: " + numberBorn);
             final int shortFallInBirths = adjustPopulationNumbers(numberBorn);
+            if (Randomness.do_debug)
+                System.out.println("Shortfall: " + shortFallInBirths);
             final int numberDying = createDeaths(SexOption.MALE) + createDeaths(SexOption.FEMALE);
+            if (Randomness.do_debug)
+                System.out.println("Died: " + numberDying + "\n");
 
             migrationModel.performMigration(currentDate, this);
             occupationChangeModel.performOccupationChange(currentDate);
@@ -342,7 +348,8 @@ public class OBDModel {
             throw new InsufficientNumberOfPeopleException("Seed size likely too small");
         }
 
-        System.out.println("Steps in initialisation: " + count);
+        if (Randomness.do_debug)
+            System.out.println("Steps in initialisation: " + count);
     }
 
     private void simulatePopulationUntilStart() {
