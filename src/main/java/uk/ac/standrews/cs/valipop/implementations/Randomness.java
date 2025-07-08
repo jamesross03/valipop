@@ -31,30 +31,35 @@ public class Randomness {
 
         if (randomGenerator == null) {
             randomGenerator = new JDKRandomGenerator() {
-//                @Override
-//                public boolean nextBoolean() {
-//                    boolean b = super.nextBoolean();
-//                    if (do_debug && debug_count++ < 20) {
-//                        System.out.println(">>>>>>>>>>>> " + b);
-//                    }
-//                    return b;
-//                }
-//
-//                @Override
-//                public double nextDouble() {
-//                    double v = super.nextDouble();
-//                    if (do_debug && debug_count++ < 20) {
-//                        System.out.println(">>>>>>>>>>>> " + v);
-//                    }                    return v;
-//                }
-//
-//                public int nextInt(int bound) {
-//                    int i = super.nextInt(bound);
-//                    if (do_debug && debug_count++ < 20) {
-//                        System.out.println(">>>>>>>>>>>> " + i);
-//                    }
-//                    return i;
-//                }
+
+                int call_count = 0;
+
+                @Override
+                public boolean nextBoolean() {
+                    call_count++;
+                    boolean b = super.nextBoolean();
+                    if ((OBDModel.global_debug))
+                        System.out.println("Number of rng calls: " + call_count);
+
+                    return b;
+                }
+
+                @Override
+                public double nextDouble() {
+                    call_count++;
+                    double v = super.nextDouble();
+                    if ((OBDModel.global_debug))
+                        System.out.println("Number of rng calls: " + call_count);
+                    return v;
+                }
+
+                public int nextInt(int bound) {
+                    call_count++;
+                    int i = super.nextInt(bound);
+                    if ((OBDModel.global_debug))
+                        System.out.println("Number of rng calls: " + call_count);
+                    return i;
+                }
             };
         }
 
