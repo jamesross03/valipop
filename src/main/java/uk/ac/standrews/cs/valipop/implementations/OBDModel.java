@@ -610,6 +610,9 @@ public class OBDModel {
             System.out.println("age: " + age);
             System.out.println("sex: " + sex);
             System.out.println("peopleOfAge: " + peopleOfAge);
+            System.out.println("rawUncorrectedCount: " + determinedCount.getRawUncorrectedCount());
+            System.out.println("rawCorrectedCount: " + determinedCount.getRawCorrectedCount());
+            System.out.println("fulfilledCount: " + determinedCount.getFulfilledCount());
             System.out.println("NumberToKill: " + numberToKill);
             System.out.println("Collection size: " + peopleToKill.size());
             System.out.println("Killed: " + killed);
