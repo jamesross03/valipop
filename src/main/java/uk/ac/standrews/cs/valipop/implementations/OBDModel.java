@@ -320,6 +320,7 @@ public class OBDModel {
     // Progress the simulation until initialisation is finished
     private void initialisePopulation() throws InsufficientNumberOfPeopleException {
 
+        int count = 0;
         while (!currentDate.isAfter(endOfInitPeriod)) {
 
             final int numberBorn = createBirths();
@@ -333,12 +334,15 @@ public class OBDModel {
             countBirthsAndDeaths(numberBorn, numberDying);
 
             advanceSimulationTime();
+            count++;
         }
 
         if (populationTooSmall()) {
             cleanUpAfterUnsuccessfulAttempt();
             throw new InsufficientNumberOfPeopleException("Seed size likely too small");
         }
+
+        System.out.println("Steps in initialisation: " + count);
     }
 
     private void simulatePopulationUntilStart() {
