@@ -210,13 +210,6 @@ public class SelfCorrectingOneDimensionDataDistribution extends OneDimensionData
         final double rawCorrectedCount = rate * key.getForNPeople();
         final double rawUncorrectedCount = uncorrectedRate * key.getForNPeople();
 
-        final int determinedCount;
-        if (binomialSampling) {
-
-            determinedCount = new BinomialDistribution(rng, (int) Math.round(key.getForNPeople()), rate).sample();
-        } else {
-            determinedCount = (int) Math.round(rate * key.getForNPeople());
-        }
         if ((OBDModel.global_debug))
         {
             System.out.println("rawCorrectedCount: " + rawCorrectedCount);
@@ -224,6 +217,24 @@ public class SelfCorrectingOneDimensionDataDistribution extends OneDimensionData
             System.out.println("binomialSampling: " + binomialSampling);
             System.out.println("key.getForNPeople(): " + key.getForNPeople());
         }
+
+        final int determinedCount;
+        if (binomialSampling) {
+
+
+            if ((OBDModel.global_debug))
+            {
+                System.out.println("rng state before passing to binomial distribution: " + rng.nextDouble());
+            }
+            determinedCount = new BinomialDistribution(rng, (int) Math.round(key.getForNPeople()), rate).sample();
+            if ((OBDModel.global_debug))
+            {
+                System.out.println("determinedCount: " + determinedCount);
+            }
+        } else {
+            determinedCount = (int) Math.round(rate * key.getForNPeople());
+        }
+
         return new SingleDeterminedCount(key, determinedCount, rawCorrectedCount, rawUncorrectedCount);
     }
 
