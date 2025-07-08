@@ -267,7 +267,7 @@ public class PopulationStatistics implements EventRateTables {
         if (sex == SexOption.MALE) {
             Year nearestYearInMap = getNearestYearInMap(year, maleDeath);
             if ((OBDModel.global_debug))
-                System.out.println("nearestYearInMap: " + nearestYearInMap);
+                System.out.println("\nnearestYearInMap: " + nearestYearInMap);
             return maleDeath.get(nearestYearInMap);
         } else {
             return femaleDeath.get(getNearestYearInMap(year, femaleDeath));
