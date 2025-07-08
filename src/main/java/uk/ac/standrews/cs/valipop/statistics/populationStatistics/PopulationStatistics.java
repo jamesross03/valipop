@@ -18,6 +18,7 @@
 package uk.ac.standrews.cs.valipop.statistics.populationStatistics;
 
 import uk.ac.standrews.cs.valipop.Config;
+import uk.ac.standrews.cs.valipop.implementations.OBDModel;
 import uk.ac.standrews.cs.valipop.implementations.Randomness;
 import uk.ac.standrews.cs.valipop.statistics.analysis.validation.contingencyTables.TreeStructure.SexOption;
 import uk.ac.standrews.cs.valipop.statistics.distributions.EnumeratedDistribution;
@@ -264,7 +265,10 @@ public class PopulationStatistics implements EventRateTables {
     public SelfCorrectingOneDimensionDataDistribution getDeathRates(final Year year, final SexOption sex) {
 
         if (sex == SexOption.MALE) {
-            return maleDeath.get(getNearestYearInMap(year, maleDeath));
+            Year nearestYearInMap = getNearestYearInMap(year, maleDeath);
+            if ((OBDModel.global_debug))
+                System.out.println("nearestYearInMap: " + nearestYearInMap);
+            return maleDeath.get(nearestYearInMap);
         } else {
             return femaleDeath.get(getNearestYearInMap(year, femaleDeath));
         }

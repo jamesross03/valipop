@@ -318,6 +318,7 @@ public class OBDModel {
     }
 
     boolean do_local_debug = false;
+    public static boolean global_debug = false;
 
     // Progress the simulation until initialisation is finished
     private void initialisePopulation() throws InsufficientNumberOfPeopleException {
@@ -337,7 +338,9 @@ public class OBDModel {
             final int shortFallInBirths = adjustPopulationNumbers(numberBorn);
             if (do_local_debug)
                 System.out.println("Shortfall: " + shortFallInBirths);
+            global_debug = do_local_debug;
             int maleDeaths = createDeaths(SexOption.MALE);
+            global_debug = false;
             int femaleDeaths = createDeaths(SexOption.FEMALE);
             final int numberDying = maleDeaths + femaleDeaths;
             if (do_local_debug) {
