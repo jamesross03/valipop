@@ -604,8 +604,11 @@ public class OBDModel {
 
         if (do_local_debug && divisionDate.isEqual(LocalDate.of(1687, 1, 1))) {
             System.out.println();
+            System.out.println("consideredTimePeriod: " + consideredTimePeriod);
+            System.out.println("currentDate: " + currentDate);
             System.out.println("divisionDate: " + divisionDate);
             System.out.println("age: " + age);
+            System.out.println("sex: " + sex);
             System.out.println("peopleOfAge: " + peopleOfAge);
             System.out.println("NumberToKill: " + numberToKill);
             System.out.println("Collection size: " + peopleToKill.size());
