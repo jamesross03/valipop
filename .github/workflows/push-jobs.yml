@@ -40,6 +40,20 @@ jobs:
           maven-target: 'test'
           maven-params: '-DexcludedGroups=slow'
 
+  build-and-test-macos:
+    name: Build and test (macOS)
+    runs-on: macos-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out project
+        uses: actions/checkout@v4.2.2
+
+      - uses: ./.github/actions/build-and-test
+        with:
+          maven-target: 'test'
+          maven-params: '-DexcludedGroups=slow'
+
   build-pages:
     name: Build website
     needs: build-and-test-linux
