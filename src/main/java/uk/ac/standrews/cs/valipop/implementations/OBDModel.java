@@ -328,7 +328,8 @@ public class OBDModel {
             do_local_debug = Randomness.do_debug && currentDate.isAfter(LocalDate.of(1703, 1, 1));
             if (do_local_debug) {
                 System.out.println("Step date: " + currentDate);
-                System.out.println("Population size: " + population.getPeople().getNumberOfPeople());
+                System.out.println("Living population size: " + population.getLivingPeople().getNumberOfPeople());
+                System.out.println("Dead population size: " + population.getDeadPeople().getNumberOfPeople());
             }
             final int numberBorn = createBirths();
             if (do_local_debug)
@@ -336,9 +337,13 @@ public class OBDModel {
             final int shortFallInBirths = adjustPopulationNumbers(numberBorn);
             if (do_local_debug)
                 System.out.println("Shortfall: " + shortFallInBirths);
-            final int numberDying = createDeaths(SexOption.MALE) + createDeaths(SexOption.FEMALE);
-            if (do_local_debug)
-                System.out.println("Died: " + numberDying + "\n");
+            int maleDeaths = createDeaths(SexOption.MALE);
+            int femaleDeaths = createDeaths(SexOption.FEMALE);
+            final int numberDying = maleDeaths + femaleDeaths;
+            if (do_local_debug) {
+                System.out.println("Male died: " + maleDeaths);
+                System.out.println("Female died: " + femaleDeaths + "\n");
+            }
 
             migrationModel.performMigration(currentDate, this);
             occupationChangeModel.performOccupationChange(currentDate);
