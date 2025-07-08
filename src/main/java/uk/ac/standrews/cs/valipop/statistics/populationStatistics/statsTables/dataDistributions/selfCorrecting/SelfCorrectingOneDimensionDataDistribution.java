@@ -217,6 +217,13 @@ public class SelfCorrectingOneDimensionDataDistribution extends OneDimensionData
         } else {
             determinedCount = (int) Math.round(rate * key.getForNPeople());
         }
+        if ((OBDModel.global_debug))
+        {
+            System.out.println("rawCorrectedCount: " + rawCorrectedCount);
+            System.out.println("rawUncorrectedCount: " + rawUncorrectedCount);
+            System.out.println("binomialSampling: " + binomialSampling);
+            System.out.println("key.getForNPeople(): " + key.getForNPeople());
+        }
         return new SingleDeterminedCount(key, determinedCount, rawCorrectedCount, rawUncorrectedCount);
     }
 
