@@ -325,7 +325,7 @@ public class OBDModel {
         int count = 0;
         while (!currentDate.isAfter(endOfInitPeriod)) {
 
-            do_local_debug = Randomness.do_debug && currentDate.isAfter(LocalDate.of(1703, 1, 1));
+            do_local_debug = Randomness.do_debug && currentDate.isAfter(LocalDate.of(1703, 1, 1)) && currentDate.isBefore(LocalDate.of(1711, 1, 1));
             if (do_local_debug) {
                 System.out.println("Step date: " + currentDate);
                 System.out.println("Living population size: " + population.getLivingPeople().getNumberOfPeople());
@@ -583,7 +583,7 @@ public class OBDModel {
         final DeterminedCount<Integer, Double, Integer, Integer> determinedCount = (DeterminedCount<Integer, Double, Integer, Integer>) desired.getDeterminedCount(key, config);
 
         // Calculate the appropriate number to kill
-        final Integer numberToKill = ((SingleDeterminedCount) determinedCount).getDeterminedCount();
+        final int numberToKill = determinedCount.getDeterminedCount();
 
         final Collection<IPerson> peopleToKill = ofSexLiving.removeNPersons(numberToKill, divisionDate, consideredTimePeriod, true);
 
@@ -593,7 +593,13 @@ public class OBDModel {
         determinedCount.setFulfilledCount(killed);
         desired.returnAchievedCount(determinedCount);
 
-        return killed;
+        if (do_local_debug && killed > 0) {
+            System.out.println("NumberToKill: " + numberToKill);
+            System.out.println("Collection size: " + peopleToKill.size());
+            System.out.println("Killed: " + killed);
+        }
+
+            return killed;
     }
 
     private int createPartnerships(final Collection<NewMother> mothersNeedingPartners) {
