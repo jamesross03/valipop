@@ -26,13 +26,13 @@ public class Randomness {
 
     public static int debug_count = 0;
     public static boolean do_debug = false;
+    public static int call_count = 0;
 
     public synchronized static RandomGenerator getRandomGenerator() {
 
         if (randomGenerator == null) {
             randomGenerator = new JDKRandomGenerator() {
 
-                int call_count = 0;
 
                 @Override
                 public boolean nextBoolean() {

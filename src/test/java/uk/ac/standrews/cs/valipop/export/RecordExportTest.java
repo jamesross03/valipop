@@ -87,6 +87,7 @@ public class RecordExportTest {
     private static void runTest(final Path configPath, final String expectedBirthHash, final String expectedDeathHash, final String expectedMarriageHash) throws IOException, NoSuchAlgorithmException {
 
         Randomness.do_debug = true;
+        Randomness.call_count = 0;
         final Config config = new Config(configPath);
         final OBDModel model = new OBDModel(config);
         model.runSimulation();
