@@ -560,7 +560,11 @@ public class OBDModel {
         for (final LocalDate divisionDate : divisionDates) {
 
             if (divisionDate.isAfter(currentDate)) break;
-            killedAtTS += getKilledAtTS(sex, ofSexLiving, divisionDate);
+            int killedAtTS1 = getKilledAtTS(sex, ofSexLiving, divisionDate);
+            if (do_local_debug && killedAtTS1 > 0)
+                System.out.println("Deaths in division: " + divisionDate);
+
+            killedAtTS += killedAtTS1;
         }
 
         return killedAtTS;
