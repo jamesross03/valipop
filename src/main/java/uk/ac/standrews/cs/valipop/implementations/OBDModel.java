@@ -339,22 +339,38 @@ public class OBDModel {
                 System.out.println("Number of rng calls: " + Randomness.call_count + "\n");
             }
 
-            do_local_debug = Randomness.do_debug && currentDate.isAfter(LocalDate.of(1703, 1, 1)) && currentDate.isBefore(LocalDate.of(1711, 1, 1));
+            do_local_debug = Randomness.do_debug && !currentDate.isBefore(LocalDate.of(1704, 1, 1)) && currentDate.isBefore(LocalDate.of(1705, 1, 1));
 //            if (do_local_debug) {
 //                System.out.println("Step date: " + currentDate);
 //                System.out.println("Living population size: " + population.getLivingPeople().getNumberOfPeople());
 //                System.out.println("Dead population size: " + population.getDeadPeople().getNumberOfPeople());
 //            }
             final int numberBorn = createBirths();
+            if (do_local_debug) {
+                System.out.println(currentDate);
+                System.out.println("Number of rng calls: " + Randomness.call_count + "\n");
+            }
 //            if (do_local_debug)
 //                System.out.println("Born: " + numberBorn);
             final int shortFallInBirths = adjustPopulationNumbers(numberBorn);
-//            if (do_local_debug)
+            if (do_local_debug) {
+                System.out.println(currentDate);
+                System.out.println("Number of rng calls: " + Randomness.call_count + "\n");
+            }
+            //            if (do_local_debug)
 //                System.out.println("Shortfall: " + shortFallInBirths);
             global_debug = do_local_debug;
             int maleDeaths = createDeaths(SexOption.MALE);
+            if (do_local_debug) {
+                System.out.println(currentDate);
+                System.out.println("Number of rng calls: " + Randomness.call_count + "\n");
+            }
             global_debug = false;
             int femaleDeaths = createDeaths(SexOption.FEMALE);
+            if (do_local_debug) {
+                System.out.println(currentDate);
+                System.out.println("Number of rng calls: " + Randomness.call_count + "\n");
+            }
             final int numberDying = maleDeaths + femaleDeaths;
 //            if (do_local_debug) {
 //                System.out.println("Male died: " + maleDeaths);
@@ -362,11 +378,22 @@ public class OBDModel {
 //            }
 
             migrationModel.performMigration(currentDate, this);
+            if (do_local_debug) {
+                System.out.println(currentDate);
+                System.out.println("Number of rng calls: " + Randomness.call_count + "\n");
+            }
             occupationChangeModel.performOccupationChange(currentDate);
+            if (do_local_debug) {
+                System.out.println(currentDate);
+                System.out.println("Number of rng calls: " + Randomness.call_count + "\n");
+            }
 
             logTimeStep(numberBorn, shortFallInBirths, numberDying);
             countBirthsAndDeaths(numberBorn, numberDying);
-
+            if (do_local_debug) {
+                System.out.println(currentDate);
+                System.out.println("Number of rng calls: " + Randomness.call_count + "\n");
+            }
             advanceSimulationTime();
             count++;
         }
