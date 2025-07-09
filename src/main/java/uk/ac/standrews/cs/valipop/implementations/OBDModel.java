@@ -571,21 +571,53 @@ public class OBDModel {
 
     private int getBornAtTS(final FemaleCollection femalesLiving, final LocalDate divisionDate) {
 
+        if (do_local_debug) {
+            System.out.println(currentDate);
+            System.out.println("Number of rng calls during getBornAtTS 1: " + Randomness.call_count + "\n");
+        }
         final Period consideredTimePeriod = config.getSimulationTimeStep();
 
+        if (do_local_debug) {
+            System.out.println(currentDate);
+            System.out.println("Number of rng calls during getBornAtTS 1: " + Randomness.call_count + "\n");
+        }
         final int age = Period.between(divisionDate.plus(consideredTimePeriod), currentDate).getYears();
+        if (do_local_debug) {
+            System.out.println(currentDate);
+            System.out.println("Number of rng calls during getBornAtTS 1: " + Randomness.call_count + "\n");
+        }
         Collection<IPerson> femalesBornInTimePeriod = femalesLiving.getPeopleBornInTimePeriod(divisionDate, consideredTimePeriod);
+        if (do_local_debug) {
+            System.out.println(currentDate);
+            System.out.println("Number of rng calls during getBornAtTS 1: " + Randomness.call_count + "\n");
+        }
         final int cohortSize = femalesBornInTimePeriod.size();
 
+        if (do_local_debug) {
+            System.out.println(currentDate);
+            System.out.println("Number of rng calls during getBornAtTS 1: " + Randomness.call_count + "\n");
+        }
         final Set<IntegerRange> birthOrders = desired.getOrderedBirthRates(Year.of(currentDate.getYear())).getColumnLabels();
+        if (do_local_debug) {
+            System.out.println(currentDate);
+            System.out.println("Number of rng calls during getBornAtTS 1: " + Randomness.call_count + "\n");
+        }
 
         int count = 0;
-
+int loopCount=0;
         for (final IntegerRange birthOrder : birthOrders) {
             int bornInRange = getBornInRange(femalesLiving, divisionDate, age, cohortSize, birthOrder);
+            if (do_local_debug) {
+                System.out.println(currentDate);
+                System.out.println("Number of rng calls during getBornAtTS loop: " + (loopCount++) + ": " + Randomness.call_count + "\n");
+            }
             count += bornInRange;
         }
 
+        if (do_local_debug) {
+            System.out.println(currentDate);
+            System.out.println("Number of rng calls during getBornAtTS 1: " + Randomness.call_count + "\n");
+        }
         return count;
     }
 
