@@ -98,12 +98,12 @@ public class RecordExportTest {
         System.out.println("Number of partnerships: " + people.getNumberOfPartnerships());
         Collection<IPerson> people1 = people.getPeople();
 
-        int debug_count = 0;
-        for (IPerson p : people1) {
-            if (debug_count++ < 20)
-                System.out.println(p);
-            else break;
-        }
+//        int debug_count = 0;
+//        for (IPerson p : people1) {
+//            if (debug_count++ < 20)
+//                System.out.println(p);
+//            else break;
+//        }
 
         model.analyseAndOutputPopulation(true);
 

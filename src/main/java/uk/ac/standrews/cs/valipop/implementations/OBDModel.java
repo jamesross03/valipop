@@ -556,6 +556,10 @@ public class OBDModel {
         for (final LocalDate divisionDate : divisionDates) {
             if (divisionDate.isAfter(currentDate)) break;
             count += getBornAtTS(femalesLiving, divisionDate);
+            if (do_local_debug) {
+                System.out.println(currentDate);
+                System.out.println("Number of rng calls during createBirths, divisionDate " + divisionDate + ": " + Randomness.call_count + "\n");
+            }
         }
         if (do_local_debug) {
             System.out.println(currentDate);
