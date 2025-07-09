@@ -1639,10 +1639,14 @@ int loopCount=0;
             if (!mothers.isEmpty())
                 ageOfMothers = ageOnDate(mothers.getFirst(), currentDate);
 
-            // Get determined count for separations for this group of mothers
+            if (Randomness.do_debug &&currentDate.isBefore(LocalDate.of(1705, 1, 1)))
+                global_debug = true;
+
+                // Get determined count for separations for this group of mothers
             final SeparationStatsKey key = new SeparationStatsKey(numberOfChildren, ageOfMothers, mothers.size(), config.getSimulationTimeStep(), currentDate);
             final SingleDeterminedCount dC = (SingleDeterminedCount) desired.getDeterminedCount(key, config);
 
+            global_debug = false;
             int count = 0;
 
             if (Randomness.do_debug &&currentDate.isBefore(LocalDate.of(1705, 1, 1))) {

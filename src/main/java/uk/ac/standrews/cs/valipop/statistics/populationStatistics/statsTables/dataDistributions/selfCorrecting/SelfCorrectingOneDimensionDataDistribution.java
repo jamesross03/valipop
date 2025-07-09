@@ -83,14 +83,14 @@ public class SelfCorrectingOneDimensionDataDistribution extends OneDimensionData
         if (aC == 0) {
             final double rateToApply = calcSubRateFromYearRate(tD, key.getConsideredTimePeriod());
             SingleDeterminedCount singleDeterminedCount = resolveRateToCount(key, rateToApply, rateToApply);
-//            if ((OBDModel.global_debug))
-//            {
-//                System.out.println("rateToApply: " + rateToApply);
-//                System.out.println("getDeterminedCount: " + singleDeterminedCount.getDeterminedCount());
-//                System.out.println("getFulfilledCount: " + singleDeterminedCount.getFulfilledCount());
-//                System.out.println("getRawUncorrectedCount: " + singleDeterminedCount.getRawUncorrectedCount());
-//                System.out.println("getRawCorrectedCount: " + singleDeterminedCount.getRawCorrectedCount());
-//            }
+            if ((OBDModel.global_debug))
+            {
+                System.out.println("rateToApply: " + rateToApply);
+                System.out.println("getDeterminedCount: " + singleDeterminedCount.getDeterminedCount());
+                System.out.println("getFulfilledCount: " + singleDeterminedCount.getFulfilledCount());
+                System.out.println("getRawUncorrectedCount: " + singleDeterminedCount.getRawUncorrectedCount());
+                System.out.println("getRawCorrectedCount: " + singleDeterminedCount.getRawCorrectedCount());
+            }
             return singleDeterminedCount; // Same due to correction rate currently same as target rate
 
         }
