@@ -1701,7 +1701,18 @@ int loopCount=0;
 
     private boolean needsNewPartner(final IPerson person, final LocalDate currentDate) {
 
-        return person.getPartnerships().isEmpty() || partnersToSeparate.contains(person) || lastPartnerDied(person, currentDate);
+        if (do_local_debug) {
+            System.out.println("Called needsNewPartner on: " + person + "\n");
+        }
+        boolean empty = person.getPartnerships().isEmpty();
+        boolean contains = partnersToSeparate.contains(person);
+        boolean b = lastPartnerDied(person, currentDate);
+        if (do_local_debug) {
+            System.out.println("Test 1: " + empty + "\n");
+            System.out.println("Test 2: " + contains + "\n");
+            System.out.println("Test 3: " + b + "\n");
+        }
+        return empty || contains || b;
     }
 
     private void separate(final IPartnership partnership, final LocalDate earliestPossibleSeperationDate) {
