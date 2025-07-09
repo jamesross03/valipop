@@ -1653,6 +1653,9 @@ int loopCount=0;
                     break;
 
                 // else mark partnership for separation
+                if (Randomness.do_debug &&currentDate.isBefore(LocalDate.of(1705, 1, 1))) {
+                    System.out.println("separate last partnership: " + mother);
+                }
                 separate(getLastPartnership(mother), getLastChild(mother).getBirthDate());
 
                 count++;
