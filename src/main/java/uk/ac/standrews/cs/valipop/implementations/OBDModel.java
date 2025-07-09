@@ -1645,6 +1645,10 @@ int loopCount=0;
 
             int count = 0;
 
+            if (Randomness.do_debug &&currentDate.isBefore(LocalDate.of(1705, 1, 1))) {
+                System.out.println("mothers size: " + mothers.size());
+            }
+
             // For each mother in this group
             for (final IPerson mother : mothers) {
 
@@ -1714,17 +1718,17 @@ int loopCount=0;
         boolean empty = person.getPartnerships().isEmpty();
         boolean contains = partnersToSeparate.contains(person);
         boolean b = lastPartnerDied(person, currentDate);
-        if (Randomness.do_debug &&currentDate.isBefore(LocalDate.of(1705, 1, 1))) {
-
-            System.out.println("partnersToSeparate:");
-            for (IPerson p : partnersToSeparate)
-                System.out.println(p);
-            System.out.println();
-
-            System.out.println("Test 1: " + empty);
-            System.out.println("Test 2: " + contains);
-            System.out.println("Test 3: " + b);
-        }
+//        if (Randomness.do_debug &&currentDate.isBefore(LocalDate.of(1705, 1, 1))) {
+//
+//            System.out.println("partnersToSeparate:");
+//            for (IPerson p : partnersToSeparate)
+//                System.out.println(p);
+//            System.out.println();
+//
+//            System.out.println("Test 1: " + empty);
+//            System.out.println("Test 2: " + contains);
+//            System.out.println("Test 3: " + b);
+//        }
         return empty || contains || b;
     }
 
