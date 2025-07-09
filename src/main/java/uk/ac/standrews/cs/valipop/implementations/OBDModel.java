@@ -1647,6 +1647,7 @@ int loopCount=0;
 
             if (Randomness.do_debug &&currentDate.isBefore(LocalDate.of(1705, 1, 1))) {
                 System.out.println("mothers size: " + mothers.size());
+                System.out.println("dC.getDeterminedCount(): " + dC.getDeterminedCount());
             }
 
             // For each mother in this group
