@@ -1308,20 +1308,35 @@ int loopCount=0;
         if (do_local_debug) {
             System.out.println(currentDate);
             System.out.println("Number of rng calls during getMothersNeedingPartners 3: " + Randomness.call_count + "\n");
+            System.out.println(">>>>>>>>>>>>>> Number of females: " + females.size() + "\n");
         }
 
+        int femaleCount=0;
         for (final IPerson female : females) {
 
+            femaleCount++;
             if (eligible(female)) {
 
+                if (do_local_debug) {
+                    System.out.println(currentDate);
+                    System.out.println("Number of rng calls during getMothersNeedingPartners 3.1 loop: " + femaleCount + ": " + Randomness.call_count + "\n");
+                }
                 final int numberOfChildrenForThisMother = highestBirthOption.getValue();
                 childrenMade += numberOfChildrenForThisMother;
 
                 addChildrenForMother(female, numberOfChildrenForThisMother, newMothers, continuingPartneredFemalesByChildren);
+                if (do_local_debug) {
+                    System.out.println(currentDate);
+                    System.out.println("Number of rng calls during getMothersNeedingPartners 3.2 loop: " + femaleCount + ": " + Randomness.call_count + "\n");
+                }
 
                 // updates count of remaining mothers to find
                 final int furtherMothersNeededForMaternitySize = remainingMothersToFind.get(highestBirthOption) - 1;
                 remainingMothersToFind.update(highestBirthOption, furtherMothersNeededForMaternitySize);
+                if (do_local_debug) {
+                    System.out.println(currentDate);
+                    System.out.println("Number of rng calls during getMothersNeedingPartners 3.3 loop: " + femaleCount + ": " + Randomness.call_count + "\n");
+                }
 
                 // updates count of mother found
                 motherCountsByMaternities.update(highestBirthOption, motherCountsByMaternities.getValue(highestBirthOption) + 1);
@@ -1334,6 +1349,10 @@ int loopCount=0;
                         // In this case we have created all the new mothers and children required
                         break;
                     }
+                }
+                if (do_local_debug) {
+                    System.out.println(currentDate);
+                    System.out.println("Number of rng calls during getMothersNeedingPartners 3.4 loop: " + femaleCount + ": " + Randomness.call_count + "\n");
                 }
 
                 if (childrenMade >= numberOfChildren) break;
