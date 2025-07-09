@@ -1383,36 +1383,40 @@ int loopCount=0;
 
         if (do_local_debug) {
             System.out.println(currentDate);
-            System.out.println("Number of rng calls during addChildrenForMother 1: " + Randomness.call_count + "\n");
+            System.out.println("Number of rng calls during addChildrenForMother 1: " + Randomness.call_count);
         }
         boolean needsNewPartner = needsNewPartner(mother, currentDate);
         if (do_local_debug) {
             System.out.println(currentDate);
             System.out.println("needsNewPartner: " + needsNewPartner);
-            System.out.println("Number of rng calls during addChildrenForMother 1.1: " + Randomness.call_count + "\n");
+            System.out.println("Number of rng calls during addChildrenForMother 1.1: " + Randomness.call_count);
         }
         if (needsNewPartner) {
             newMothers.add(new NewMother(mother, numberOfChildrenForThisMother));
             if (do_local_debug) {
                 System.out.println(currentDate);
-                System.out.println("Number of rng calls during addChildrenForMother 2: " + Randomness.call_count + "\n");
+                System.out.println("Number of rng calls during addChildrenForMother 2: " + Randomness.call_count );
             }
 
         } else {
             if (do_local_debug) {
                 System.out.println(currentDate);
-                System.out.println("Number of rng calls during addChildrenForMother 3: " + Randomness.call_count + "\n");
+                System.out.println("Number of rng calls during addChildrenForMother 3: " + Randomness.call_count);
             }
 
             addChildrenToCurrentPartnership(mother, numberOfChildrenForThisMother);
             final int numberOfChildrenInLatestPartnership = numberOfChildrenInLatestPartnership(mother);
             if (do_local_debug) {
                 System.out.println(currentDate);
-                System.out.println("Number of rng calls during addChildrenForMother 4: " + Randomness.call_count + "\n");
+                System.out.println("Number of rng calls during addChildrenForMother 4: " + Randomness.call_count);
             }
 
             if (!continuingPartneredFemalesByChildren.containsKey(numberOfChildrenInLatestPartnership)) {
                 continuingPartneredFemalesByChildren.put(numberOfChildrenInLatestPartnership, new ArrayList<>());
+            }
+            if (do_local_debug) {
+                System.out.println(currentDate);
+                System.out.println("adding mother: " + mother);
             }
             continuingPartneredFemalesByChildren.get(numberOfChildrenInLatestPartnership).add(mother);
             if (do_local_debug) {
@@ -1701,13 +1705,13 @@ int loopCount=0;
 
     private boolean needsNewPartner(final IPerson person, final LocalDate currentDate) {
 
-        if (currentDate.isBefore(LocalDate.of(1705, 1, 1))) {
+        if (Randomness.do_debug &&currentDate.isBefore(LocalDate.of(1705, 1, 1))) {
             System.out.println("Called needsNewPartner on: " + person + "\n");
         }
         boolean empty = person.getPartnerships().isEmpty();
         boolean contains = partnersToSeparate.contains(person);
         boolean b = lastPartnerDied(person, currentDate);
-        if (currentDate.isBefore(LocalDate.of(1705, 1, 1))) {
+        if (Randomness.do_debug &&currentDate.isBefore(LocalDate.of(1705, 1, 1))) {
 
             System.out.println("partnersToSeparate:");
             for (IPerson p : partnersToSeparate)
@@ -1721,10 +1725,14 @@ int loopCount=0;
         return empty || contains || b;
     }
 
-    private void separate(final IPartnership partnership, final LocalDate earliestPossibleSeperationDate) {
+    private void separate(final IPartnership partnership, final LocalDate earliestPossibleSeparationDate) {
 
-        partnership.setEarliestPossibleSeparationDate(earliestPossibleSeperationDate);
+        partnership.setEarliestPossibleSeparationDate(earliestPossibleSeparationDate);
 
+        if (Randomness.do_debug &&currentDate.isBefore(LocalDate.of(1705, 1, 1))) {
+            System.out.println("Adding partner to separate: " + partnership.getFemalePartner());
+            System.out.println("Adding partner to separate: " + partnership.getMalePartner() + "\n");
+        }
         partnersToSeparate.add(partnership.getFemalePartner());
         partnersToSeparate.add(partnership.getMalePartner());
     }
