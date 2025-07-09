@@ -55,9 +55,10 @@ public class SelfCorrectingTwoDimensionDataDistribution implements InputMetaData
         this.data = tableData;
     }
 
+    static int debug_count = 0;
     public SingleDeterminedCount determineCount(StatsKey<Integer, Integer> key, Config config, RandomGenerator random) {
         try {
-            if (OBDModel.global_debug) {
+            if (Randomness.do_debug && debug_count++ < 10) {
                 System.out.println("Number of rng calls during separationStats determineCount: " + Randomness.call_count);
             }
             return getData(key.getXLabel()).determineCount(key, config, random);
