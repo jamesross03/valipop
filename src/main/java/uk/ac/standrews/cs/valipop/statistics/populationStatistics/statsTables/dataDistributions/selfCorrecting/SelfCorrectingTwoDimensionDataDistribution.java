@@ -20,6 +20,8 @@ package uk.ac.standrews.cs.valipop.statistics.populationStatistics.statsTables.d
 
 import org.apache.commons.math3.random.RandomGenerator;
 import uk.ac.standrews.cs.valipop.Config;
+import uk.ac.standrews.cs.valipop.implementations.OBDModel;
+import uk.ac.standrews.cs.valipop.implementations.Randomness;
 import uk.ac.standrews.cs.valipop.statistics.populationStatistics.determinedCounts.DeterminedCount;
 import uk.ac.standrews.cs.valipop.statistics.populationStatistics.determinedCounts.SingleDeterminedCount;
 import uk.ac.standrews.cs.valipop.statistics.populationStatistics.statsKeys.StatsKey;
@@ -27,6 +29,7 @@ import uk.ac.standrews.cs.valipop.statistics.populationStatistics.statsTables.da
 import uk.ac.standrews.cs.valipop.utils.specialTypes.labeledValueSets.IntegerRange;
 import uk.ac.standrews.cs.valipop.utils.specialTypes.labeledValueSets.InvalidRangeException;
 
+import java.time.LocalDate;
 import java.time.Year;
 import java.util.Collection;
 import java.util.Map;
@@ -54,6 +57,9 @@ public class SelfCorrectingTwoDimensionDataDistribution implements InputMetaData
 
     public SingleDeterminedCount determineCount(StatsKey<Integer, Integer> key, Config config, RandomGenerator random) {
         try {
+            if (OBDModel.global_debug) {
+                System.out.println("Number of rng calls during separationStats determineCount: " + Randomness.call_count);
+            }
             return getData(key.getXLabel()).determineCount(key, config, random);
         } catch (InvalidRangeException e) {
             return new SingleDeterminedCount(key, 0, 0, 0);
