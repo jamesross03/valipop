@@ -1708,6 +1708,12 @@ int loopCount=0;
         boolean contains = partnersToSeparate.contains(person);
         boolean b = lastPartnerDied(person, currentDate);
         if (do_local_debug) {
+
+            System.out.println("partnersToSeparate:");
+            for (IPerson p : partnersToSeparate)
+                System.out.println(p);
+            System.out.println();
+
             System.out.println("Test 1: " + empty + "\n");
             System.out.println("Test 2: " + contains + "\n");
             System.out.println("Test 3: " + b + "\n");
