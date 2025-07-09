@@ -534,8 +534,20 @@ public class OBDModel {
 
     private int createBirths() {
 
+        if (do_local_debug) {
+            System.out.println(currentDate);
+            System.out.println("Number of rng calls during createBirths 1: " + Randomness.call_count + "\n");
+        }
         final FemaleCollection femalesLiving = population.getLivingPeople().getFemales();
+        if (do_local_debug) {
+            System.out.println(currentDate);
+            System.out.println("Number of rng calls during createBirths 2: " + Randomness.call_count + "\n");
+        }
         final Period timeStep = config.getSimulationTimeStep();
+        if (do_local_debug) {
+            System.out.println(currentDate);
+            System.out.println("Number of rng calls during createBirths 3: " + Randomness.call_count + "\n");
+        }
         final Set<LocalDate> divisionDates = femalesLiving.getDivisionDates(timeStep);
 
         int count = 0;
@@ -544,6 +556,10 @@ public class OBDModel {
         for (final LocalDate divisionDate : divisionDates) {
             if (divisionDate.isAfter(currentDate)) break;
             count += getBornAtTS(femalesLiving, divisionDate);
+        }
+        if (do_local_debug) {
+            System.out.println(currentDate);
+            System.out.println("Number of rng calls during createBirths 4: " + Randomness.call_count + "\n");
         }
 
         return count;
