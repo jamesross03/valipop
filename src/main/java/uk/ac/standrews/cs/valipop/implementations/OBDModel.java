@@ -579,28 +579,28 @@ public class OBDModel {
 
         if (do_local_debug) {
             System.out.println(currentDate);
-            System.out.println("Number of rng calls during getBornAtTS 1: " + Randomness.call_count + "\n");
+            System.out.println("Number of rng calls during getBornAtTS 2: " + Randomness.call_count + "\n");
         }
         final int age = Period.between(divisionDate.plus(consideredTimePeriod), currentDate).getYears();
         if (do_local_debug) {
             System.out.println(currentDate);
-            System.out.println("Number of rng calls during getBornAtTS 1: " + Randomness.call_count + "\n");
+            System.out.println("Number of rng calls during getBornAtTS 3: " + Randomness.call_count + "\n");
         }
         Collection<IPerson> femalesBornInTimePeriod = femalesLiving.getPeopleBornInTimePeriod(divisionDate, consideredTimePeriod);
         if (do_local_debug) {
             System.out.println(currentDate);
-            System.out.println("Number of rng calls during getBornAtTS 1: " + Randomness.call_count + "\n");
+            System.out.println("Number of rng calls during getBornAtTS 4: " + Randomness.call_count + "\n");
         }
         final int cohortSize = femalesBornInTimePeriod.size();
 
         if (do_local_debug) {
             System.out.println(currentDate);
-            System.out.println("Number of rng calls during getBornAtTS 1: " + Randomness.call_count + "\n");
+            System.out.println("Number of rng calls during getBornAtTS 5: " + Randomness.call_count + "\n");
         }
         final Set<IntegerRange> birthOrders = desired.getOrderedBirthRates(Year.of(currentDate.getYear())).getColumnLabels();
         if (do_local_debug) {
             System.out.println(currentDate);
-            System.out.println("Number of rng calls during getBornAtTS 1: " + Randomness.call_count + "\n");
+            System.out.println("Number of rng calls during getBornAtTS 6: " + Randomness.call_count + "\n");
         }
 
         int count = 0;
@@ -616,17 +616,25 @@ int loopCount=0;
 
         if (do_local_debug) {
             System.out.println(currentDate);
-            System.out.println("Number of rng calls during getBornAtTS 1: " + Randomness.call_count + "\n");
+            System.out.println("Number of rng calls during getBornAtTS 7: " + Randomness.call_count + "\n");
         }
         return count;
     }
 
     private int getBornInRange(final FemaleCollection femalesLiving, final LocalDate divisionDate, final int age, final int cohortSize, final IntegerRange birthOrder) {
 
+        if (do_local_debug) {
+            System.out.println(currentDate);
+            System.out.println("Number of rng calls during getBornInRange 1: " + Randomness.call_count + "\n");
+        }
         final Period consideredTimePeriod = config.getSimulationTimeStep();
 
         // TODO already retrieved women for this period in calling method.
         final List<IPerson> people = new ArrayList<>(femalesLiving.getByDatePeriodAndBirthOrder(divisionDate, consideredTimePeriod, birthOrder));
+        if (do_local_debug) {
+            System.out.println(currentDate);
+            System.out.println("Number of rng calls during getBornInRange 2: " + Randomness.call_count + "\n");
+        }
 
         final BirthStatsKey key = new BirthStatsKey(age, birthOrder.getValue(), cohortSize, consideredTimePeriod, currentDate);
         final SingleDeterminedCount determinedCount = (SingleDeterminedCount) desired.getDeterminedCount(key, config);
@@ -634,6 +642,10 @@ int loopCount=0;
         final int numberOfChildren = determinedCount.getDeterminedCount();
 
         // Make women into mothers
+        if (do_local_debug) {
+            System.out.println(currentDate);
+            System.out.println("Number of rng calls during getBornInRange 3: " + Randomness.call_count + "\n");
+        }
 
         final MothersNeedingPartners mothersNeedingPartners = selectMothers(people, numberOfChildren);
 
@@ -641,10 +653,18 @@ int loopCount=0;
         // Children are created in the partnerships phase
         final int cancelledChildren = createPartnerships(mothersNeedingPartners.mothers);
         final int fulfilled = mothersNeedingPartners.newlyProducedChildren - cancelledChildren;
+        if (do_local_debug) {
+            System.out.println(currentDate);
+            System.out.println("Number of rng calls during getBornInRange 4: " + Randomness.call_count + "\n");
+        }
 
         determinedCount.setFulfilledCount(fulfilled);
 
         desired.returnAchievedCount(determinedCount);
+        if (do_local_debug) {
+            System.out.println(currentDate);
+            System.out.println("Number of rng calls during getBornInRange 5: " + Randomness.call_count + "\n");
+        }
         return fulfilled;
     }
 
