@@ -336,7 +336,7 @@ public class OBDModel {
 
             if (Randomness.do_debug) {
                 System.out.println(currentDate);
-                System.out.println("Number of rng calls: " + Randomness.call_count + "\n");
+                System.out.println("Number of rng calls: " + Randomness.call_count);
             }
 
             do_local_debug = Randomness.do_debug && !currentDate.isBefore(LocalDate.of(1704, 1, 1)) && currentDate.isBefore(LocalDate.of(1705, 1, 1));
@@ -347,19 +347,19 @@ public class OBDModel {
 //            }
             if (do_local_debug) {
                 System.out.println(currentDate);
-                System.out.println("Number of rng calls before createBirths: " + Randomness.call_count + "\n");
+                System.out.println("Number of rng calls before createBirths: " + Randomness.call_count);
             }
             final int numberBorn = createBirths();
             if (do_local_debug) {
                 System.out.println(currentDate);
-                System.out.println("Number of rng calls after createBirths: " + Randomness.call_count + "\n");
+                System.out.println("Number of rng calls after createBirths: " + Randomness.call_count);
             }
 //            if (do_local_debug)
 //                System.out.println("Born: " + numberBorn);
             final int shortFallInBirths = adjustPopulationNumbers(numberBorn);
             if (do_local_debug) {
                 System.out.println(currentDate);
-                System.out.println("Number of rng calls: " + Randomness.call_count + "\n");
+                System.out.println("Number of rng calls: " + Randomness.call_count);
             }
             //            if (do_local_debug)
 //                System.out.println("Shortfall: " + shortFallInBirths);
@@ -367,13 +367,13 @@ public class OBDModel {
             int maleDeaths = createDeaths(SexOption.MALE);
             if (do_local_debug) {
                 System.out.println(currentDate);
-                System.out.println("Number of rng calls: " + Randomness.call_count + "\n");
+                System.out.println("Number of rng calls: " + Randomness.call_count);
             }
             global_debug = false;
             int femaleDeaths = createDeaths(SexOption.FEMALE);
             if (do_local_debug) {
                 System.out.println(currentDate);
-                System.out.println("Number of rng calls: " + Randomness.call_count + "\n");
+                System.out.println("Number of rng calls: " + Randomness.call_count);
             }
             final int numberDying = maleDeaths + femaleDeaths;
 //            if (do_local_debug) {
@@ -384,19 +384,19 @@ public class OBDModel {
             migrationModel.performMigration(currentDate, this);
             if (do_local_debug) {
                 System.out.println(currentDate);
-                System.out.println("Number of rng calls: " + Randomness.call_count + "\n");
+                System.out.println("Number of rng calls: " + Randomness.call_count);
             }
             occupationChangeModel.performOccupationChange(currentDate);
             if (do_local_debug) {
                 System.out.println(currentDate);
-                System.out.println("Number of rng calls: " + Randomness.call_count + "\n");
+                System.out.println("Number of rng calls: " + Randomness.call_count);
             }
 
             logTimeStep(numberBorn, shortFallInBirths, numberDying);
             countBirthsAndDeaths(numberBorn, numberDying);
             if (do_local_debug) {
                 System.out.println(currentDate);
-                System.out.println("Number of rng calls: " + Randomness.call_count + "\n");
+                System.out.println("Number of rng calls: " + Randomness.call_count);
             }
             advanceSimulationTime();
             count++;
@@ -1647,7 +1647,9 @@ int loopCount=0;
 
             if (Randomness.do_debug &&currentDate.isBefore(LocalDate.of(1705, 1, 1))) {
                 System.out.println("mothers size: " + mothers.size());
+                System.out.println("rng calls: " + Randomness.call_count);
                 System.out.println("dC.getDeterminedCount(): " + dC.getDeterminedCount());
+                System.out.println("rng next state: " + Randomness.getRandomGenerator().nextDouble());
             }
 
             // For each mother in this group
@@ -1714,7 +1716,7 @@ int loopCount=0;
     private boolean needsNewPartner(final IPerson person, final LocalDate currentDate) {
 
         if (Randomness.do_debug &&currentDate.isBefore(LocalDate.of(1705, 1, 1))) {
-            System.out.println("Called needsNewPartner on: " + person + "\n");
+            System.out.println("Called needsNewPartner on: " + person);
         }
         boolean empty = person.getPartnerships().isEmpty();
         boolean contains = partnersToSeparate.contains(person);

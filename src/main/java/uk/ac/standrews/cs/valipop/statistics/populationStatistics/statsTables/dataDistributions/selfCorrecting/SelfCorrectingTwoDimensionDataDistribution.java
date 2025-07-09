@@ -41,14 +41,14 @@ import java.util.Set;
 public class SelfCorrectingTwoDimensionDataDistribution implements InputMetaData<IntegerRange>, SelfCorrection<Integer, Double, Integer, Integer> {
 
     // The integer range here represents the row labels (i.e. the age ranges on the ordered birth table)
-    private Map<IntegerRange, SelfCorrectingOneDimensionDataDistribution> data;
+    private final Map<IntegerRange, SelfCorrectingOneDimensionDataDistribution> data;
 
-    private Year year;
-    private String sourcePopulation;
+    private final Year year;
+    private final String sourcePopulation;
 
-    private String sourceOrganisation;
+    private final String sourceOrganisation;
 
-    public SelfCorrectingTwoDimensionDataDistribution(Year year, String sourcePopulation, String sourceOrganisation, Map<IntegerRange, SelfCorrectingOneDimensionDataDistribution> tableData) {
+    public SelfCorrectingTwoDimensionDataDistribution(final Year year, final String sourcePopulation, final String sourceOrganisation, final Map<IntegerRange, SelfCorrectingOneDimensionDataDistribution> tableData) {
         this.year = year;
         this.sourceOrganisation = sourceOrganisation;
         this.sourcePopulation = sourcePopulation;
@@ -56,28 +56,28 @@ public class SelfCorrectingTwoDimensionDataDistribution implements InputMetaData
     }
 
     static int debug_count = 0;
-    public SingleDeterminedCount determineCount(StatsKey<Integer, Integer> key, Config config, RandomGenerator random) {
+    public SingleDeterminedCount determineCount(final StatsKey<Integer, Integer> key, final Config config, final RandomGenerator random) {
         try {
-            if (Randomness.do_debug && debug_count++ < 1000) {
-                System.out.println("Number of rng calls during separationStats determineCount: " + Randomness.call_count);
-            }
+//            if (Randomness.do_debug && debug_count++ < 1000) {
+//                System.out.println("Number of rng calls during separationStats determineCount: " + Randomness.call_count);
+//            }
             return getData(key.getXLabel()).determineCount(key, config, random);
-        } catch (InvalidRangeException e) {
+        } catch (final InvalidRangeException e) {
             return new SingleDeterminedCount(key, 0, 0, 0);
         }
     }
 
-    public void returnAchievedCount(DeterminedCount<Integer, Double, Integer, Integer> achievedCount, RandomGenerator random) {
+    public void returnAchievedCount(final DeterminedCount<Integer, Double, Integer, Integer> achievedCount, final RandomGenerator random) {
         try {
             getData(achievedCount.getKey().getXLabel()).returnAchievedCount(achievedCount, random);
-        } catch (InvalidRangeException e) {
+        } catch (final InvalidRangeException e) {
             if (achievedCount.getDeterminedCount() != 0) throw e;
         }
     }
 
-    public SelfCorrectingOneDimensionDataDistribution getData(Integer yLabel) throws InvalidRangeException {
+    public SelfCorrectingOneDimensionDataDistribution getData(final Integer yLabel) throws InvalidRangeException {
 
-        IntegerRange row = resolveRowValue(yLabel);
+        final IntegerRange row = resolveRowValue(yLabel);
         return data.get(row);
     }
 
@@ -100,8 +100,8 @@ public class SelfCorrectingTwoDimensionDataDistribution implements InputMetaData
     public IntegerRange getSmallestLabel() {
         int min = Integer.MAX_VALUE;
         IntegerRange minRange = null;
-        for (IntegerRange iR : data.keySet()) {
-            int v = iR.getMin();
+        for (final IntegerRange iR : data.keySet()) {
+            final int v = iR.getMin();
             if (v < min) {
                 min = v;
                 minRange = iR;
@@ -114,8 +114,8 @@ public class SelfCorrectingTwoDimensionDataDistribution implements InputMetaData
     public IntegerRange getLargestLabel() {
         IntegerRange max = null;
         int maxV = Integer.MIN_VALUE;
-        for (IntegerRange iR : data.keySet()) {
-            int v = iR.getMax();
+        for (final IntegerRange iR : data.keySet()) {
+            final int v = iR.getMax();
             if (v > maxV) {
                 max = iR;
                 maxV = v;
@@ -129,9 +129,9 @@ public class SelfCorrectingTwoDimensionDataDistribution implements InputMetaData
         return getRowLabels();
     }
 
-    private IntegerRange resolveRowValue(Integer rowValue) {
+    private IntegerRange resolveRowValue(final Integer rowValue) {
 
-        for (IntegerRange iR : data.keySet()) {
+        for (final IntegerRange iR : data.keySet()) {
             if (iR.contains(rowValue)) {
                 return iR;
             }
