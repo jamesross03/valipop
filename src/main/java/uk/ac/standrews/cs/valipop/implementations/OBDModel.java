@@ -648,10 +648,18 @@ int loopCount=0;
         }
 
         final MothersNeedingPartners mothersNeedingPartners = selectMothers(people, numberOfChildren);
+        if (do_local_debug) {
+            System.out.println(currentDate);
+            System.out.println("Number of rng calls during getBornInRange 3.1: " + Randomness.call_count + "\n");
+        }
 
         // Partner females of age who don't have partners
         // Children are created in the partnerships phase
         final int cancelledChildren = createPartnerships(mothersNeedingPartners.mothers);
+        if (do_local_debug) {
+            System.out.println(currentDate);
+            System.out.println("Number of rng calls during getBornInRange 3.2: " + Randomness.call_count + "\n");
+        }
         final int fulfilled = mothersNeedingPartners.newlyProducedChildren - cancelledChildren;
         if (do_local_debug) {
             System.out.println(currentDate);
