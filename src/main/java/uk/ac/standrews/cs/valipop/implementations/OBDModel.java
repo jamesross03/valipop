@@ -1385,7 +1385,13 @@ int loopCount=0;
             System.out.println(currentDate);
             System.out.println("Number of rng calls during addChildrenForMother 1: " + Randomness.call_count + "\n");
         }
-        if (needsNewPartner(mother, currentDate)) {
+        boolean needsNewPartner = needsNewPartner(mother, currentDate);
+        if (do_local_debug) {
+            System.out.println(currentDate);
+            System.out.println("needsNewPartner: " + needsNewPartner);
+            System.out.println("Number of rng calls during addChildrenForMother 1.1: " + Randomness.call_count + "\n");
+        }
+        if (needsNewPartner) {
             newMothers.add(new NewMother(mother, numberOfChildrenForThisMother));
             if (do_local_debug) {
                 System.out.println(currentDate);
