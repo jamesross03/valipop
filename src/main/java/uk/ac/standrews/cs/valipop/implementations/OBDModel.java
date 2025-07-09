@@ -1322,12 +1322,16 @@ int loopCount=0;
                     System.out.println("Number of rng calls during getMothersNeedingPartners 3.1 loop: " + femaleCount + ": " + Randomness.call_count + "\n");
                 }
                 final int numberOfChildrenForThisMother = highestBirthOption.getValue();
+                if (do_local_debug) {
+                    System.out.println(currentDate);
+                    System.out.println("Number of rng calls during getMothersNeedingPartners 3.2 loop: " + femaleCount + ": " + Randomness.call_count + "\n");
+                }
                 childrenMade += numberOfChildrenForThisMother;
 
                 addChildrenForMother(female, numberOfChildrenForThisMother, newMothers, continuingPartneredFemalesByChildren);
                 if (do_local_debug) {
                     System.out.println(currentDate);
-                    System.out.println("Number of rng calls during getMothersNeedingPartners 3.2 loop: " + femaleCount + ": " + Randomness.call_count + "\n");
+                    System.out.println("Number of rng calls during getMothersNeedingPartners 3.3 loop: " + femaleCount + ": " + Randomness.call_count + "\n");
                 }
 
                 // updates count of remaining mothers to find
@@ -1335,7 +1339,7 @@ int loopCount=0;
                 remainingMothersToFind.update(highestBirthOption, furtherMothersNeededForMaternitySize);
                 if (do_local_debug) {
                     System.out.println(currentDate);
-                    System.out.println("Number of rng calls during getMothersNeedingPartners 3.3 loop: " + femaleCount + ": " + Randomness.call_count + "\n");
+                    System.out.println("Number of rng calls during getMothersNeedingPartners 3.4 loop: " + femaleCount + ": " + Randomness.call_count + "\n");
                 }
 
                 // updates count of mother found
@@ -1377,18 +1381,38 @@ int loopCount=0;
 
     private void addChildrenForMother(final IPerson mother, final int numberOfChildrenForThisMother, final List<NewMother> newMothers, final Map<Integer, List<IPerson>> continuingPartneredFemalesByChildren) {
 
+        if (do_local_debug) {
+            System.out.println(currentDate);
+            System.out.println("Number of rng calls during addChildrenForMother 1: " + Randomness.call_count + "\n");
+        }
         if (needsNewPartner(mother, currentDate)) {
             newMothers.add(new NewMother(mother, numberOfChildrenForThisMother));
+            if (do_local_debug) {
+                System.out.println(currentDate);
+                System.out.println("Number of rng calls during addChildrenForMother 2: " + Randomness.call_count + "\n");
+            }
 
         } else {
+            if (do_local_debug) {
+                System.out.println(currentDate);
+                System.out.println("Number of rng calls during addChildrenForMother 3: " + Randomness.call_count + "\n");
+            }
 
             addChildrenToCurrentPartnership(mother, numberOfChildrenForThisMother);
             final int numberOfChildrenInLatestPartnership = numberOfChildrenInLatestPartnership(mother);
+            if (do_local_debug) {
+                System.out.println(currentDate);
+                System.out.println("Number of rng calls during addChildrenForMother 4: " + Randomness.call_count + "\n");
+            }
 
             if (!continuingPartneredFemalesByChildren.containsKey(numberOfChildrenInLatestPartnership)) {
                 continuingPartneredFemalesByChildren.put(numberOfChildrenInLatestPartnership, new ArrayList<>());
             }
             continuingPartneredFemalesByChildren.get(numberOfChildrenInLatestPartnership).add(mother);
+            if (do_local_debug) {
+                System.out.println(currentDate);
+                System.out.println("Number of rng calls during addChildrenForMother 5: " + Randomness.call_count + "\n");
+            }
         }
     }
 
