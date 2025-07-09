@@ -1701,13 +1701,13 @@ int loopCount=0;
 
     private boolean needsNewPartner(final IPerson person, final LocalDate currentDate) {
 
-//        if (do_local_debug) {
+        if (currentDate.isBefore(LocalDate.of(1705, 1, 1))) {
             System.out.println("Called needsNewPartner on: " + person + "\n");
-//        }
+        }
         boolean empty = person.getPartnerships().isEmpty();
         boolean contains = partnersToSeparate.contains(person);
         boolean b = lastPartnerDied(person, currentDate);
-//        if (do_local_debug) {
+        if (currentDate.isBefore(LocalDate.of(1705, 1, 1))) {
 
             System.out.println("partnersToSeparate:");
             for (IPerson p : partnersToSeparate)
@@ -1717,7 +1717,7 @@ int loopCount=0;
             System.out.println("Test 1: " + empty);
             System.out.println("Test 2: " + contains);
             System.out.println("Test 3: " + b);
-//        }
+        }
         return empty || contains || b;
     }
 
