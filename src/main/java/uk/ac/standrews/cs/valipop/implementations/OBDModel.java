@@ -1289,7 +1289,15 @@ int loopCount=0;
     private MothersNeedingPartners getMothersNeedingPartners(final List<IPerson> females, final int numberOfChildren, final MultipleDeterminedCountByIR requiredBirths,
                                                              final LabelledValueSet<IntegerRange, Integer> motherCountsByMaternities, final OperableLabelledValueSet<IntegerRange, Integer> remainingMothersToFind) {
 
+        if (do_local_debug) {
+            System.out.println(currentDate);
+            System.out.println("Number of rng calls during getMothersNeedingPartners 1: " + Randomness.call_count + "\n");
+        }
         CollectionUtils.shuffle(females, Randomness.getRandomGenerator());
+        if (do_local_debug) {
+            System.out.println(currentDate);
+            System.out.println("Number of rng calls during getMothersNeedingPartners 2: " + Randomness.call_count + "\n");
+        }
 
         IntegerRange highestBirthOption = remainingMothersToFind.getLargestLabelOfNonZeroValue();
 
@@ -1297,6 +1305,10 @@ int loopCount=0;
         final List<NewMother> newMothers = new ArrayList<>();
 
         final Map<Integer, List<IPerson>> continuingPartneredFemalesByChildren = new HashMap<>();
+        if (do_local_debug) {
+            System.out.println(currentDate);
+            System.out.println("Number of rng calls during getMothersNeedingPartners 3: " + Randomness.call_count + "\n");
+        }
 
         for (final IPerson female : females) {
 
@@ -1328,11 +1340,19 @@ int loopCount=0;
             }
         }
 
+        if (do_local_debug) {
+            System.out.println(currentDate);
+            System.out.println("Number of rng calls during getMothersNeedingPartners 4: " + Randomness.call_count + "\n");
+        }
         separationEvent(continuingPartneredFemalesByChildren);
 
         requiredBirths.setFulfilledCount(motherCountsByMaternities);
         desired.returnAchievedCount(requiredBirths);
 
+        if (do_local_debug) {
+            System.out.println(currentDate);
+            System.out.println("Number of rng calls during getMothersNeedingPartners 5: " + Randomness.call_count + "\n");
+        }
         return new MothersNeedingPartners(newMothers, childrenMade);
     }
 
