@@ -1253,16 +1253,33 @@ int loopCount=0;
     // TODO adjust this to also permit age variations
     private MothersNeedingPartners selectMothers(final List<IPerson> females, final int numberOfChildren) {
 
+        if (do_local_debug) {
+            System.out.println(currentDate);
+            System.out.println("Number of rng calls during selectMothers 1: " + Randomness.call_count + "\n");
+        }
         if (females.isEmpty()) return new MothersNeedingPartners();
 
         final int ageOfMothers = ageOnDate(females.getFirst(), currentDate);
+        if (do_local_debug) {
+            System.out.println(currentDate);
+            System.out.println("Number of rng calls during selectMothers 2: " + Randomness.call_count + "\n");
+        }
 
         final MultipleDeterminedCountByIR requiredBirths = calcNumberOfPregnanciesOfMultipleBirth(ageOfMothers, numberOfChildren);
         final LabelledValueSet<IntegerRange, Integer> motherCountsByMaternities = new IntegerRangeToIntegerSet(requiredBirths.getDeterminedCount().getLabels(), 0, Randomness.getRandomGenerator());
         final OperableLabelledValueSet<IntegerRange, Integer> remainingMothersToFind = new IntegerRangeToIntegerSet(requiredBirths.getDeterminedCount().clone(), Randomness.getRandomGenerator());
+        if (do_local_debug) {
+            System.out.println(currentDate);
+            System.out.println("Number of rng calls during selectMothers 3: " + Randomness.call_count + "\n");
+        }
 
         try {
-            return getMothersNeedingPartners(females, numberOfChildren, requiredBirths, motherCountsByMaternities, remainingMothersToFind);
+            MothersNeedingPartners mothersNeedingPartners = getMothersNeedingPartners(females, numberOfChildren, requiredBirths, motherCountsByMaternities, remainingMothersToFind);
+            if (do_local_debug) {
+                System.out.println(currentDate);
+                System.out.println("Number of rng calls during selectMothers 4: " + Randomness.call_count + "\n");
+            }
+            return mothersNeedingPartners;
 
         } catch (final NoSuchElementException e) {
             return new MothersNeedingPartners();
