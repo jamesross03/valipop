@@ -85,6 +85,12 @@ public class SelfCorrectingOneDimensionDataDistribution extends OneDimensionData
             SingleDeterminedCount singleDeterminedCount = resolveRateToCount(key, rateToApply, rateToApply);
             if ((OBDModel.global_debug))
             {
+                System.out.println("targetRates:");
+                for (IntegerRange r : targetRates.keySet()) {
+                    System.out.println("\t" + r + ": " + targetRates.get(r));
+                }
+                System.out.println();
+
                 System.out.println("range: " + range);
                 System.out.println("targetRate: " + targetRate);
                 System.out.println("rateToApply: " + rateToApply);
