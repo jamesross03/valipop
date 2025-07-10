@@ -473,7 +473,10 @@ public class PopulationStatistics implements EventRateTables {
 
         for (final Path path : paths) {
             // read in each file
-            final SelfCorrectingTwoDimensionDataDistribution tempData = InputFileReader.readInSC2DDataFile(path, config, Randomness.getRandomGenerator());
+//            if ((OBDModel.global_debug))
+    System.out.println("Loading distribution file: " + path);
+
+                final SelfCorrectingTwoDimensionDataDistribution tempData = InputFileReader.readInSC2DDataFile(path, config, Randomness.getRandomGenerator());
             data.put(tempData.getYear(), tempData);
         }
 
