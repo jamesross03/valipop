@@ -40,6 +40,7 @@ import java.nio.file.Path;
 import java.time.Period;
 import java.time.Year;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
@@ -427,10 +428,9 @@ public class PopulationStatistics implements EventRateTables {
 
     private static TreeMap<Year, SelfCorrectingOneDimensionDataDistribution> readInSC1DDataFiles(final DirectoryStream<Path> paths, final Config config) throws IOException, InvalidInputFileException {
 
-        final TreeMap<Year, SelfCorrectingOneDimensionDataDistribution> data = new TreeMap<>();
+        final TreeMap<Year, SelfCorrectingOneDimensionDataDistribution> data = new WriteOnceTreeMap<>();
 
         for (final Path path : paths) {
-            // read in each file
             final SelfCorrectingOneDimensionDataDistribution tempData = InputFileReader.readInSC1DDataFile(path, config, Randomness.getRandomGenerator());
             data.put(tempData.getYear(), tempData);
         }
@@ -442,10 +442,9 @@ public class PopulationStatistics implements EventRateTables {
 
     private static TreeMap<Year, ValiPopEnumeratedDistribution> readInNamesDataFiles(final DirectoryStream<Path> paths, final Config config) throws IOException, InvalidInputFileException, InconsistentWeightException {
 
-        final TreeMap<Year, ValiPopEnumeratedDistribution> data = new TreeMap<>();
+        final TreeMap<Year, ValiPopEnumeratedDistribution> data = new WriteOnceTreeMap<>();
 
         for (final Path path : paths) {
-            // read in each file
             final ValiPopEnumeratedDistribution tempData = InputFileReader.readInNameDataFile(path, Randomness.getRandomGenerator());
             data.put(tempData.getYear(), tempData);
         }
@@ -455,7 +454,7 @@ public class PopulationStatistics implements EventRateTables {
 
     private static TreeMap<Year, AgeDependantEnumeratedDistribution> readInAgeDependantEnumeratedDistributionDataFiles(final DirectoryStream<Path> paths, final Config config) throws IOException, InvalidInputFileException, InconsistentWeightException {
 
-        final TreeMap<Year, AgeDependantEnumeratedDistribution> data = new TreeMap<>();
+        final TreeMap<Year, AgeDependantEnumeratedDistribution> data = new WriteOnceTreeMap<>();
 
         for (final Path path : paths) {
             // read in each file
@@ -469,14 +468,11 @@ public class PopulationStatistics implements EventRateTables {
 
     private static TreeMap<Year, SelfCorrectingTwoDimensionDataDistribution> readInSC2DDataFiles(final DirectoryStream<Path> paths, final Config config) throws IOException, InvalidInputFileException {
 
-        final TreeMap<Year, SelfCorrectingTwoDimensionDataDistribution> data = new TreeMap<>();
+        final TreeMap<Year, SelfCorrectingTwoDimensionDataDistribution> data = new WriteOnceTreeMap<>();
 
         for (final Path path : paths) {
-            // read in each file
-//            if ((OBDModel.global_debug))
-    System.out.println("Loading distribution file: " + path);
 
-                final SelfCorrectingTwoDimensionDataDistribution tempData = InputFileReader.readInSC2DDataFile(path, config, Randomness.getRandomGenerator());
+            final SelfCorrectingTwoDimensionDataDistribution tempData = InputFileReader.readInSC2DDataFile(path, config, Randomness.getRandomGenerator());
             data.put(tempData.getYear(), tempData);
         }
 
@@ -487,10 +483,9 @@ public class PopulationStatistics implements EventRateTables {
 
     private static TreeMap<Year, SelfCorrecting2DIntegerRangeProportionalDistribution> readInAgeAndProportionalStatsInputFiles(final DirectoryStream<Path> paths, final Config config) throws IOException, InvalidInputFileException {
 
-        final TreeMap<Year, SelfCorrecting2DIntegerRangeProportionalDistribution> data = new TreeMap<>();
+        final TreeMap<Year, SelfCorrecting2DIntegerRangeProportionalDistribution> data = new WriteOnceTreeMap<>();
 
         for (final Path path : paths) {
-            // read in each file
             final SelfCorrecting2DIntegerRangeProportionalDistribution tempData = InputFileReader.readInAgeAndProportionalStatsInput(path, Randomness.getRandomGenerator());
             data.put(tempData.getYear(), tempData);
         }
@@ -500,10 +495,9 @@ public class PopulationStatistics implements EventRateTables {
 
     private static TreeMap<Year, SelfCorrecting2DEnumeratedProportionalDistribution> readInStringAndProportionalStatsInputFiles(final DirectoryStream<Path> paths, final Config config) throws IOException, InvalidInputFileException {
 
-        final TreeMap<Year, SelfCorrecting2DEnumeratedProportionalDistribution> data = new TreeMap<>();
+        final TreeMap<Year, SelfCorrecting2DEnumeratedProportionalDistribution> data = new WriteOnceTreeMap<>();
 
         for (final Path path : paths) {
-            // read in each file
             final SelfCorrecting2DEnumeratedProportionalDistribution tempData = InputFileReader.readInStringAndProportionalStatsInput(path, Randomness.getRandomGenerator());
             data.put(tempData.getYear(), tempData);
         }
@@ -513,10 +507,9 @@ public class PopulationStatistics implements EventRateTables {
 
     private static TreeMap<Year, SelfCorrectingProportionalDistribution<IntegerRange, Integer, Integer>> readInAndAdaptAgeAndProportionalStatsInputFiles(final DirectoryStream<Path> paths, final Config config) throws IOException, InvalidInputFileException {
 
-        final TreeMap<Year, SelfCorrectingProportionalDistribution<IntegerRange, Integer, Integer>> data = new TreeMap<>();
+        final TreeMap<Year, SelfCorrectingProportionalDistribution<IntegerRange, Integer, Integer>> data = new WriteOnceTreeMap<>();
 
         for (final Path path : paths) {
-            // read in each file
             final SelfCorrectingProportionalDistribution<IntegerRange, Integer, Integer> tempData = InputFileReader.readInAndAdaptAgeAndProportionalStatsInput(path, Randomness.getRandomGenerator());
             data.put(tempData.getYear(), tempData);
         }
@@ -546,7 +539,8 @@ public class PopulationStatistics implements EventRateTables {
         while (true) {
 
             curDate = prevInputDate.plus(Period.ofYears(inputWidth.getYears() * c));
-            if (curDate.isAfter(years[0])) break;
+//            if (curDate.isAfter(years[0])) break;
+            if (!curDate.isBefore(years[0])) break;
             inputs.put(curDate, inputs.get(years[0]));
             c++;
         }
@@ -582,5 +576,12 @@ public class PopulationStatistics implements EventRateTables {
         final int refTo2 = Math.abs(referenceDate.getValue() - option2.getValue());
 
         return (refTo1 < refTo2) ? option1 : option2;
+    }
+
+    private static class WriteOnceTreeMap<K, V> extends TreeMap<K, V> {
+        public V put(final K key, final V value) {
+            if (containsKey(key)) throw new RuntimeException("Key " + key + " already exists");
+            return super.put(key, value);
+        }
     }
 }
