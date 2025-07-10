@@ -24,7 +24,8 @@ jobs:
         with:
           maven-target: 'package'
           maven-params: '-DexcludedGroups=slow'
-          upload-dependencies: 'true'
+          # Disabled while gedinline dependency is handled as a local jar.
+          # upload-dependencies: 'true'
 
   build-and-test-windows:
     name: Build and test (Windows)
