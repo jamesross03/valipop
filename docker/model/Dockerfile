@@ -3,6 +3,7 @@ FROM maven:3.9.9-eclipse-temurin-21-jammy AS build
 WORKDIR /app
 
 COPY pom.xml ./
+COPY target/lib /app/lib
 
 RUN mvn -B -s /usr/share/maven/ref/settings-docker.xml dependency:resolve-plugins dependency:resolve clean package -Dmaven.test.skip -Dmaven.repo.local=repository
 
