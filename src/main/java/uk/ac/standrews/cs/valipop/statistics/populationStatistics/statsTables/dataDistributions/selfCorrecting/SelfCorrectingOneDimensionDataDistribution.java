@@ -71,21 +71,22 @@ public class SelfCorrectingOneDimensionDataDistribution extends OneDimensionData
 
     public SingleDeterminedCount determineCount(final StatsKey<Integer, Integer> key, final Config config, final RandomGenerator random) {
 
-        final IntegerRange age = resolveRowValue(key.getYLabel());
+        final IntegerRange range = resolveRowValue(key.getYLabel());
 
         // target rate
-        final double tD = targetRates.get(age);
+        final double targetRate = targetRates.get(range);
 
         // applied count
-        final double aC = appliedCounts.get(age);
+        final double appliedCount = appliedCounts.get(range);
 
         // if no correction data - i.e. first call to this method
-        if (aC == 0) {
-            final double rateToApply = calcSubRateFromYearRate(tD, key.getConsideredTimePeriod());
+        if (appliedCount == 0) {
+            final double rateToApply = calcSubRateFromYearRate(targetRate, key.getConsideredTimePeriod());
             SingleDeterminedCount singleDeterminedCount = resolveRateToCount(key, rateToApply, rateToApply);
             if ((OBDModel.global_debug))
             {
-                System.out.println("targetRate: " + tD);
+                System.out.println("range: " + range);
+                System.out.println("targetRate: " + targetRate);
                 System.out.println("rateToApply: " + rateToApply);
                 System.out.println("getDeterminedCount: " + singleDeterminedCount.getDeterminedCount());
                 System.out.println("getFulfilledCount: " + singleDeterminedCount.getFulfilledCount());
@@ -100,11 +101,11 @@ public class SelfCorrectingOneDimensionDataDistribution extends OneDimensionData
         final double tAT = key.getForNPeople();
 
         // applied rate
-        final double aD = appliedRates.get(age);
+        final double appliedRate = appliedRates.get(range);
 
         // if no N value given in StatsKey
         if (tAT == 0) {
-            final double rateToApply = calcSubRateFromYearRate(tD, key.getConsideredTimePeriod());
+            final double rateToApply = calcSubRateFromYearRate(targetRate, key.getConsideredTimePeriod());
             if ((OBDModel.global_debug))
             {
                 System.out.println("rateToApply: " + rateToApply);
@@ -118,11 +119,11 @@ public class SelfCorrectingOneDimensionDataDistribution extends OneDimensionData
         }
 
         // shortfall
-        final double fall = Math.ceil((aC * tD) - (aC * aD));
+        final double fall = Math.ceil((appliedCount * targetRate) - (appliedCount * appliedRate));
 
         double cD;
         if (fall > 0) {
-            cD = (fall * rf + tAT * tD) / tAT;
+            cD = (fall * rf + tAT * targetRate) / tAT;
         } else {
             cD = 0;
         }
@@ -135,7 +136,7 @@ public class SelfCorrectingOneDimensionDataDistribution extends OneDimensionData
         }
 
         final double rateToApply = calcSubRateFromYearRate(cD, key.getConsideredTimePeriod());
-        final double uncorrectedRate = calcSubRateFromYearRate(tD, key.getConsideredTimePeriod());
+        final double uncorrectedRate = calcSubRateFromYearRate(targetRate, key.getConsideredTimePeriod());
 
 
 //        if ((OBDModel.global_debug))
