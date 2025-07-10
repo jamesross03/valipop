@@ -1653,7 +1653,7 @@ int loopCount=0;
                 System.out.println("mothers size: " + mothers.size());
                 System.out.println("rng calls: " + Randomness.call_count);
                 System.out.println("dC.getDeterminedCount(): " + dC.getDeterminedCount());
-                System.out.println("rng next state: " + Randomness.getRandomGenerator().nextDouble());
+//                System.out.println("rng next state: " + Randomness.getRandomGenerator().nextDouble());
             }
 
             // For each mother in this group
