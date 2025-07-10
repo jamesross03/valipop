@@ -56,6 +56,7 @@ public class PopulationLogic {
 
         boolean sensible = parentsHaveSensibleAgesAtChildBirth(father_birth_date, father_death_date, mother_birth_date, mother_death_date, child_birth_date);
 
+        // TODO rewrite as assertions.
         if (!sensible) {
             System.err.println("father: " + father + " mother: " + mother + " child: " + child);
             System.err.println("mother birth: " +  mother_birth_date);

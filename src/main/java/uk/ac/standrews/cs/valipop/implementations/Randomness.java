@@ -24,44 +24,10 @@ public class Randomness {
 
     private static RandomGenerator randomGenerator = null;
 
-    public static int debug_count = 0;
-    public static boolean do_debug = false;
-    public static int call_count = 0;
-
     public synchronized static RandomGenerator getRandomGenerator() {
 
-        if (randomGenerator == null) {
-            randomGenerator = new JDKRandomGenerator() {
-
-
-                @Override
-                public boolean nextBoolean() {
-                    call_count++;
-                    boolean b = super.nextBoolean();
-//                    if ((OBDModel.global_debug))
-//                        System.out.println("Number of rng calls: " + call_count);
-
-                    return b;
-                }
-
-                @Override
-                public double nextDouble() {
-                    call_count++;
-                    double v = super.nextDouble();
-//                    if ((OBDModel.global_debug))
-//                        System.out.println("Number of rng calls: " + call_count);
-                    return v;
-                }
-
-                public int nextInt(int bound) {
-                    call_count++;
-                    int i = super.nextInt(bound);
-//                    if ((OBDModel.global_debug))
-//                        System.out.println("Number of rng calls: " + call_count);
-                    return i;
-                }
-            };
-        }
+        if (randomGenerator == null)
+            randomGenerator = new JDKRandomGenerator();
 
         return randomGenerator;
     }

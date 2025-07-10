@@ -18,7 +18,6 @@
 package uk.ac.standrews.cs.valipop.statistics.populationStatistics;
 
 import uk.ac.standrews.cs.valipop.Config;
-import uk.ac.standrews.cs.valipop.implementations.OBDModel;
 import uk.ac.standrews.cs.valipop.implementations.Randomness;
 import uk.ac.standrews.cs.valipop.statistics.analysis.validation.contingencyTables.TreeStructure.SexOption;
 import uk.ac.standrews.cs.valipop.statistics.distributions.EnumeratedDistribution;
@@ -40,9 +39,7 @@ import java.nio.file.Path;
 import java.time.Period;
 import java.time.Year;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.TreeMap;
-import java.util.logging.Logger;
 
 /**
  * The PopulationStatistics holds data about the rate at which specified events occur to specified subsets of
@@ -77,9 +74,6 @@ public class PopulationStatistics implements EventRateTables {
 
     private Period minGestationPeriod;
     private Period minBirthSpacing;
-
-    @SuppressWarnings("unused")
-    private static Logger log = Logger.getLogger(PopulationStatistics.class.getName());
 
     private TreeMap<Year, AgeDependantEnumeratedDistribution> maleOccupation;
     private TreeMap<Year, AgeDependantEnumeratedDistribution> femaleOccupation;
@@ -181,37 +175,29 @@ public class PopulationStatistics implements EventRateTables {
 
     public DeterminedCount<?,?,?,?> getDeterminedCount(final StatsKey<?, ?> key, final Config config) {
 
-        if (key instanceof final DeathStatsKey k) {
+        if (key instanceof final DeathStatsKey k)
             return getDeathRates(k.getYear(), k.getSex()).determineCount(k, config, Randomness.getRandomGenerator());
-        }
 
-        if (key instanceof final BirthStatsKey k) {
+        if (key instanceof final BirthStatsKey k)
             return getOrderedBirthRates(k.getYear()).determineCount(k, config, Randomness.getRandomGenerator());
-        }
 
-        if (key instanceof final MultipleBirthStatsKey k) {
+        if (key instanceof final MultipleBirthStatsKey k)
             return getMultipleBirthRates(k.getYear()).determineCount(k, config, Randomness.getRandomGenerator());
-        }
 
-        if (key instanceof final AdulterousBirthStatsKey k) {
+        if (key instanceof final AdulterousBirthStatsKey k)
             return getAdulterousBirthRates(k.getYear()).determineCount(k, config, Randomness.getRandomGenerator());
-        }
 
-        if (key instanceof final MarriageStatsKey k) {
+        if (key instanceof final MarriageStatsKey k)
             return getMarriageRates(k.getYear()).determineCount(k, config, Randomness.getRandomGenerator());
-        }
 
-        if (key instanceof final SeparationStatsKey k) {
+        if (key instanceof final SeparationStatsKey k)
             return getSeparationByChildCountRates(k.getYear()).determineCount(k, config, Randomness.getRandomGenerator());
-        }
 
-        if (key instanceof final PartneringStatsKey k) {
+        if (key instanceof final PartneringStatsKey k)
             return getPartneringProportions(k.getYear()).determineCount(k, config, Randomness.getRandomGenerator());
-        }
 
-        if(key instanceof final OccupationChangeStatsKey k) {
+        if (key instanceof final OccupationChangeStatsKey k)
             return getOccupationChangeProportions(k.getYear(), k.getSex()).determineCount(k, config, Randomness.getRandomGenerator());
-        }
 
         throw new Error("Key based access not implemented for key class: " + key.getClass().toGenericString());
     }
@@ -265,24 +251,19 @@ public class PopulationStatistics implements EventRateTables {
     @Override
     public SelfCorrectingOneDimensionDataDistribution getDeathRates(final Year year, final SexOption sex) {
 
-        if (sex == SexOption.MALE) {
-            Year nearestYearInMap = getNearestYearInMap(year, maleDeath);
-//            if ((OBDModel.global_debug))
-//                System.out.println("\nnearestYearInMap: " + nearestYearInMap);
-            return maleDeath.get(nearestYearInMap);
-        } else {
+        if (sex == SexOption.MALE)
+            return maleDeath.get(getNearestYearInMap(year, maleDeath));
+        else
             return femaleDeath.get(getNearestYearInMap(year, femaleDeath));
-        }
     }
 
     @Override
     public EnumeratedDistribution getDeathCauseRates(final Year year, final SexOption sex, final int age) {
 
-        if (sex == SexOption.MALE) {
+        if (sex == SexOption.MALE)
             return maleDeathCauses.get(getNearestYearInMap(year, maleDeathCauses)).getDistributionForAge(age);
-        } else {
+        else
             return femaleDeathCauses.get(getNearestYearInMap(year, femaleDeathCauses)).getDistributionForAge(age);
-        }
     }
 
     @Override
@@ -293,11 +274,10 @@ public class PopulationStatistics implements EventRateTables {
     @Override
     public SelfCorrecting2DEnumeratedProportionalDistribution getOccupationChangeProportions(final Year year, final SexOption sex) {
 
-        if (sex == SexOption.MALE) {
+        if (sex == SexOption.MALE)
             return maleOccupationChange.get(getNearestYearInMap(year, maleOccupationChange));
-        } else {
+        else
             return femaleOccupationChange.get(getNearestYearInMap(year, femaleOccupationChange));
-        }
     }
 
     @Override
@@ -328,21 +308,19 @@ public class PopulationStatistics implements EventRateTables {
     @Override
     public EnumeratedDistribution getForenameDistribution(final Year year, final SexOption sex) {
 
-        if (sex == SexOption.MALE) {
+        if (sex == SexOption.MALE)
             return maleForenames.get(getNearestYearInMap(year, maleForenames));
-        } else {
+        else
             return femaleForenames.get(getNearestYearInMap(year, femaleForenames));
-        }
     }
 
     @Override
     public EnumeratedDistribution getMigrantForenameDistribution(final Year year, final SexOption sex) {
 
-        if (sex == SexOption.MALE) {
+        if (sex == SexOption.MALE)
             return migrantMaleForenames.get(getNearestYearInMap(year, migrantMaleForenames));
-        } else {
+        else
             return migrantFemaleForenames.get(getNearestYearInMap(year, migrantFemaleForenames));
-        }
     }
 
     @Override
@@ -357,11 +335,11 @@ public class PopulationStatistics implements EventRateTables {
 
     @Override
     public AgeDependantEnumeratedDistribution getOccupation(final Year year, final SexOption sex) {
-        if (sex == SexOption.MALE) {
+
+        if (sex == SexOption.MALE)
             return maleOccupation.get(getNearestYearInMap(year, maleOccupation));
-        } else {
+        else
             return femaleOccupation.get(getNearestYearInMap(year, femaleOccupation));
-        }
     }
 
     @Override
@@ -374,22 +352,20 @@ public class PopulationStatistics implements EventRateTables {
         return sexRatioBirth.get(getNearestYearInMap(onDate, sexRatioBirth));
     }
 
-    private Year getNearestYearInMap(final Year year, final TreeMap<Year, ?> map) {
+    private static Year getNearestYearInMap(final Year year, final TreeMap<Year, ?> map) {
 
-        // the fast way
         final Year ceiling = map.ceilingKey(year);
         final Year floor = map.floorKey(year);
 
-        if(ceiling == null) return floor;
-        if(floor == null) return ceiling;
+        if (ceiling == null) return floor;
+        if (floor == null) return ceiling;
 
         final int yearInt = year.getValue();
 
         if (ceiling.getValue() - yearInt > yearInt - floor.getValue())
             return floor;
-        else {
+        else
             return ceiling;
-        }
     }
 
     public Period getMinBirthSpacing() {
@@ -422,7 +398,6 @@ public class PopulationStatistics implements EventRateTables {
         }
 
         paths.close();
-
         return data;
     }
 
@@ -436,7 +411,6 @@ public class PopulationStatistics implements EventRateTables {
         }
 
         paths.close();
-
         return insertDistributionsToMeetInputWidth(config, data);
     }
 
@@ -448,6 +422,7 @@ public class PopulationStatistics implements EventRateTables {
             final ValiPopEnumeratedDistribution tempData = InputFileReader.readInNameDataFile(path, Randomness.getRandomGenerator());
             data.put(tempData.getYear(), tempData);
         }
+
         paths.close();
         return insertDistributionsToMeetInputWidth(config, data);
     }
@@ -457,7 +432,6 @@ public class PopulationStatistics implements EventRateTables {
         final TreeMap<Year, AgeDependantEnumeratedDistribution> data = new WriteOnceTreeMap<>();
 
         for (final Path path : paths) {
-            // read in each file
             final AgeDependantEnumeratedDistribution tempData = InputFileReader.readInDeathCauseDataFile(path, Randomness.getRandomGenerator());
             data.put(tempData.getYear(), tempData);
         }
@@ -477,7 +451,6 @@ public class PopulationStatistics implements EventRateTables {
         }
 
         paths.close();
-
         return insertDistributionsToMeetInputWidth(config, data);
     }
 
@@ -489,6 +462,7 @@ public class PopulationStatistics implements EventRateTables {
             final SelfCorrecting2DIntegerRangeProportionalDistribution tempData = InputFileReader.readInAgeAndProportionalStatsInput(path, Randomness.getRandomGenerator());
             data.put(tempData.getYear(), tempData);
         }
+
         paths.close();
         return insertDistributionsToMeetInputWidth(config, data);
     }
@@ -501,6 +475,7 @@ public class PopulationStatistics implements EventRateTables {
             final SelfCorrecting2DEnumeratedProportionalDistribution tempData = InputFileReader.readInStringAndProportionalStatsInput(path, Randomness.getRandomGenerator());
             data.put(tempData.getYear(), tempData);
         }
+
         paths.close();
         return insertDistributionsToMeetInputWidth(config, data);
     }
@@ -513,6 +488,7 @@ public class PopulationStatistics implements EventRateTables {
             final SelfCorrectingProportionalDistribution<IntegerRange, Integer, Integer> tempData = InputFileReader.readInAndAdaptAgeAndProportionalStatsInput(path, Randomness.getRandomGenerator());
             data.put(tempData.getYear(), tempData);
         }
+
         paths.close();
         return insertDistributionsToMeetInputWidth(config, data);
     }
@@ -539,7 +515,6 @@ public class PopulationStatistics implements EventRateTables {
         while (true) {
 
             curDate = prevInputDate.plus(Period.ofYears(inputWidth.getYears() * c));
-//            if (curDate.isAfter(years[0])) break;
             if (!curDate.isBefore(years[0])) break;
             inputs.put(curDate, inputs.get(years[0]));
             c++;
@@ -579,6 +554,7 @@ public class PopulationStatistics implements EventRateTables {
     }
 
     private static class WriteOnceTreeMap<K, V> extends TreeMap<K, V> {
+
         public V put(final K key, final V value) {
             if (containsKey(key)) throw new RuntimeException("Key " + key + " already exists");
             return super.put(key, value);

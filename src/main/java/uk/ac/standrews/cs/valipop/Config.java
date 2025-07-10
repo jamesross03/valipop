@@ -288,7 +288,7 @@ public class Config implements Serializable {
         return projectPath;
     }
 
-    private Path pathToLogDir(final String runPurpose, final LocalDateTime startTime, final Path resultPath) {
+    private static Path pathToLogDir(final String runPurpose, final LocalDateTime startTime, final Path resultPath) {
         return resultPath.resolve(runPurpose).resolve(formatTimeStamp(startTime)).resolve("log").resolve("trace.txt");
     }
 
@@ -416,14 +416,6 @@ public class Config implements Serializable {
         return setUpDR;
     }
 
-    public Path getResultsSavePath() {
-        return resultsSavePath;
-    }
-
-    public Path getBirthOrdersPath() {
-        return birthOrdersPath;
-    }
-
     public LocalDateTime getStartTime() {
         return startTime;
     }
@@ -530,12 +522,6 @@ public class Config implements Serializable {
         return this;
     }
 
-    public Config setResultsSavePath(final Path resultsSavePath) {
-
-        this.resultsSavePath = resultsSavePath;
-        return this;
-    }
-
     public Config setProjectPath(final Path projectPath) {
         this.projectPath = projectPath;
         return this;
@@ -599,25 +585,25 @@ public class Config implements Serializable {
         }
     }
 
-    public static void createFileIfDoesNotExist(Path path) throws IOException {
+    public static void createFileIfDoesNotExist(final Path path) throws IOException {
+
         if (!Files.exists(path)) {
             createParentDirectoryIfDoesNotExist(path);
             Files.createFile(path);
         }
     }
 
-    public static void createParentDirectoryIfDoesNotExist(Path path) throws IOException {
-        Path parent_dir = path.getParent();
-        if (parent_dir != null) {
+    public static void createParentDirectoryIfDoesNotExist(final Path path) throws IOException {
+
+        final Path parent_dir = path.getParent();
+        if (parent_dir != null)
             Files.createDirectories(parent_dir);
-        }
     }
 
     private static void mkSummaryFile(final Path summaryFilePath) {
 
-        if (summaryFilePath.toFile().exists()) {
+        if (summaryFilePath.toFile().exists())
             return;
-        }
 
         try {
             mkBlankFile(summaryFilePath);
@@ -630,11 +616,10 @@ public class Config implements Serializable {
         }
     }
 
-    private void mkDirs(final Path path) {
+    private static void mkDirs(final Path path) {
 
-        if (!Files.exists(path)) {
+        if (!Files.exists(path))
             new File(path.toString()).mkdirs();
-        }
     }
 
     // Filter method to exclude dot files from data file directory streams
@@ -699,7 +684,7 @@ public class Config implements Serializable {
         processors.put("run_purpose", value -> runPurpose = value);
     }
 
-    private LocalDate parseDate(final String value, final String option) {
+    private static LocalDate parseDate(final String value, final String option) {
         try {
             return LocalDate.parse(value);
         } catch (final DateTimeParseException e) {
@@ -707,7 +692,7 @@ public class Config implements Serializable {
         }
     }
 
-    private Period parsePeriod(final String value, final String option) {
+    private static Period parsePeriod(final String value, final String option) {
         try {
             return Period.parse(value);
         } catch (final DateTimeParseException e) {
@@ -715,7 +700,7 @@ public class Config implements Serializable {
         }
     }
 
-    private int parseInteger(final String value, final String option) {
+    private static int parseInteger(final String value, final String option) {
         try {
             return Integer.parseInt(value);
         } catch (final NumberFormatException e) {
@@ -723,15 +708,15 @@ public class Config implements Serializable {
         }
     }
 
-    private int parsePositiveInteger(final String value, final String option) {
+    private static int parsePositiveInteger(final String value, final String option) {
         final int val = parseInteger(value, option);
-        if (val < 0) {
+        if (val < 0)
             throw new IllegalArgumentException("`" + option + "` cannot be a negative number");
-        }
+
         return val;
     }
 
-    private double parseDouble(final String value, final String option) {
+    private static double parseDouble(final String value, final String option) {
         try {
             return Double.parseDouble(value);
         } catch (final NumberFormatException e) {
@@ -739,12 +724,11 @@ public class Config implements Serializable {
         }
     }
 
-    public double parseOversizedGeographyFactor(final String value, final String option) {
+    public static double parseOversizedGeographyFactor(final String value, final String option) {
         final double v = parseDouble(value, option);
 
-        if(v < 1) {
+        if (v < 1)
             throw new IllegalArgumentException("`" + option + "` cannot be less than 1");
-        }
 
         return v;
     }
@@ -782,35 +766,32 @@ public class Config implements Serializable {
     }
 
     private void validateOptions() {
-        // Ensure required options are set
-        if (tS == null) {
+
+        if (tS == null)
             throw new IllegalArgumentException("`tS` is required");
-        }
-        if (t0 == null) {
+
+        if (t0 == null)
             throw new IllegalArgumentException("`t0` is required");
-        }
-        if (tE == null) {
+
+        if (tE == null)
             throw new IllegalArgumentException("`tE` is required");
-        }
-        if (t0PopulationSize == null) {
+
+        if (t0PopulationSize == null)
             throw new IllegalArgumentException("`t0_pop_size` is required");
-        }
-        if (varPath == null) {
+
+        if (varPath == null)
             throw new IllegalArgumentException("`var_data_files` is required");
-        }
 
         // Ensure ordering of dates
-        if (tS.isAfter(t0) ) {
+        if (tS.isAfter(t0) )
             throw new IllegalArgumentException("`tS` cannot be after `t0`");
-        }
-        if (t0.isAfter(tE)) {
+
+        if (t0.isAfter(tE))
             throw new IllegalArgumentException("`t0` cannot be after `tE`");
-        }
 
         // This allows the simulation enough time to burn in
-        if (t0.getYear() - tS.getYear() < 150) {
+        if (t0.getYear() - tS.getYear() < 150)
             throw new IllegalArgumentException("`tS` must be at least 150 years before `t0`");
-        }
     }
 
     private void setUpFileStructure() {

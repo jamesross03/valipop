@@ -73,8 +73,6 @@ public class OBDModel {
 
     // TODO use more informative class name
 
-    private static final boolean ENABLE_MIGRATION = true;
-
     private static final int MINIMUM_POPULATION_SIZE = 100;
     private static final int EARLIEST_AGE_OF_MARRIAGE = 16;
     private static final int MAX_ATTEMPTS = 1;
@@ -169,8 +167,8 @@ public class OBDModel {
                 simTimer = new ProgramTimer();
                 runSimulationAttempt();
                 break;
-            } catch (final InsufficientNumberOfPeopleException e) {
 
+            } catch (final InsufficientNumberOfPeopleException e) {
                 resetSimulation(simTimer);
             }
         }
@@ -257,29 +255,9 @@ public class OBDModel {
 
     private void runSimulationAttempt() {
 
-        if (Randomness.do_debug) {
-            System.out.println("Population size 1: " + population.getPeople().getNumberOfPeople());
-            System.out.println("Number of rng calls: " + Randomness.call_count);
-        }
-
         initialisePopulation();
-        if (Randomness.do_debug){
-            System.out.println("Population size 2: " + population.getPeople().getNumberOfPeople());
-            System.out.println("Number of rng calls: " + Randomness.call_count);
-        }
-
         simulatePopulationUntilStart();
-        if (Randomness.do_debug){
-            System.out.println("Population size 3: " + population.getPeople().getNumberOfPeople());
-            System.out.println("Number of rng calls: " + Randomness.call_count);
-        }
-
         simulatePopulationUntilEnd();
-        if (Randomness.do_debug){
-            System.out.println("Population size 4: " + population.getPeople().getNumberOfPeople());
-            System.out.println("Number of rng calls: " + Randomness.call_count);
-        }
-
 
         logResults();
         recordSummary();
@@ -289,9 +267,9 @@ public class OBDModel {
 
     private static void closeLogFile() {
 
-        for (final Handler h : log.getHandlers()) {
+        for (final Handler h : log.getHandlers())
             h.close();
-        }
+
         LogManager.getLogManager().reset();
 
         log = Logger.getLogger(OBDModel.class.getName());
@@ -325,90 +303,34 @@ public class OBDModel {
         log.info(logEntry);
     }
 
-    boolean do_local_debug = false;
-    public static boolean global_debug = false;
 
     // Progress the simulation until initialisation is finished
     private void initialisePopulation() throws InsufficientNumberOfPeopleException {
 
-        int count = 0;
         while (!currentDate.isAfter(endOfInitPeriod)) {
 
-            if (Randomness.do_debug) {
-                System.out.println(currentDate);
-                System.out.println("Number of rng calls: " + Randomness.call_count);
-            }
-
-            do_local_debug = Randomness.do_debug && !currentDate.isBefore(LocalDate.of(1704, 1, 1)) && currentDate.isBefore(LocalDate.of(1705, 1, 1));
-//            if (do_local_debug) {
-//                System.out.println("Step date: " + currentDate);
-//                System.out.println("Living population size: " + population.getLivingPeople().getNumberOfPeople());
-//                System.out.println("Dead population size: " + population.getDeadPeople().getNumberOfPeople());
-//            }
-            if (do_local_debug) {
-                System.out.println(currentDate);
-                System.out.println("Number of rng calls before createBirths: " + Randomness.call_count);
-            }
             final int numberBorn = createBirths();
-            if (do_local_debug) {
-                System.out.println(currentDate);
-                System.out.println("Number of rng calls after createBirths: " + Randomness.call_count);
-            }
-//            if (do_local_debug)
-//                System.out.println("Born: " + numberBorn);
+
             final int shortFallInBirths = adjustPopulationNumbers(numberBorn);
-            if (do_local_debug) {
-                System.out.println(currentDate);
-                System.out.println("Number of rng calls: " + Randomness.call_count);
-            }
-            //            if (do_local_debug)
-//                System.out.println("Shortfall: " + shortFallInBirths);
-            global_debug = do_local_debug;
-            int maleDeaths = createDeaths(SexOption.MALE);
-            if (do_local_debug) {
-                System.out.println(currentDate);
-                System.out.println("Number of rng calls: " + Randomness.call_count);
-            }
-            global_debug = false;
-            int femaleDeaths = createDeaths(SexOption.FEMALE);
-            if (do_local_debug) {
-                System.out.println(currentDate);
-                System.out.println("Number of rng calls: " + Randomness.call_count);
-            }
+
+            final int maleDeaths = createDeaths(SexOption.MALE);
+            final int femaleDeaths = createDeaths(SexOption.FEMALE);
+
             final int numberDying = maleDeaths + femaleDeaths;
-//            if (do_local_debug) {
-//                System.out.println("Male died: " + maleDeaths);
-//                System.out.println("Female died: " + femaleDeaths + "\n");
-//            }
 
             migrationModel.performMigration(currentDate, this);
-            if (do_local_debug) {
-                System.out.println(currentDate);
-                System.out.println("Number of rng calls: " + Randomness.call_count);
-            }
             occupationChangeModel.performOccupationChange(currentDate);
-            if (do_local_debug) {
-                System.out.println(currentDate);
-                System.out.println("Number of rng calls: " + Randomness.call_count);
-            }
 
             logTimeStep(numberBorn, shortFallInBirths, numberDying);
             countBirthsAndDeaths(numberBorn, numberDying);
-            if (do_local_debug) {
-                System.out.println(currentDate);
-                System.out.println("Number of rng calls: " + Randomness.call_count);
-            }
+
             advanceSimulationTime();
-            count++;
         }
 
         if (populationTooSmall()) {
             cleanUpAfterUnsuccessfulAttempt();
             throw new InsufficientNumberOfPeopleException("Seed size likely too small");
         }
-
-//        if (Randomness.do_debug)
-//            System.out.println("Steps in initialisation: " + count);
     }
 
     private void simulatePopulationUntilStart() {
@@ -466,7 +388,7 @@ public class OBDModel {
     private int calculateStartingPopulationSize() {
 
         // Performs compound growth in reverse to work backwards from the target population to the
-        return (int) (config.getT0PopulationSize() / Math.pow(config.getSetUpBR() - config.getSetUpDR() + 1, Period.between(config.getTS(), config.getT0()).getYears()));
+        return (int) (config.getT0PopulationSize() / StrictMath.pow(config.getSetUpBR() - config.getSetUpDR() + 1, Period.between(config.getTS(), config.getT0()).getYears()));
     }
 
     private void advanceSimulationTime() {
@@ -505,24 +427,6 @@ public class OBDModel {
         return shortFallInBirths;
     }
 
-    @SuppressWarnings("unused")
-    private void removePeople(final int excessBirths) {
-
-        final int numberOfFemalesToRemove = excessBirths / 2;
-        final int numberOfMalesToRemove = excessBirths - numberOfFemalesToRemove;
-
-        final Period timeStep = config.getSimulationTimeStep();
-
-        // TODO why is this a loop? Seems to try to remove n people n times...
-        for (int i = 0; i < numberOfMalesToRemove; i++) {
-            population.getLivingPeople().removeMales(numberOfMalesToRemove, currentDate, timeStep, true, geography, moveDistanceSelector, config);
-        }
-
-        for (int i = 0; i < numberOfFemalesToRemove; i++) {
-            population.getLivingPeople().removeFemales(numberOfFemalesToRemove, currentDate, timeStep, true, geography, moveDistanceSelector, config);
-        }
-    }
-
     private void createOrphanChildren(final int shortFallInBirths) {
 
         for (int i = 0; i < shortFallInBirths; i++) {
@@ -534,20 +438,8 @@ public class OBDModel {
 
     private int createBirths() {
 
-        if (do_local_debug) {
-            System.out.println(currentDate);
-            System.out.println("Number of rng calls during createBirths 1: " + Randomness.call_count + "\n");
-        }
         final FemaleCollection femalesLiving = population.getLivingPeople().getFemales();
-        if (do_local_debug) {
-            System.out.println(currentDate);
-            System.out.println("Number of rng calls during createBirths 2: " + Randomness.call_count + "\n");
-        }
         final Period timeStep = config.getSimulationTimeStep();
-        if (do_local_debug) {
-            System.out.println(currentDate);
-            System.out.println("Number of rng calls during createBirths 3: " + Randomness.call_count + "\n");
-        }
         final Set<LocalDate> divisionDates = femalesLiving.getDivisionDates(timeStep);
 
         int count = 0;
@@ -556,14 +448,6 @@ public class OBDModel {
         for (final LocalDate divisionDate : divisionDates) {
             if (divisionDate.isAfter(currentDate)) break;
             count += getBornAtTS(femalesLiving, divisionDate);
-            if (do_local_debug) {
-                System.out.println(currentDate);
-                System.out.println("Number of rng calls during createBirths, divisionDate " + divisionDate + ": " + Randomness.call_count + "\n");
-            }
-        }
-        if (do_local_debug) {
-            System.out.println(currentDate);
-            System.out.println("Number of rng calls during createBirths 4: " + Randomness.call_count + "\n");
         }
 
         return count;
@@ -571,108 +455,43 @@ public class OBDModel {
 
     private int getBornAtTS(final FemaleCollection femalesLiving, final LocalDate divisionDate) {
 
-        if (do_local_debug) {
-            System.out.println(currentDate);
-            System.out.println("Number of rng calls during getBornAtTS 1: " + Randomness.call_count + "\n");
-        }
         final Period consideredTimePeriod = config.getSimulationTimeStep();
-
-        if (do_local_debug) {
-            System.out.println(currentDate);
-            System.out.println("Number of rng calls during getBornAtTS 2: " + Randomness.call_count + "\n");
-        }
         final int age = Period.between(divisionDate.plus(consideredTimePeriod), currentDate).getYears();
-        if (do_local_debug) {
-            System.out.println(currentDate);
-            System.out.println("Number of rng calls during getBornAtTS 3: " + Randomness.call_count + "\n");
-        }
-        Collection<IPerson> femalesBornInTimePeriod = femalesLiving.getPeopleBornInTimePeriod(divisionDate, consideredTimePeriod);
-        if (do_local_debug) {
-            System.out.println(currentDate);
-            System.out.println("Number of rng calls during getBornAtTS 4: " + Randomness.call_count + "\n");
-        }
-        final int cohortSize = femalesBornInTimePeriod.size();
 
-        if (do_local_debug) {
-            System.out.println(currentDate);
-            System.out.println("Number of rng calls during getBornAtTS 5: " + Randomness.call_count + "\n");
-        }
+        final int cohortSize = femalesLiving.getPeopleBornInTimePeriod(divisionDate, consideredTimePeriod).size();
+
         final Set<IntegerRange> birthOrders = desired.getOrderedBirthRates(Year.of(currentDate.getYear())).getColumnLabels();
-        if (do_local_debug) {
-            System.out.println(currentDate);
-            System.out.println("Number of rng calls during getBornAtTS 6: " + Randomness.call_count + "\n");
-        }
 
         int count = 0;
-int loopCount=0;
-        for (final IntegerRange birthOrder : birthOrders) {
-            int bornInRange = getBornInRange(femalesLiving, divisionDate, age, cohortSize, birthOrder);
-            if (do_local_debug) {
-                System.out.println(currentDate);
-                System.out.println("Number of rng calls during getBornAtTS loop: " + (loopCount++) + ": " + Randomness.call_count + "\n");
-            }
-            count += bornInRange;
-        }
 
-        if (do_local_debug) {
-            System.out.println(currentDate);
-            System.out.println("Number of rng calls during getBornAtTS 7: " + Randomness.call_count + "\n");
-        }
+        for (final IntegerRange birthOrder : birthOrders)
+            count += getBornInRange(femalesLiving, divisionDate, age, cohortSize, birthOrder);
+
         return count;
     }
 
     private int getBornInRange(final FemaleCollection femalesLiving, final LocalDate divisionDate, final int age, final int cohortSize, final IntegerRange birthOrder) {
 
-        if (do_local_debug) {
-            System.out.println(currentDate);
-            System.out.println("Number of rng calls during getBornInRange 1: " + Randomness.call_count + "\n");
-        }
         final Period consideredTimePeriod = config.getSimulationTimeStep();
 
         // TODO already retrieved women for this period in calling method.
         final List<IPerson> people = new ArrayList<>(femalesLiving.getByDatePeriodAndBirthOrder(divisionDate, consideredTimePeriod, birthOrder));
-        if (do_local_debug) {
-            System.out.println(currentDate);
-            System.out.println("Number of rng calls during getBornInRange 2: " + Randomness.call_count + "\n");
-        }
-
         final BirthStatsKey key = new BirthStatsKey(age, birthOrder.getValue(), cohortSize, consideredTimePeriod, currentDate);
         final SingleDeterminedCount determinedCount = (SingleDeterminedCount) desired.getDeterminedCount(key, config);
 
         final int numberOfChildren = determinedCount.getDeterminedCount();
 
         // Make women into mothers
-        if (do_local_debug) {
-            System.out.println(currentDate);
-            System.out.println("Number of rng calls during getBornInRange 3: " + Randomness.call_count + "\n");
-        }
-
         final MothersNeedingPartners mothersNeedingPartners = selectMothers(people, numberOfChildren);
-        if (do_local_debug) {
-            System.out.println(currentDate);
-            System.out.println("Number of rng calls during getBornInRange 3.1: " + Randomness.call_count + "\n");
-        }
 
         // Partner females of age who don't have partners
         // Children are created in the partnerships phase
         final int cancelledChildren = createPartnerships(mothersNeedingPartners.mothers);
-        if (do_local_debug) {
-            System.out.println(currentDate);
-            System.out.println("Number of rng calls during getBornInRange 3.2: " + Randomness.call_count + "\n");
-        }
         final int fulfilled = mothersNeedingPartners.newlyProducedChildren - cancelledChildren;
-        if (do_local_debug) {
-            System.out.println(currentDate);
-            System.out.println("Number of rng calls during getBornInRange 4: " + Randomness.call_count + "\n");
-        }
 
         determinedCount.setFulfilledCount(fulfilled);
-
         desired.returnAchievedCount(determinedCount);
-        if (do_local_debug) {
-            System.out.println(currentDate);
-            System.out.println("Number of rng calls during getBornInRange 5: " + Randomness.call_count + "\n");
-        }
+
         return fulfilled;
     }
 
@@ -687,9 +506,7 @@ int loopCount=0;
         for (final LocalDate divisionDate : divisionDates) {
 
             if (divisionDate.isAfter(currentDate)) break;
-            int killedAtTS1 = getKilledAtTS(sex, ofSexLiving, divisionDate);
-//            if (do_local_debug && killedAtTS1 > 0)
-//                System.out.println("Deaths in division: " + divisionDate);
+            final int killedAtTS1 = getKilledAtTS(sex, ofSexLiving, divisionDate);
 
             killedAtTS += killedAtTS1;
         }
@@ -703,9 +520,6 @@ int loopCount=0;
 
         final int age = Period.between(divisionDate, currentDate).getYears();
         final int peopleOfAge = ofSexLiving.getNumberOfPeople(divisionDate, consideredTimePeriod);
-
-
-
 
         // gets death rate for people of age at the current date
         final StatsKey<Integer,Integer> key = new DeathStatsKey(age, peopleOfAge, consideredTimePeriod, currentDate, sex);
@@ -723,28 +537,7 @@ int loopCount=0;
         determinedCount.setFulfilledCount(killed);
         desired.returnAchievedCount(determinedCount);
 
-//        if (do_local_debug && killed > 0) {
-//            System.out.println("NumberToKill: " + numberToKill);
-//            System.out.println("Collection size: " + peopleToKill.size());
-//            System.out.println("Killed: " + killed);
-//        }
-
-//        if (do_local_debug && divisionDate.isEqual(LocalDate.of(1687, 1, 1))) {
-//            System.out.println();
-//            System.out.println("consideredTimePeriod: " + consideredTimePeriod);
-//            System.out.println("currentDate: " + currentDate);
-//            System.out.println("divisionDate: " + divisionDate);
-//            System.out.println("age: " + age);
-//            System.out.println("sex: " + sex);
-//            System.out.println("peopleOfAge: " + peopleOfAge);
-//            System.out.println("rawUncorrectedCount: " + determinedCount.getRawUncorrectedCount());
-//            System.out.println("rawCorrectedCount: " + determinedCount.getRawCorrectedCount());
-//            System.out.println("fulfilledCount: " + determinedCount.getFulfilledCount());
-//            System.out.println("NumberToKill: " + numberToKill);
-//            System.out.println("Collection size: " + peopleToKill.size());
-//            System.out.println("Killed: " + killed);
-//        }
-            return killed;
+        return killed;
     }
 
     private int createPartnerships(final Collection<NewMother> mothersNeedingPartners) {
@@ -832,21 +625,20 @@ int loopCount=0;
         final Address newAddress;
 
         if (lastMaleAddress == null || lastMaleAddress.getArea() == null) {
-            if(lastFemaleAddress == null || lastFemaleAddress.getArea() == null) {
+            if (lastFemaleAddress == null || lastFemaleAddress.getArea() == null)
                 newAddress = geography.getRandomEmptyAddress();
-            } else {
+            else
                 newAddress = geography.getNearestEmptyAddressAtDistance(lastFemaleAddress.getArea().getCentroid(), moveDistance);
-            }
+
         } else {
             if (lastFemaleAddress == null || lastFemaleAddress.getArea() == null) {
                 newAddress = geography.getNearestEmptyAddressAtDistance(lastMaleAddress.getArea().getCentroid(), moveDistance);
             } else {
                 // both already have address, so flip coin to decide who acts as origin for move
-                if (Randomness.getRandomGenerator().nextBoolean()) {
+                if (Randomness.getRandomGenerator().nextBoolean())
                     newAddress = geography.getNearestEmptyAddressAtDistance(lastMaleAddress.getArea().getCentroid(), moveDistance);
-                } else {
+                else
                     newAddress = geography.getNearestEmptyAddressAtDistance(lastFemaleAddress.getArea().getCentroid(), moveDistance);
-                }
             }
         }
 
@@ -957,7 +749,7 @@ int loopCount=0;
         return determinedCount;
     }
 
-    private OperableLabelledValueSet<IntegerRange, Integer> redistributePartnerCounts(final OperableLabelledValueSet<IntegerRange, Integer> initialPartnerCounts, final LabelledValueSet<IntegerRange, Integer> availableMen) {
+    private static OperableLabelledValueSet<IntegerRange, Integer> redistributePartnerCounts(final OperableLabelledValueSet<IntegerRange, Integer> initialPartnerCounts, final LabelledValueSet<IntegerRange, Integer> availableMen) {
 
         OperableLabelledValueSet<IntegerRange, Integer> partnerCounts = initialPartnerCounts;
         OperableLabelledValueSet<IntegerRange, Double> shortfallCounts;
@@ -1007,7 +799,7 @@ int loopCount=0;
         final IPartnership partnership = new Partnership(father, mother);
         makeChildren(partnership, numberOfChildren, adulterousBirth, marriedAtBirth);
 
-        if(adulterousBirth)
+        if (adulterousBirth)
             partnership.setFinalised(true);
 
         population.getLivingPeople().add(partnership);
@@ -1235,51 +1027,18 @@ int loopCount=0;
         return population.getLivingPeople().getPeople().size() < MINIMUM_POPULATION_SIZE;
     }
 
-//    // When the time is after the end of init period
-//    private boolean initialisationFinished() {
-//
-//        return !inInitPeriod(currentDate);
-//    }
-
-    private boolean inInitPeriod(final LocalDate currentTime) {
-
-        return !currentTime.isAfter(endOfInitPeriod);
-    }
-
-    private boolean simulationFinished() {
-        return currentDate.isAfter(config.getTE());
-    }
-
-    // TODO adjust this to also permit age variations
     private MothersNeedingPartners selectMothers(final List<IPerson> females, final int numberOfChildren) {
 
-        if (do_local_debug) {
-            System.out.println(currentDate);
-            System.out.println("Number of rng calls during selectMothers 1: " + Randomness.call_count + "\n");
-        }
         if (females.isEmpty()) return new MothersNeedingPartners();
 
         final int ageOfMothers = ageOnDate(females.getFirst(), currentDate);
-        if (do_local_debug) {
-            System.out.println(currentDate);
-            System.out.println("Number of rng calls during selectMothers 2: " + Randomness.call_count + "\n");
-        }
 
         final MultipleDeterminedCountByIR requiredBirths = calcNumberOfPregnanciesOfMultipleBirth(ageOfMothers, numberOfChildren);
         final LabelledValueSet<IntegerRange, Integer> motherCountsByMaternities = new IntegerRangeToIntegerSet(requiredBirths.getDeterminedCount().getLabels(), 0, Randomness.getRandomGenerator());
         final OperableLabelledValueSet<IntegerRange, Integer> remainingMothersToFind = new IntegerRangeToIntegerSet(requiredBirths.getDeterminedCount().clone(), Randomness.getRandomGenerator());
-        if (do_local_debug) {
-            System.out.println(currentDate);
-            System.out.println("Number of rng calls during selectMothers 3: " + Randomness.call_count + "\n");
-        }
 
         try {
-            MothersNeedingPartners mothersNeedingPartners = getMothersNeedingPartners(females, numberOfChildren, requiredBirths, motherCountsByMaternities, remainingMothersToFind);
-            if (do_local_debug) {
-                System.out.println(currentDate);
-                System.out.println("Number of rng calls during selectMothers 4: " + Randomness.call_count + "\n");
-            }
-            return mothersNeedingPartners;
+            return getMothersNeedingPartners(females, numberOfChildren, requiredBirths, motherCountsByMaternities, remainingMothersToFind);
 
         } catch (final NoSuchElementException e) {
             return new MothersNeedingPartners();
@@ -1289,15 +1048,7 @@ int loopCount=0;
     private MothersNeedingPartners getMothersNeedingPartners(final List<IPerson> females, final int numberOfChildren, final MultipleDeterminedCountByIR requiredBirths,
                                                              final LabelledValueSet<IntegerRange, Integer> motherCountsByMaternities, final OperableLabelledValueSet<IntegerRange, Integer> remainingMothersToFind) {
 
-        if (do_local_debug) {
-            System.out.println(currentDate);
-            System.out.println("Number of rng calls during getMothersNeedingPartners 1: " + Randomness.call_count + "\n");
-        }
         CollectionUtils.shuffle(females, Randomness.getRandomGenerator());
-        if (do_local_debug) {
-            System.out.println(currentDate);
-            System.out.println("Number of rng calls during getMothersNeedingPartners 2: " + Randomness.call_count + "\n");
-        }
 
         IntegerRange highestBirthOption = remainingMothersToFind.getLargestLabelOfNonZeroValue();
 
@@ -1305,42 +1056,20 @@ int loopCount=0;
         final List<NewMother> newMothers = new ArrayList<>();
 
         final Map<Integer, List<IPerson>> continuingPartneredFemalesByChildren = new HashMap<>();
-        if (do_local_debug) {
-            System.out.println(currentDate);
-            System.out.println("Number of rng calls during getMothersNeedingPartners 3: " + Randomness.call_count + "\n");
-            System.out.println(">>>>>>>>>>>>>> Number of females: " + females.size() + "\n");
-        }
 
-        int femaleCount=0;
         for (final IPerson female : females) {
 
-            femaleCount++;
             if (eligible(female)) {
 
-                if (do_local_debug) {
-                    System.out.println(currentDate);
-                    System.out.println("Number of rng calls during getMothersNeedingPartners 3.1 loop: " + femaleCount + ": " + Randomness.call_count + "\n");
-                }
                 final int numberOfChildrenForThisMother = highestBirthOption.getValue();
-                if (do_local_debug) {
-                    System.out.println(currentDate);
-                    System.out.println("Number of rng calls during getMothersNeedingPartners 3.2 loop: " + femaleCount + ": " + Randomness.call_count + "\n");
-                }
+
                 childrenMade += numberOfChildrenForThisMother;
 
                 addChildrenForMother(female, numberOfChildrenForThisMother, newMothers, continuingPartneredFemalesByChildren);
-                if (do_local_debug) {
-                    System.out.println(currentDate);
-                    System.out.println("Number of rng calls during getMothersNeedingPartners 3.3 loop: " + femaleCount + ": " + Randomness.call_count + "\n");
-                }
 
                 // updates count of remaining mothers to find
                 final int furtherMothersNeededForMaternitySize = remainingMothersToFind.get(highestBirthOption) - 1;
                 remainingMothersToFind.update(highestBirthOption, furtherMothersNeededForMaternitySize);
-                if (do_local_debug) {
-                    System.out.println(currentDate);
-                    System.out.println("Number of rng calls during getMothersNeedingPartners 3.4 loop: " + femaleCount + ": " + Randomness.call_count + "\n");
-                }
 
                 // updates count of mother found
                 motherCountsByMaternities.update(highestBirthOption, motherCountsByMaternities.getValue(highestBirthOption) + 1);
@@ -1354,75 +1083,32 @@ int loopCount=0;
                         break;
                     }
                 }
-                if (do_local_debug) {
-                    System.out.println(currentDate);
-                    System.out.println("Number of rng calls during getMothersNeedingPartners 3.4 loop: " + femaleCount + ": " + Randomness.call_count + "\n");
-                }
 
                 if (childrenMade >= numberOfChildren) break;
             }
         }
 
-        if (do_local_debug) {
-            System.out.println(currentDate);
-            System.out.println("Number of rng calls during getMothersNeedingPartners 4: " + Randomness.call_count + "\n");
-        }
         separationEvent(continuingPartneredFemalesByChildren);
 
         requiredBirths.setFulfilledCount(motherCountsByMaternities);
         desired.returnAchievedCount(requiredBirths);
 
-        if (do_local_debug) {
-            System.out.println(currentDate);
-            System.out.println("Number of rng calls during getMothersNeedingPartners 5: " + Randomness.call_count + "\n");
-        }
         return new MothersNeedingPartners(newMothers, childrenMade);
     }
 
     private void addChildrenForMother(final IPerson mother, final int numberOfChildrenForThisMother, final List<NewMother> newMothers, final Map<Integer, List<IPerson>> continuingPartneredFemalesByChildren) {
 
-        if (do_local_debug) {
-            System.out.println(currentDate);
-            System.out.println("Number of rng calls during addChildrenForMother 1: " + Randomness.call_count);
-        }
-        boolean needsNewPartner = needsNewPartner(mother, currentDate);
-        if (do_local_debug) {
-            System.out.println(currentDate);
-            System.out.println("needsNewPartner: " + needsNewPartner);
-            System.out.println("Number of rng calls during addChildrenForMother 1.1: " + Randomness.call_count);
-        }
-        if (needsNewPartner) {
+        if (needsNewPartner(mother, currentDate)) {
             newMothers.add(new NewMother(mother, numberOfChildrenForThisMother));
-            if (do_local_debug) {
-                System.out.println(currentDate);
-                System.out.println("Number of rng calls during addChildrenForMother 2: " + Randomness.call_count );
-            }
 
         } else {
-            if (do_local_debug) {
-                System.out.println(currentDate);
-                System.out.println("Number of rng calls during addChildrenForMother 3: " + Randomness.call_count);
-            }
-
             addChildrenToCurrentPartnership(mother, numberOfChildrenForThisMother);
             final int numberOfChildrenInLatestPartnership = numberOfChildrenInLatestPartnership(mother);
-            if (do_local_debug) {
-                System.out.println(currentDate);
-                System.out.println("Number of rng calls during addChildrenForMother 4: " + Randomness.call_count);
-            }
 
-            if (!continuingPartneredFemalesByChildren.containsKey(numberOfChildrenInLatestPartnership)) {
+            if (!continuingPartneredFemalesByChildren.containsKey(numberOfChildrenInLatestPartnership))
                 continuingPartneredFemalesByChildren.put(numberOfChildrenInLatestPartnership, new ArrayList<>());
-            }
-            if (do_local_debug) {
-                System.out.println(currentDate);
-                System.out.println("adding mother: " + mother);
-            }
+
             continuingPartneredFemalesByChildren.get(numberOfChildrenInLatestPartnership).add(mother);
-            if (do_local_debug) {
-                System.out.println(currentDate);
-                System.out.println("Number of rng calls during addChildrenForMother 5: " + Randomness.call_count + "\n");
-            }
         }
     }
 
@@ -1438,10 +1124,7 @@ int loopCount=0;
         if (potentialMother.getPartnerships().isEmpty()) return true;
 
         // if last partnership has not ended in separation and the spouse has emigrated then this women cannot produce a child (now or at any future point in the simulation)
-        if (!needsNewPartner(potentialMother, currentDate) &&
-                potentialMother.getLastPartnership().getMalePartner().hasEmigrated()) {
-            return false;
-        }
+        if (!needsNewPartner(potentialMother, currentDate) && potentialMother.getLastPartnership().getMalePartner().hasEmigrated()) return false;
 
         final IPerson lastChild = PopulationNavigation.getLastChild(potentialMother);
 
@@ -1463,9 +1146,7 @@ int loopCount=0;
 
         final boolean eligible = maleAvailable(man, newMother.numberOfChildrenInMaternity) && legallyEligibleToMarry(man, newMother.newMother);
 
-        if (!eligible) {
-            population.getPopulationCounts().incFailedEligibilityCheck();
-        }
+        if (!eligible) population.getPopulationCounts().incFailedEligibilityCheck();
 
         return eligible;
     }
@@ -1517,9 +1198,9 @@ int loopCount=0;
         final IPerson mother = partnership.female;
         final int numChildrenInPartnership = partnership.numberOfChildren;
 
-        if (!partneredFemalesByChildren.containsKey(numChildrenInPartnership)) {
+        if (!partneredFemalesByChildren.containsKey(numChildrenInPartnership))
             partneredFemalesByChildren.put(numChildrenInPartnership, new ArrayList<>());
-        }
+
         partneredFemalesByChildren.get(numChildrenInPartnership).add(mother);
     }
 
@@ -1571,9 +1252,7 @@ int loopCount=0;
                 return false;
 
         // during the initialisation phase any partnering is allowed
-
-        if (!currentDate.isAfter(endOfInitPeriod))
-            return true;
+        if (!currentDate.isAfter(endOfInitPeriod)) return true;
 
         // Get adulterous birth rates
         final AdulterousBirthStatsKey adulterousBirthKey = new AdulterousBirthStatsKey(ageOnDate(man, currentDate), childrenInPregnancy, config.getSimulationTimeStep(), currentDate);
@@ -1639,36 +1318,20 @@ int loopCount=0;
             if (!mothers.isEmpty())
                 ageOfMothers = ageOnDate(mothers.getFirst(), currentDate);
 
-            if (Randomness.do_debug &&currentDate.isBefore(LocalDate.of(1705, 1, 1)))
-                global_debug = true;
-
-                // Get determined count for separations for this group of mothers
+            // Get determined count for separations for this group of mothers
             final SeparationStatsKey key = new SeparationStatsKey(numberOfChildren, ageOfMothers, mothers.size(), config.getSimulationTimeStep(), currentDate);
             final SingleDeterminedCount dC = (SingleDeterminedCount) desired.getDeterminedCount(key, config);
 
-            global_debug = false;
             int count = 0;
-
-            if (Randomness.do_debug &&currentDate.isBefore(LocalDate.of(1705, 1, 1))) {
-                System.out.println("mothers size: " + mothers.size());
-                System.out.println("rng calls: " + Randomness.call_count);
-                System.out.println("dC.getDeterminedCount(): " + dC.getDeterminedCount());
-//                System.out.println("rng next state: " + Randomness.getRandomGenerator().nextDouble());
-            }
 
             // For each mother in this group
             for (final IPerson mother : mothers) {
 
                 // If enough mothers have been separated then break
-                if (count >= dC.getDeterminedCount())
-                    break;
+                if (count >= dC.getDeterminedCount()) break;
 
                 // else mark partnership for separation
-                if (Randomness.do_debug &&currentDate.isBefore(LocalDate.of(1705, 1, 1))) {
-                    System.out.println("separate last partnership: " + mother);
-                }
                 separate(getLastPartnership(mother), getLastChild(mother).getBirthDate());
-
                 count++;
             }
 
@@ -1693,14 +1356,12 @@ int loopCount=0;
             person.setDeathDate(deathDate);
             person.setDeathCause(deathCause);
 
-            for(final IPartnership partnership : person.getPartnerships()) {
+            for (final IPartnership partnership : person.getPartnerships())
                 handleSeparationMoves(partnership, partnership.getPartnerOf(person));
-            }
 
             final Address lastAddress = person.getAddress(deathDate);
-            if(lastAddress != null) {
+            if (lastAddress != null)
                 lastAddress.removeInhabitant(person);
-            }
 
             killed++;
 
@@ -1719,39 +1380,19 @@ int loopCount=0;
 
     private boolean needsNewPartner(final IPerson person, final LocalDate currentDate) {
 
-        if (Randomness.do_debug &&currentDate.isBefore(LocalDate.of(1705, 1, 1))) {
-            System.out.println("Called needsNewPartner on: " + person);
-        }
-        boolean empty = person.getPartnerships().isEmpty();
-        boolean contains = partnersToSeparate.contains(person);
-        boolean b = lastPartnerDied(person, currentDate);
-//        if (Randomness.do_debug &&currentDate.isBefore(LocalDate.of(1705, 1, 1))) {
-//
-//            System.out.println("partnersToSeparate:");
-//            for (IPerson p : partnersToSeparate)
-//                System.out.println(p);
-//            System.out.println();
-//
-//            System.out.println("Test 1: " + empty);
-//            System.out.println("Test 2: " + contains);
-//            System.out.println("Test 3: " + b);
-//        }
-        return empty || contains || b;
+        return person.getPartnerships().isEmpty() || partnersToSeparate.contains(person) || lastPartnerDied(person, currentDate);
     }
 
     private void separate(final IPartnership partnership, final LocalDate earliestPossibleSeparationDate) {
 
         partnership.setEarliestPossibleSeparationDate(earliestPossibleSeparationDate);
 
-        if (Randomness.do_debug &&currentDate.isBefore(LocalDate.of(1705, 1, 1))) {
-            System.out.println("Adding partner to separate: " + partnership.getFemalePartner());
-            System.out.println("Adding partner to separate: " + partnership.getMalePartner() + "\n");
-        }
         partnersToSeparate.add(partnership.getFemalePartner());
         partnersToSeparate.add(partnership.getMalePartner());
     }
 
     public void recordOutOfMemorySummary() {
+
         summary.setCompleted(false);
         summary.setPeakPop(population.getPopulationCounts().getPeakPopulationSize());
         summary.setEligibilityChecks(population.getPopulationCounts().getEligibilityChecks());
@@ -1794,9 +1435,8 @@ int loopCount=0;
 
         // this is a random dice roll to see if the fraction of a has the event or not
 
-        if (Randomness.getRandomGenerator().nextInt(100) < toHaveEvent * 100) {
+        if (Randomness.getRandomGenerator().nextInt(100) < toHaveEvent * 100)
             flooredToHaveEvent++;
-        }
 
         return flooredToHaveEvent;
     }
