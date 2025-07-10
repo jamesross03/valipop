@@ -95,9 +95,10 @@ public class RecordExportTest {
 //            sample += lines.get(i);
 //        }
 
-        final byte[] bytes = Files.readAllBytes(recordPath);
-
-        final String actualHash = Base64.getEncoder().encodeToString(MessageDigest.getInstance("MD5").digest(bytes));
+////        final byte[] bytes = Files.readAllBytes(recordPath);
+//        final byte[] bytes = new String(Files.readAllBytes(recordPath)).replaceAll("\\r\\n", "\n").getBytes();
+//
+//        final String actualHash = Base64.getEncoder().encodeToString(MessageDigest.getInstance("MD5").digest(bytes));
 
 //        assertEquals(expected_sample, sample, "Checking records from " + "birth_records.csv");
 
@@ -109,7 +110,8 @@ public class RecordExportTest {
     private static void checkHash(final Config config, final String fileName, final String expectedHash) throws IOException, NoSuchAlgorithmException {
 
         final Path recordPath = config.getRunPath().resolve(RECORD_DIR).resolve(fileName);
-        final byte[] bytes = Files.readAllBytes(recordPath);
+//        final byte[] bytes = Files.readAllBytes(recordPath);
+        final byte[] bytes = new String(Files.readAllBytes(recordPath)).replaceAll("\\r\\n", "\n").getBytes();
 
         final String actualHash = Base64.getEncoder().encodeToString(MessageDigest.getInstance("MD5").digest(bytes));
 
