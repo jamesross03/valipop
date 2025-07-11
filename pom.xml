@@ -27,16 +27,6 @@
     <packaging>jar</packaging>
     <name>valipop</name>
 
-    <repositories>
-        <repository>
-            <!-- Used to bind to gedinline dependency as github project.
-                 Currently unused due to build problem on jitpack.io:
-                 https://github.com/nigel-parker/gedinline/issues/25 -->
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
-
     <build>
         <plugins>
             <plugin>
@@ -180,16 +170,14 @@
             <version>2.3.1</version>
         </dependency>
 
+        <!-- Local package dependency (Gedinline)-->
         <dependency>
             <groupId>com.github.nigel-parker</groupId>
             <artifactId>gedinline</artifactId>
             <version>4.0.1</version>
-
             <!-- It would be preferable to avoid having the jar in this repository by
                  loading from jitpack.io, but this version of gedinline doesn't build
                  successfully on jitpack.io. -->
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/gedinline-4.0.1.jar</systemPath>
         </dependency>
 
     </dependencies>
