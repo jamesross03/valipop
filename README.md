@@ -79,6 +79,14 @@ git clone https://github.com/stacs-srg/valipop
 # Navigate to the repository directory.
 cd valipop
 
+# Install gedinline local dependency
+mvn install:install-file \
+  -Dfile=lib/gedinline-4.0.1.jar \
+  -DgroupId=com.github.nigel-parker \
+  -DartifactId=gedinline \
+  -Dversion=4.0.1 \
+  -Dpackaging=jar
+
 # Install dependencies, compile, and package into JARs.
 mvn clean package -Dmaven.test.skip
 

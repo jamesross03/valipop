@@ -5,18 +5,29 @@ WORKDIR /app
 COPY pom.xml ./
 COPY lib ./
 
-RUN mvn -B -s /usr/share/maven/ref/settings-docker.xml dependency:resolve-plugins dependency:resolve clean package -Dmaven.test.skip -Dmaven.repo.local=repository
+# Install Gedinline JAR (local dependency)
+RUN mvn install:install-file \
+  -Dfile=gedinline-4.0.1.jar \
+  -DgroupId=com.github.nigel-parker \
+  -DartifactId=gedinline \
+  -Dversion=4.0.1 \
+  -Dpackaging=jar 
 
-# We need the Java source code and the R analysis
+# Copy Java source code and the R analysis
 COPY src/main/java src/main/java
 COPY src/main/resources/valipop/analysis-r/geeglm src/main/resources/valipop/analysis-r/geeglm
 
-RUN mvn -B -s /usr/share/maven/ref/settings-docker.xml clean package -Dmaven.test.skip -Dmaven.repo.local=repository
+RUN mvn clean package -Dmaven.test.skip=true
 
+# Extract version from pom.xml
+RUN VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout) && \
+    echo "VERSION=$VERSION" && \
+    mv target/valipop-${VERSION}-jar-with-dependencies.jar ./valipop.jar
+
+# Create runtime image
 FROM valipop-base AS run
 
-COPY --from=build /app/target/valipop-4.0-SNAPSHOT-jar-with-dependencies.jar ./valipop.jar
-
+COPY --from=build /app/valipop.jar ./valipop.jar
 COPY docker/model/entrypoint.sh .
 
 ENTRYPOINT [ "./entrypoint.sh" ]
