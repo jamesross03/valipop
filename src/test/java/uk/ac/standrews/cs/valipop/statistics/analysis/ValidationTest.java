@@ -35,6 +35,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 public class ValidationTest {
 
+    // TODO add some actual population validation tests.
+
     private static final Path TEST_RESOURCE_DIR = Path.of("src/test/resources/valipop/validation");
 
     private static List<Arguments> configurations = List.of(

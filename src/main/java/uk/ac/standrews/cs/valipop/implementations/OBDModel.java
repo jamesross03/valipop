@@ -540,13 +540,13 @@ public class OBDModel {
         return killed;
     }
 
-    private int createPartnerships(final Collection<NewMother> mothersNeedingPartners) {
+    private int createPartnerships(final List<NewMother> mothersNeedingPartners) {
 
         if (mothersNeedingPartners.isEmpty()) return 0;
 
-        final LinkedList<NewMother> women = new LinkedList<>(mothersNeedingPartners);
+        final List<NewMother> mothersNeedingPartnersCopy = new ArrayList<>(mothersNeedingPartners);
 
-        final int age = ageOnDate(women.getFirst().newMother, currentDate);
+        final int age = ageOnDate(mothersNeedingPartnersCopy.getFirst().newMother, currentDate);
 
         final PartneringStatsKey key = new PartneringStatsKey(age, mothersNeedingPartners.size(), config.getSimulationTimeStep(), currentDate);
 
@@ -556,20 +556,24 @@ public class OBDModel {
         final LabelledValueSet<IntegerRange, Integer> achievedPartnerCounts = new IntegerRangeToIntegerSet(partnerCounts.getLabels(), 0, Randomness.getRandomGenerator());
         final LabelledValueSet<IntegerRange, Integer> availableMen = new IntegerRangeToIntegerSet(partnerCounts.getLabels(), 0, Randomness.getRandomGenerator());
 
-        final Map<IntegerRange, LinkedList<IPerson>> menMap = getAllMen(partnerCounts, availableMen);
+        final Map<IntegerRange, List<IPerson>> menMap = getAllMen(partnerCounts, availableMen);
         final OperableLabelledValueSet<IntegerRange, Integer> redistributedPartnerCounts = redistributePartnerCounts(partnerCounts, availableMen);
 
-        // TODO - upto - question: does infids affect NPA?
+        final List<ProposedPartnership> proposedPartnerships = getProposedPartnerships(mothersNeedingPartnersCopy, menMap, redistributedPartnerCounts, achievedPartnerCounts);
 
-        final List<ProposedPartnership> proposedPartnerships = getProposedPartnerships(women, menMap, redistributedPartnerCounts, achievedPartnerCounts);
+        findPartners(mothersNeedingPartnersCopy, menMap, redistributedPartnerCounts, proposedPartnerships);
 
-        findPartners(women, menMap, redistributedPartnerCounts, proposedPartnerships);
-
-        final int cancelledChildren = removeLastPartners(population, women);
+//        if (!mothersNeedingPartnersCopy.isEmpty())
+//            System.out.println("mothers needing partners:");
+//        for (NewMother newMother : mothersNeedingPartnersCopy) {
+//            System.out.println(newMother.newMother);
+//        }
+//        final int cancelledChildren = removeLastPartners(mothersNeedingPartnersCopy);
 
         separationEvent(getPartneredFemalesByChildren(determinedCounts, proposedPartnerships));
 
-        return cancelledChildren;
+//        return cancelledChildren;
+        return 0;
     }
 
     private Map<Integer, List<IPerson>> getPartneredFemalesByChildren(final MultipleDeterminedCountByIR determinedCounts, final List<ProposedPartnership> proposedPartnerships) {
@@ -660,7 +664,7 @@ public class OBDModel {
             }
     }
 
-    private void findPartners(final List<NewMother> women, final Map<IntegerRange, LinkedList<IPerson>> menMap,
+    private void findPartners(final List<NewMother> women, final Map<IntegerRange, List<IPerson>> menMap,
                               final LabelledValueSet<IntegerRange, Integer> partnerCounts, final List<ProposedPartnership> proposedPartnerships) {
 
         final Iterator<NewMother> iterator = women.iterator();
@@ -685,7 +689,7 @@ public class OBDModel {
         }
     }
 
-    private List<ProposedPartnership> getProposedPartnerships(final LinkedList<NewMother> women, final Map<IntegerRange, LinkedList<IPerson>> menMap,
+    private List<ProposedPartnership> getProposedPartnerships(final List<NewMother> women, final Map<IntegerRange, List<IPerson>> menMap,
                                                               final LabelledValueSet<IntegerRange, Integer> partnerCounts, final LabelledValueSet<IntegerRange, Integer> achievedPartnerCounts) {
 
         final List<ProposedPartnership> proposedPartnerships = new ArrayList<>();
@@ -693,7 +697,7 @@ public class OBDModel {
         // for each age range of males
         for (final IntegerRange range : partnerCounts.getLabels()) {
 
-            final LinkedList<IPerson> men = menMap.get(range);
+            final List<IPerson> men = menMap.get(range);
             final Collection<NewMother> unmatchedFemales = new ArrayList<>();
 
             final int determinedCount = addPartnerships(women, men, proposedPartnerships, unmatchedFemales, partnerCounts.get(range));
@@ -707,7 +711,7 @@ public class OBDModel {
         return proposedPartnerships;
     }
 
-    private int addPartnerships(final LinkedList<NewMother> women, final LinkedList<IPerson> men, final List<ProposedPartnership> proposedPartnerships, final Collection<NewMother> unmatchedFemales, final int initialCount) {
+    private int addPartnerships(final List<NewMother> women, final List<IPerson> men, final List<ProposedPartnership> proposedPartnerships, final Collection<NewMother> unmatchedFemales, final int initialCount) {
 
         int determinedCount = initialCount;
 
@@ -716,8 +720,8 @@ public class OBDModel {
         // Keep going until enough females have been matched for this range
         while (determinedCount > 0 && !women.isEmpty()) {
 
-            final IPerson man = men.pollFirst();
-            NewMother woman = women.pollFirst();
+            final IPerson man = men.removeFirst();
+            NewMother woman = women.removeFirst();
 
             // if man is head of list - i.e. this is the second time round
             if (man == head) {
@@ -727,7 +731,7 @@ public class OBDModel {
 
                 // get next woman to check for partnering
                 if (women.isEmpty()) break;
-                woman = women.pollFirst();
+                woman = women.removeFirst();
             }
 
             // check if there is any reason why these people cannot lawfully be partnered...
@@ -771,15 +775,14 @@ public class OBDModel {
         return partnerCounts;
     }
 
-    private Map<IntegerRange, LinkedList<IPerson>> getAllMen(final LabelledValueSet<IntegerRange, Integer> partnerCounts, final LabelledValueSet<IntegerRange, Integer> availableMen) {
+    private Map<IntegerRange, List<IPerson>> getAllMen(final LabelledValueSet<IntegerRange, Integer> partnerCounts, final LabelledValueSet<IntegerRange, Integer> availableMen) {
 
-        final Map<IntegerRange, LinkedList<IPerson>> allMen = new TreeMap<>();
+        final Map<IntegerRange, List<IPerson>> allMen = new TreeMap<>();
         for (final IntegerRange range : partnerCounts.getLabels()) {
 
-            final LocalDate yobOfOlderEndOfIR = getYearOfBirthOfOlderEndOfRange(range, currentDate);
             final Period rangeLength = getRangeLength(range);
 
-            final LinkedList<IPerson> men = new LinkedList<>(population.getLivingPeople().getMales().getPeopleBornInTimePeriod(yobOfOlderEndOfIR, rangeLength));
+            final List<IPerson> men = new ArrayList<>(population.getLivingPeople().getMales().getPeopleBornInTimePeriod(getYearOfBirthOfOlderEndOfRange(range, currentDate), rangeLength));
 
             CollectionUtils.shuffle(men, Randomness.getRandomGenerator());
 
@@ -1204,19 +1207,22 @@ public class OBDModel {
         partneredFemalesByChildren.get(numChildrenInPartnership).add(mother);
     }
 
-    private static int removeLastPartners(final Population population, final List<NewMother> women) {
+    private int removeLastPartners(final List<NewMother> women) {
 
         int cancelledChildren = 0;
 
         if (!women.isEmpty()) {
             for (final NewMother newMother : women) {
 
+                System.out.println("removing last partnership of: " + newMother.newMother);
+
                 // update position in data structures
                 population.getLivingPeople().remove(newMother.newMother);
 
                 cancelledChildren += newMother.numberOfChildrenInMaternity;
                 // cancel birth(s) as no father can be found
-                newMother.newMother.getPartnerships().remove(getLastPartnership(newMother.newMother));
+                IPartnership lastPartnership = getLastPartnership(newMother.newMother);
+                newMother.newMother.getPartnerships().remove(lastPartnership);
 
                 population.getLivingPeople().add(newMother.newMother);
             }

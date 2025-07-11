@@ -257,7 +257,8 @@ public class PeopleCollectionTest {
 
         living.remove(f1);
 
-        Partnership p1 = new Partnership(m1, f1, c1.getBirthDate());
+        Partnership p1 = new Partnership(m1, f1);
+        p1.setPartnershipDate(c1.getBirthDate());
         p1.addChildren(Collections.singletonList(c1));
         m1.recordPartnership(p1);
         f1.recordPartnership(p1);

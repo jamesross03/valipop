@@ -322,6 +322,7 @@ public class BalancedMigrationModel {
             mimicedFather.recordPartnership(parents);
             mimicedMother.recordPartnership(parents);
 
+            population.getLivingPeople().add(parents);
             population.getLivingPeople().add(mimicedFather);
             population.getLivingPeople().add(mimicedMother);
         }

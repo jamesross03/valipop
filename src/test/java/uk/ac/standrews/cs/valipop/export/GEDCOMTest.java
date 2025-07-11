@@ -76,7 +76,6 @@ public abstract class GEDCOMTest extends PopulationExportTest {
     }
 
     @Test
-    @Disabled
     public void GEDCOMIsValid() throws Exception {
 
         final IPopulationWriter population_writer = new GEDCOMPopulationWriter(generated_output_file1);
@@ -85,7 +84,9 @@ public abstract class GEDCOMTest extends PopulationExportTest {
             converter.convert();
         }
 
-        final GedInlineValidator validator = new GedInlineValidator(new File(generated_output_file1.toString()), new PrintWriter("/Users/gnck/Desktop/validation-output.txt"));
+        final Path validation_output_file = Files.createTempFile(temp_dir, null, ".txt");
+
+        final GedInlineValidator validator = new GedInlineValidator(new File(generated_output_file1.toString()), new PrintWriter(validation_output_file.toString()));
         assertTrue(validator.validate());
         assertEquals(0, validator.getNumberOfWarnings(), "GEDCOM validation warnings count");
     }

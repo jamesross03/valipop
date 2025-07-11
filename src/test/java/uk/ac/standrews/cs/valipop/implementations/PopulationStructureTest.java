@@ -131,7 +131,6 @@ public abstract class PopulationStructureTest {
     }
 
     @Test
-    @Disabled
     public void partnershipsConsistent() {
 
         final List<IPartnership> partnerships = new ArrayList<>();

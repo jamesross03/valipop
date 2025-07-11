@@ -51,13 +51,6 @@ public class Partnership implements IPartnership {
 
     private boolean finalised = false;
 
-    public Partnership(final IPerson male, final IPerson female, final LocalDate partnershipDate) {
-
-        this(male, female);
-
-        this.partnershipDate = partnershipDate;
-    }
-
     public Partnership(final IPerson male, final IPerson female) {
 
         this.id = getNewId();
