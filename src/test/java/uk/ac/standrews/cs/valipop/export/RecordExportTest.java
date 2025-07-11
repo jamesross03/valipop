@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
- * E2E tests which compares ValiPop generated record checksums 
+ * E2E tests of GEDCOM export.
  *
  * @author Daniel Brathagen (dbrathagen@gmail.com)
  */

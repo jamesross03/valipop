@@ -37,8 +37,11 @@ import static uk.ac.standrews.cs.valipop.config.TestCases.getTestConfigurations;
  */
 public abstract class PopulationExportTest {
 
-    public static final List<Integer> FAST_TEST_CASE_INITIAL_POPULATION_SIZES = List.of(200);
-    public static final List<Integer> SLOW_TEST_CASE_INITIAL_POPULATION_SIZES = List.of(300, 1000, 5000);
+    // Eventual population sizes, used in names of expected files: 113, 188.
+    public static final List<Integer> FAST_TEST_CASE_INITIAL_POPULATION_SIZES = List.of(200, 300);
+
+    // Eventual population sizes, used in names of expected files: 19065, 86033.
+    public static final List<Integer> SLOW_TEST_CASE_INITIAL_POPULATION_SIZES = List.of(1000, 5000);
 
     static final String TEST_DIRECTORY_PATH_STRING = "src/test/resources/valipop/";
 
@@ -53,7 +56,7 @@ public abstract class PopulationExportTest {
     PopulationExportTest(final IPersonCollection population) {
 
         this.population = population;
-        this.file_name_root = "file" + population.getNumberOfPeople() + "_intended";
+        this.file_name_root = "file" + population.getNumberOfPeople() + "_expected";
     }
 
     static List<Arguments> getFastTestCases()  {

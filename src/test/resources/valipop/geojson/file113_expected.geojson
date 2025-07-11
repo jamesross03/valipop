@@ -1,0 +1,159 @@
+{
+"type": "FeatureCollection",
+"features": [
+{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-4.0467825, 55.9788042],[-4.0467825, 55.9773043],[-4.0433204, 55.9773043],[-4.0433204, 55.9788042],[-4.0467825, 55.9788042]]]},
+"properties": {
+"name": "Skye Pringle",
+"birth_date": "1616-05-07",
+"death_date": "1632-12-24",
+"birth_place": "99 Lochan Road, North Barrwood, North Lanarkshire"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-4.0467825, 55.9788042],[-4.0467825, 55.9773043],[-4.0433204, 55.9773043],[-4.0433204, 55.9788042],[-4.0467825, 55.9788042]]]},
+"properties": {
+"name": "Zoe Pringle",
+"birth_date": "1617-09-15",
+"death_date": "1634-02-12",
+"birth_place": "99 Lochan Road, North Barrwood, North Lanarkshire"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-4.0467825, 55.9788042],[-4.0467825, 55.9773043],[-4.0433204, 55.9773043],[-4.0433204, 55.9788042],[-4.0467825, 55.9788042]]]},
+"properties": {
+"name": "Hannah Pringle",
+"birth_date": "1619-11-20",
+"death_date": "1638-03-25",
+"birth_place": "99 Lochan Road, North Barrwood, North Lanarkshire"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-4.0467825, 55.9788042],[-4.0467825, 55.9773043],[-4.0433204, 55.9773043],[-4.0433204, 55.9788042],[-4.0467825, 55.9788042]]]},
+"properties": {
+"name": "Sophie Pringle",
+"birth_date": "1621-10-06",
+"death_date": "1642-11-23",
+"birth_place": "99 Lochan Road, North Barrwood, North Lanarkshire"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-4.0467825, 55.9788042],[-4.0467825, 55.9773043],[-4.0433204, 55.9773043],[-4.0433204, 55.9788042],[-4.0467825, 55.9788042]]]},
+"properties": {
+"name": "Cody Pringle",
+"birth_date": "1623-01-11",
+"death_date": "1646-03-19",
+"birth_place": "99 Lochan Road, North Barrwood, North Lanarkshire"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-4.0467825, 55.9788042],[-4.0467825, 55.9773043],[-4.0433204, 55.9773043],[-4.0433204, 55.9788042],[-4.0467825, 55.9788042]]]},
+"properties": {
+"name": "Shannon Pringle",
+"birth_date": "1626-05-18",
+"birth_place": "99 Lochan Road, North Barrwood, North Lanarkshire"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-3.0405147, 56.1805809],[-3.0405147, 56.180164],[-3.0404757, 56.180164],[-3.0404757, 56.1805809],[-3.0405147, 56.1805809]]]},
+"properties": {
+"name": "Charlotte Ingham",
+"birth_date": "1636-01-13",
+"birth_place": "45 Kestrel Grove, Methilhill, Buckhaven"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-3.3003924, 57.6596278],[-3.3003924, 57.6585896],[-3.3000155, 57.6585896],[-3.3000155, 57.6596278],[-3.3003924, 57.6596278]]]},
+"properties": {
+"name": "Chelsea Hussain",
+"birth_date": "1638-09-01",
+"birth_place": "41 Marleon Field, Bishopmill, Elgin"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-4.1999761, 56.2409283],[-4.1999761, 56.2400678],[-4.1969756, 56.2400678],[-4.1969756, 56.2409283],[-4.1999761, 56.2409283]]]},
+"properties": {
+"name": "James Thomson",
+"birth_date": "1641-08-18",
+"birth_place": "1 Glen Gardens, Braeleny Farm, Callander"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-3.4143055, 56.0519523],[-3.4143055, 56.0518299],[-3.4132886, 56.0518299],[-3.4132886, 56.0519523],[-3.4143055, 56.0519523]]]},
+"properties": {
+"name": "Adam Gilmore",
+"birth_date": "1642-06-14",
+"birth_place": "1 Springwood, Masterton, Dunfermline"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-5.0753643, 56.2309982],[-5.0753643, 56.2306108],[-5.0741453, 56.2306108],[-5.0741453, 56.2309982],[-5.0753643, 56.2309982]]]},
+"properties": {
+"name": "Gemma Gilmore",
+"birth_date": "1642-10-23",
+"birth_place": "41 Chalmers Court, Three Bridges, Inveraray"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-3.3003924, 57.6596278],[-3.3003924, 57.6585896],[-3.3000155, 57.6585896],[-3.3000155, 57.6596278],[-3.3003924, 57.6596278]]]},
+"properties": {
+"name": "Benjamin Hussain",
+"birth_date": "1643-03-09",
+"birth_place": "41 Marleon Field, Bishopmill, Elgin"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-5.6988991, 57.7309379],[-5.6988991, 57.7303972],[-5.6972088, 57.7303972],[-5.6972088, 57.7309379],[-5.6988991, 57.7309379]]]},
+"properties": {
+"name": "Luke Egan",
+"birth_date": "1644-01-13",
+"birth_place": "1 Faolin, Highland"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-4.0233408, 55.9297071],[-4.0233408, 55.9296984],[-4.023049, 55.9296984],[-4.023049, 55.9297071],[-4.0233408, 55.9297071]]]},
+"properties": {
+"name": "Taylor Goldie",
+"birth_date": "1646-05-31",
+"birth_place": "1 Barbeth Road, Craiglinn, North Lanarkshire"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-3.2511516, 55.9565229],[-3.2511516, 55.9559095],[-3.2506741, 55.9559095],[-3.2506741, 55.9565229],[-3.2511516, 55.9565229]]]},
+"properties": {
+"name": "Joshua Beaton",
+"birth_date": "1647-10-12",
+"birth_place": "1 Keith Terrace, Blackhall, City of Edinburgh"
+}}
+]}

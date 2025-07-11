@@ -1,0 +1,335 @@
+{
+"type": "FeatureCollection",
+"features": [
+{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-3.3093007, 56.1311315],[-3.3093007, 56.1298424],[-3.3084096, 56.1298424],[-3.3084096, 56.1311315],[-3.3093007, 56.1311315]]]},
+"properties": {
+"name": "Adam Pringle",
+"birth_date": "1616-12-05",
+"death_date": "1639-07-19",
+"birth_place": "1 Reid Street, Lochgelly, Fife"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-4.1942964, 56.2376488],[-4.1942964, 56.2354009],[-4.1927513, 56.2354009],[-4.1927513, 56.2376488],[-4.1942964, 56.2376488]]]},
+"properties": {
+"name": "Jovan Pringle",
+"birth_date": "1621-07-30",
+"birth_place": "1 Vorlich Crescent, Braeleny Farm, Stirling"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-4.1996774, 56.2415198],[-4.1996774, 56.2411171],[-4.1972925, 56.2411171],[-4.1972925, 56.2415198],[-4.1996774, 56.2415198]]]},
+"properties": {
+"name": "Alice Pringle",
+"birth_date": "1621-07-29",
+"birth_place": "1 Balgibbon Drive, Braeleny Farm, Callander"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-2.7936787, 56.3395014],[-2.7936787, 56.3371587],[-2.7930237, 56.3371587],[-2.7930237, 56.3395014],[-2.7936787, 56.3395014]]]},
+"properties": {
+"name": "Oliver Ashcroft",
+"birth_date": "1626-06-25",
+"birth_place": "1 Westburn Lane, Carngour, St Andrews"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-3.3093007, 56.1311315],[-3.3093007, 56.1298424],[-3.3084096, 56.1298424],[-3.3084096, 56.1311315],[-3.3093007, 56.1311315]]]},
+"properties": {
+"name": "Rosie Ashcroft",
+"birth_date": "1626-12-08",
+"birth_place": "1 Reid Street, Lochgelly, Fife"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-4.1815676, 56.2356074],[-4.1815676, 56.2347603],[-4.1808399, 56.2347603],[-4.1808399, 56.2356074],[-4.1815676, 56.2356074]]]},
+"properties": {
+"name": "Francis Crossan",
+"birth_date": "1628-01-07",
+"birth_place": "1 Keltie Bridge, Braeleny Farm, Stirling"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-5.0733004, 56.2316668],[-5.0733004, 56.2315754],[-5.0732262, 56.2315754],[-5.0732262, 56.2316668],[-5.0733004, 56.2316668]]]},
+"properties": {
+"name": "Kieran Hüseynov",
+"birth_date": "1631-11-22",
+"birth_place": "1 The Avenue, Three Bridges, Inveraray"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-4.1815676, 56.2356074],[-4.1815676, 56.2347603],[-4.1808399, 56.2347603],[-4.1808399, 56.2356074],[-4.1815676, 56.2356074]]]},
+"properties": {
+"name": "Frances Crossan",
+"birth_date": "1631-01-23",
+"birth_place": "1 Keltie Bridge, Braeleny Farm, Stirling"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-5.0733004, 56.2316668],[-5.0733004, 56.2315754],[-5.0732262, 56.2315754],[-5.0732262, 56.2316668],[-5.0733004, 56.2316668]]]},
+"properties": {
+"name": "Rachel Hüseynov",
+"birth_date": "1633-10-26",
+"birth_place": "1 The Avenue, Three Bridges, Inveraray"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-2.802793, 56.3368889],[-2.802793, 56.3364832],[-2.8009481, 56.3364832],[-2.8009481, 56.3368889],[-2.802793, 56.3368889]]]},
+"properties": {
+"name": "Jessica Pringle",
+"birth_date": "1635-11-27",
+"birth_place": "1 Wallace Street, Northbank Farm Steadings, St Andrews"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-4.3954906, 55.3229383],[-4.3954906, 55.3217227],[-4.393783, 55.3217227],[-4.393783, 55.3229383],[-4.3954906, 55.3229383]]]},
+"properties": {
+"name": "Whitney Lavoie",
+"birth_date": "1636-08-11",
+"birth_place": "1 Townhead, Dalmellington, East Ayrshire"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-5.0733004, 56.2316668],[-5.0733004, 56.2315754],[-5.0732262, 56.2315754],[-5.0732262, 56.2316668],[-5.0733004, 56.2316668]]]},
+"properties": {
+"name": "Lewis Hüseynov",
+"birth_date": "1637-12-03",
+"birth_place": "1 The Avenue, Three Bridges, Inveraray"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-4.0247657, 55.8266924],[-4.0247657, 55.8263778],[-4.0229901, 55.8263778],[-4.0229901, 55.8266924],[-4.0247657, 55.8266924]]]},
+"properties": {
+"name": "Conor Ritchie",
+"birth_date": "1637-05-19",
+"birth_place": "1 Limegrove Street, Hattonrigg, Bellshill"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-4.8062568, 55.6482951],[-4.8062568, 55.6469271],[-4.8055937, 55.6469271],[-4.8055937, 55.6482951],[-4.8062568, 55.6482951]]]},
+"properties": {
+"name": "Sophie Paterson",
+"birth_date": "1638-07-24",
+"birth_place": "1 Mcdowall Avenue, Ardrossan, North Ayrshire"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-2.7570432, 55.7208604],[-2.7570432, 55.7187121],[-2.7531006, 55.7187121],[-2.7531006, 55.7208604],[-2.7570432, 55.7208604]]]},
+"properties": {
+"name": "Eden Ross",
+"birth_date": "1638-07-02",
+"birth_place": "1 Allanbank Gardens, Allanbank, Lauder"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-2.7570432, 55.7208604],[-2.7570432, 55.7187121],[-2.7531006, 55.7187121],[-2.7531006, 55.7208604],[-2.7570432, 55.7208604]]]},
+"properties": {
+"name": "Conor Ross",
+"birth_date": "1639-10-15",
+"birth_place": "1 Allanbank Gardens, Allanbank, Lauder"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-2.6603641, 56.2998749],[-2.6603641, 56.2994433],[-2.659887, 56.2994433],[-2.659887, 56.2998749],[-2.6603641, 56.2998749]]]},
+"properties": {
+"name": "Lauren Downie",
+"birth_date": "1640-06-15",
+"birth_place": "1 Torrie Wyne, Fife"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-2.6305979, 56.2605775],[-2.6305979, 56.2603821],[-2.6291433, 56.2603821],[-2.6291433, 56.2605775],[-2.6305979, 56.2605775]]]},
+"properties": {
+"name": "Stephanie Mckay",
+"birth_date": "1641-02-15",
+"birth_place": "1 Milne Gardens, Crail, Fife"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-4.3954906, 55.3229383],[-4.3954906, 55.3217227],[-4.393783, 55.3217227],[-4.393783, 55.3229383],[-4.3954906, 55.3229383]]]},
+"properties": {
+"name": "Antonio Hüseynov",
+"birth_date": "1641-05-13",
+"birth_place": "1 Townhead, Dalmellington, East Ayrshire"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-2.4633169, 56.701565],[-2.4633169, 56.701366],[-2.461773, 56.701366],[-2.461773, 56.701565],[-2.4633169, 56.701565]]]},
+"properties": {
+"name": "Mason Holland",
+"birth_date": "1642-11-29",
+"birth_place": "1 William Street, Manse, Angus"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-2.7570432, 55.7208604],[-2.7570432, 55.7187121],[-2.7531006, 55.7187121],[-2.7531006, 55.7208604],[-2.7570432, 55.7208604]]]},
+"properties": {
+"name": "Mandeep Ross",
+"birth_date": "1642-08-06",
+"birth_place": "1 Allanbank Gardens, Allanbank, Lauder"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-2.7570432, 55.7208604],[-2.7570432, 55.7187121],[-2.7531006, 55.7187121],[-2.7531006, 55.7208604],[-2.7570432, 55.7208604]]]},
+"properties": {
+"name": "Adam Ross",
+"birth_date": "1643-12-23",
+"birth_place": "1 Allanbank Gardens, Allanbank, Lauder"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-6.4125841, 57.3573252],[-6.4125841, 57.3570195],[-6.4120193, 57.3570195],[-6.4120193, 57.3573252],[-6.4125841, 57.3573252]]]},
+"properties": {
+"name": "Joshua Carmichael",
+"birth_date": "1643-05-09",
+"birth_place": "39 Ard Struan Road, Highland"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-3.1698999, 55.9618038],[-3.1698999, 55.9610656],[-3.1685489, 55.9610656],[-3.1685489, 55.9618038],[-3.1698999, 55.9618038]]]},
+"properties": {
+"name": "Amy Çelik",
+"birth_date": "1644-08-15",
+"birth_place": "1 Harrismith Place, Leith Central, City of Edinburgh"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-2.0101805, 57.3157856],[-2.0101805, 57.3155951],[-2.00894, 57.3155951],[-2.00894, 57.3157856],[-2.0101805, 57.3157856]]]},
+"properties": {
+"name": "Kerin Carmichael",
+"birth_date": "1645-12-30",
+"birth_place": "1 Haddo Crescent, Aberdeenshire"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-2.6603641, 56.2998749],[-2.6603641, 56.2994433],[-2.659887, 56.2994433],[-2.659887, 56.2998749],[-2.6603641, 56.2998749]]]},
+"properties": {
+"name": "Sam Downie",
+"birth_date": "1645-10-18",
+"birth_place": "1 Torrie Wyne, Fife"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-2.0900532, 57.2474753],[-2.0900532, 57.2457107],[-2.0858732, 57.2457107],[-2.0858732, 57.2474753],[-2.0900532, 57.2474753]]]},
+"properties": {
+"name": "Lydia Carmichael",
+"birth_date": "1645-12-20",
+"birth_place": "1 Cairntack Road, Aberdeenshire"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-4.6483601, 55.5330591],[-4.6483601, 55.5278981],[-4.6437578, 55.5278981],[-4.6437578, 55.5330591],[-4.6483601, 55.5330591]]]},
+"properties": {
+"name": "Nicole Dunn",
+"birth_date": "1646-03-19",
+"birth_place": "1 Crosbie Road, Troon, South Ayrshire"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-5.842394, 56.9112315],[-5.842394, 56.9110155],[-5.8406273, 56.9110155],[-5.8406273, 56.9112315],[-5.842394, 56.9112315]]]},
+"properties": {
+"name": "Harry Kaya",
+"birth_date": "1646-01-02",
+"birth_place": "1 Roshven View, Highland"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-2.5518424, 55.4749732],[-2.5518424, 55.4737436],[-2.5509745, 55.4737436],[-2.5509745, 55.4749732],[-2.5518424, 55.4749732]]]},
+"properties": {
+"name": "Jordanne Dunn",
+"birth_date": "1646-06-29",
+"birth_place": "65 Honeyfield Drive, Scaurs, Jedburgh"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-2.5261673, 55.9925716],[-2.5261673, 55.9925648],[-2.5259249, 55.9925648],[-2.5259249, 55.9925716],[-2.5261673, 55.9925716]]]},
+"properties": {
+"name": "Tristan Mercer",
+"birth_date": "1647-03-02",
+"birth_place": "1 Rennie Drive, Belhaven, East Lothian"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-2.6603641, 56.2998749],[-2.6603641, 56.2994433],[-2.659887, 56.2994433],[-2.659887, 56.2998749],[-2.6603641, 56.2998749]]]},
+"properties": {
+"name": "Thomas Downie",
+"birth_date": "1648-10-24",
+"birth_place": "1 Torrie Wyne, Fife"
+}}
+,{
+"type": "Feature",
+"geometry": {
+"type": "Polygon",
+"coordinates": [[[-2.5261673, 55.9925716],[-2.5261673, 55.9925648],[-2.5259249, 55.9925648],[-2.5259249, 55.9925716],[-2.5261673, 55.9925716]]]},
+"properties": {
+"name": "Samual Mercer",
+"birth_date": "1649-05-28",
+"birth_place": "1 Rennie Drive, Belhaven, East Lothian"
+}}
+]}
