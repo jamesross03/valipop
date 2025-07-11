@@ -19,10 +19,15 @@ COPY src/main/resources/valipop/analysis-r/geeglm src/main/resources/valipop/ana
 
 RUN mvn clean package -Dmaven.test.skip=true
 
+# Extract version from pom.xml
+RUN VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout) && \
+    echo "VERSION=$VERSION" && \
+    mv target/valipop-${VERSION}-jar-with-dependencies.jar ./valipop.jar
+
+# Create runtime image
 FROM valipop-base AS run
 
-COPY --from=build /app/target/valipop-4.0-SNAPSHOT-jar-with-dependencies.jar ./valipop.jar
-
+COPY --from=build /app/valipop.jar ./valipop.jar
 COPY docker/model/entrypoint.sh .
 
 ENTRYPOINT [ "./entrypoint.sh" ]
