@@ -108,9 +108,8 @@ public class GraphvizPopulationWriter extends AbstractFilePopulationWriter {
 
         final int partnership_id = partnership.getId();
 
-        for (final IPerson child : partnership.getChildren()) {
+        for (final IPerson child : partnership.getChildren())
             writer.println(familyLabel(partnership_id) + ARC + individualLabel(child.getId()));
-        }
     }
 
     private String getIndividualNodeAttributes(final IPerson person) {
@@ -132,20 +131,18 @@ public class GraphvizPopulationWriter extends AbstractFilePopulationWriter {
 
     private String getFamilyNodeAttributes(final IPartnership partnership) {
 
-        if (partnership.getMarriageDate() != null) {
+        if (partnership.getMarriageDate() != null)
             return " [shape=box color=" + PARTNERSHIP_NODE_COLOUR + " label=\"m: " + partnership.getMarriageDate().format(formatter) + "\"]";
-        } else {
+        else
             return " [shape=box color=" + PARTNERSHIP_NODE_COLOUR + " label=\"m: " + "null" + "\"]";
-        } 
     }
 
     private void setRankIfOrphan(final IPerson person) {
 
         if (!personHasParents(person)) {
             final int id_of_next_person_with_parents = findIdOfClosestPersonWithParents(person);
-            if (id_of_next_person_with_parents != -1) {
+            if (id_of_next_person_with_parents != -1)
                 writer.println("{ rank = same; " + individualLabel(person.getId()) + ' ' + individualLabel(id_of_next_person_with_parents) + "; }");
-            }
         }
     }
 
@@ -158,25 +155,23 @@ public class GraphvizPopulationWriter extends AbstractFilePopulationWriter {
         IPerson most_recent_with_parents = null;
         while (iterator.hasNext()) {
             final IPerson next_person = iterator.next();
-            if (next_person.getId() == person.getId()) {
+            if (next_person.getId() == person.getId())
                 break;
-            }
-            if (personHasParents(next_person)) {
+
+            if (personHasParents(next_person))
                 most_recent_with_parents = next_person;
-            }
         }
 
         while (iterator.hasNext()) {
             final IPerson next_person = iterator.next();
-            if (personHasParents(next_person)) {
+            if (personHasParents(next_person))
                 return next_person.getId();
-            }
         }
 
         return most_recent_with_parents != null ? most_recent_with_parents.getId() : -1;
     }
 
-    private boolean personHasParents(final IPerson person) {
+    private static boolean personHasParents(final IPerson person) {
 
         return person.getParents() != null;
     }

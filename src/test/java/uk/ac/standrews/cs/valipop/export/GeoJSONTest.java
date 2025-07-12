@@ -18,14 +18,12 @@
 package uk.ac.standrews.cs.valipop.export;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import uk.ac.standrews.cs.valipop.export.geojson.GeojsonPopulationWriter;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPersonCollection;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
@@ -33,7 +31,6 @@ import java.nio.file.Paths;
  *
  * @author Daniel Brathagen (dbrathagen@gmail.com)
  */
-@Disabled
 public abstract class GeoJSONTest extends PopulationExportTest {
 
     static final String INTENDED_SUFFIX = ".geojson";
@@ -42,8 +39,6 @@ public abstract class GeoJSONTest extends PopulationExportTest {
     public void setup() throws IOException {
 
         generated_output_file1 = Files.createTempFile(temp_dir, null, INTENDED_SUFFIX);
-        generated_output_file2 = Files.createTempFile(temp_dir,null, INTENDED_SUFFIX);
-
         expected_output_file = Paths.get(TEST_DIRECTORY_PATH_STRING, "geojson", file_name_root + INTENDED_SUFFIX);
     }
 
@@ -53,7 +48,7 @@ public abstract class GeoJSONTest extends PopulationExportTest {
     }
 
     @Test
-    public void GeoJSONExportIsAsExpected() throws Exception {
+    public void geoJSONExportIsAsExpected() throws Exception {
 
         final IPopulationWriter population_writer = new GeojsonPopulationWriter(generated_output_file1);
 
