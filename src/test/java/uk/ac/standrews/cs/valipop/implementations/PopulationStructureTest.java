@@ -43,10 +43,6 @@ public abstract class PopulationStructureTest {
     public static final List<Integer> FAST_TEST_CASE_INITIAL_POPULATION_SIZES = List.of(200, 300);
     public static final List<Integer> SLOW_TEST_CASE_INITIAL_POPULATION_SIZES = List.of(1000, 10000);
 
-    private static final int PEOPLE_ITERATION_SAMPLE_THRESHOLD = 40;
-    private static final int PEOPLE_ITERATION_SAMPLE_START = 30;
-    private static final int PARTNERSHIP_ITERATION_SAMPLE_THRESHOLD = 20;
-    private static final int PARTNERSHIP_ITERATION_SAMPLE_START = 10;
     private static final int MAX_REASONABLE_FAMILY_SIZE = 20;
 
     private final IPersonCollection population;

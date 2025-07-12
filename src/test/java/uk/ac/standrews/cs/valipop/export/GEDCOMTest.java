@@ -51,8 +51,7 @@ public abstract class GEDCOMTest extends PopulationExportTest {
     @BeforeEach
     public void setup() throws IOException {
 
-//        generated_output_file1 = Files.createTempFile(temp_dir, null, INTENDED_SUFFIX);
-        generated_output_file1 = Files.createTempFile(Path.of("/Users/gnck/Desktop/temp_dir"), null, INTENDED_SUFFIX);
+        generated_output_file1 = Files.createTempFile(temp_dir, null, INTENDED_SUFFIX);
         generated_output_file2 = Files.createTempFile(temp_dir,null, INTENDED_SUFFIX);
 
         expected_output_file = Paths.get(TEST_DIRECTORY_PATH_STRING, "gedcom", file_name_root + INTENDED_SUFFIX);
