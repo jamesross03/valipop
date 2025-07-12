@@ -28,7 +28,7 @@ import static uk.ac.standrews.cs.valipop.simulationEntities.PopulationNavigation
  * @author Tom Dalton (tsd4@st-andrews.ac.uk)
  */
 @SuppressWarnings("ImplicitNumericConversion")
-public class PersonTest {
+public class PopulationNavigationTest {
 
     @Test
     public void testAgeOnDate() {

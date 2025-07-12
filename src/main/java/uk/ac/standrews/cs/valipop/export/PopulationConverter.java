@@ -50,23 +50,23 @@ public class PopulationConverter implements AutoCloseable {
      */
     public void convert() {
 
-        List<IPerson> people = new ArrayList<>();
-        for (IPerson p : population.getPeople()) people.add(p);
+        final List<IPerson> people = new ArrayList<>();
+        for (final IPerson p : population.getPeople()) people.add(p);
 
-        Set<IPerson> immigrantParentsToAdd = new HashSet<>();
+        final Set<IPerson> immigrantParentsToAdd = new HashSet<>();
 
-        List<IPartnership> partnerships = new ArrayList<>();
-        for (IPartnership p : population.getPartnerships()) partnerships.add(p);
+        final List<IPartnership> partnerships = new ArrayList<>();
+        for (final IPartnership p : population.getPartnerships()) partnerships.add(p);
 
-        Set<IPartnership> immigrantParentPartnershipsToAdd = new HashSet<>();
+        final Set<IPartnership> immigrantParentPartnershipsToAdd = new HashSet<>();
 
         for (final IPerson person : people) {
 
-            IPartnership parents = person.getParents();
+            final IPartnership parents = person.getParents();
 
             if (parents != null) {
-                IPerson mother = parents.getFemalePartner();
-                IPerson father = parents.getMalePartner();
+                final IPerson mother = parents.getFemalePartner();
+                final IPerson father = parents.getMalePartner();
 
                 if (!people.contains(mother)) immigrantParentsToAdd.add(mother);
                 if (!people.contains(father)) immigrantParentsToAdd.add(father);
@@ -94,8 +94,8 @@ public class PopulationConverter implements AutoCloseable {
 
     private <T extends Comparable<T>> Iterable<T> sort(final Iterable<T> unsorted) {
 
-        List<T> list = new ArrayList<>();
-        for (T value : unsorted) {
+        final List<T> list = new ArrayList<>();
+        for (final T value : unsorted) {
             list.add(value);
         }
         Collections.sort(list);

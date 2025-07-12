@@ -190,24 +190,23 @@ public class OBDModel {
 
     public void analyseAndOutputPopulation(final boolean outputSummaryRow) {
 
-        if (config.shouldGenerateContingencyTables())
-            ContingencyTableFactory.generateContingencyTables(population.getPeople(), desiredStatistics, config, summary);
-
         final ProgramTimer recordTimer = new ProgramTimer();
-
-        if (config.getOutputRecordFormat() != RecordFormat.NONE)
-            RecordGenerationFactory.outputRecords(config.getOutputRecordFormat(), config.getRecordsDirPath(), population.getPeople(), population.getPeople().getPartnerships(), config.getT0());
-
-        if (config.getOutputGraphFormat() != ExportFormat.NONE)
-            outputToGraph(config.getOutputGraphFormat(), population.getPeople(), config.getGraphsDirPath());
-
-        summary.setRecordsRunTime(recordTimer.getRunTimeSeconds());
 
         try (final PrintStream resultsOutput = new PrintStream(config.getDetailedResultsPath().toFile(), StandardCharsets.UTF_8)) {
 
+            if (config.shouldGenerateContingencyTables())
+                ContingencyTableFactory.generateContingencyTables(population.getPeople(), desiredStatistics, config, summary);
+
+            if (config.getOutputRecordFormat() != RecordFormat.NONE)
+                RecordGenerationFactory.outputRecords(config.getOutputRecordFormat(), config.getRecordsDirPath(), population.getPeople(), config.getT0());
+
+            if (config.getOutputGraphFormat() != ExportFormat.NONE)
+                outputToGraph(config.getOutputGraphFormat(), population.getPeople(), config.getGraphsDirPath());
+
+            summary.setRecordsRunTime(recordTimer.getRunTimeSeconds());
             AnalyticsRunner.runAnalytics(population.getPeople(config.getT0(), config.getTE(), MAX_AGE), resultsOutput);
 
-        } catch (final IOException e) {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
 
@@ -221,35 +220,25 @@ public class OBDModel {
         log.info("OBDModel --- Output complete");
     }
 
-    private static void outputToGraph(final ExportFormat type, final IPersonCollection people, final Path outputDir) {
+    private static void outputToGraph(final ExportFormat type, final IPersonCollection people, final Path outputDir) throws Exception {
 
-        try {
-            final IPopulationWriter populationWriter;
-            switch (type) {
-                case GEDCOM:
-                    final Path gedcomPath = outputDir.resolve("graph.ged");
-                    populationWriter = new GEDCOMPopulationWriter(gedcomPath);
-                    break;
-                case GRAPHVIZ:
-                    final Path graphvizPath = outputDir.resolve("graph.dot");
-                    populationWriter = new GraphvizPopulationWriter(people, graphvizPath);
-                    break;
-                case GEOJSON:
-                    final Path geojsonPath = outputDir.resolve("graph.geojson");
-                    populationWriter = new GeojsonPopulationWriter(geojsonPath);
-                    break;
-                default:
-                    return;
-            }
+        final IPopulationWriter populationWriter;
+        switch (type) {
+            case GEDCOM:
+                populationWriter = new GEDCOMPopulationWriter(outputDir.resolve("graph.ged"));
+                break;
+            case GRAPHVIZ:
+                populationWriter = new GraphvizPopulationWriter(people, outputDir.resolve("graph.dot"));
+                break;
+            case GEOJSON:
+                populationWriter = new GeojsonPopulationWriter(outputDir.resolve("graph.geojson"));
+                break;
+            default:
+                return;
+        }
 
-            try (final PopulationConverter converter = new PopulationConverter(people, populationWriter)) {
-                converter.convert();
-            }
-
-        } catch (final Exception e) {
-            log.info("Graph generation failed");
-            e.printStackTrace();
-            log.info(e.getMessage());
+        try (final PopulationConverter converter = new PopulationConverter(people, populationWriter)) {
+            converter.convert();
         }
     }
 

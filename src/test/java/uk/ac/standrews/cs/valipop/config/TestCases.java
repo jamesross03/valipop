@@ -28,9 +28,19 @@ import java.util.List;
 
 public abstract class TestCases {
 
-    public static final int SEED = 841584;
+    private static final int SEED = 841584;
 
-    public static IPersonCollection generatePopulation(final int initialPopulationSize)  {
+    public static List<Arguments> getTestConfigurations(final List<Integer> initialPopulationSizes) {
+
+        return initialPopulationSizes.stream().map(TestCases::makeTestConfiguration).toList();
+    }
+
+    private static Arguments makeTestConfiguration(final int initialPopulationSize) {
+
+        return Arguments.of(generatePopulation(initialPopulationSize));
+    }
+
+    private static IPersonCollection generatePopulation(final int initialPopulationSize)  {
 
         final Config config = new Config(
             LocalDate.of(1599, 1, 1),
@@ -50,15 +60,5 @@ public abstract class TestCases {
         final IPersonCollection population = model.getPopulation().getPeople();
         population.setDescription("initial size=" + initialPopulationSize + ", seed=" + SEED);
         return population;
-    }
-
-    public static List<Arguments> getTestConfigurations(final List<Integer> initialPopulationSizes) {
-
-        return initialPopulationSizes.stream().map(TestCases::makeTestConfiguration).toList();
-    }
-
-    private static Arguments makeTestConfiguration(final int initialPopulationSize) {
-
-        return Arguments.of(generatePopulation(initialPopulationSize));
     }
 }

@@ -17,7 +17,6 @@
  */
 package uk.ac.standrews.cs.valipop.implementations;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.provider.Arguments;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPartnership;
@@ -40,11 +39,15 @@ import static uk.ac.standrews.cs.valipop.config.TestCases.getTestConfigurations;
  */
 public abstract class PopulationStructureTest {
 
-    // TODO check birth before marriage & death, after parents' birth.
     public static final List<Integer> FAST_TEST_CASE_INITIAL_POPULATION_SIZES = List.of(200, 300);
     public static final List<Integer> SLOW_TEST_CASE_INITIAL_POPULATION_SIZES = List.of(1000, 10000);
 
     private static final int MAX_REASONABLE_FAMILY_SIZE = 20;
+    private static final int MINIMUM_MOTHER_AGE_AT_CHILDBIRTH = 12;
+    private static final int MAXIMUM_MOTHER_AGE_AT_CHILDBIRTH = 55;
+    private static final int MINIMUM_FATHER_AGE_AT_CHILDBIRTH = 12;
+    private static final int MAX_GESTATION_IN_DAYS = 300;
+    private static final int MINIMUM_AGE_AT_MARRIAGE = 14;
 
     private final IPersonCollection population;
 
@@ -76,7 +79,17 @@ public abstract class PopulationStructureTest {
     }
 
     @Test
-    public void numberOfPeopleIsConsistentAndIDsArentRepeated() {
+    public void numberOfPeopleIsConsistent() {
+
+        int count = 0;
+        for (final IPerson ignored : population.getPeople())
+            count++;
+
+        assertEquals(population.getNumberOfPeople(), count);
+    }
+
+    @Test
+    public void personIDsArentRepeated() {
 
         final Set<Integer> ids = new HashSet<>();
 
@@ -84,19 +97,27 @@ public abstract class PopulationStructureTest {
             assertFalse(ids.contains(person.getId()));
             ids.add(person.getId());
         }
-
-        assertEquals(population.getNumberOfPeople(), ids.size());
     }
 
     @Test
     public void numberOfPartnershipsIsConsistent() {
 
-        final Set<Integer> partnerships = new HashSet<>();
+        int count = 0;
+        for (final IPartnership ignored : population.getPartnerships())
+            count++;
+
+        assertEquals(population.getNumberOfPartnerships(), count);
+    }
+
+    @Test
+    public void partnershipIDsArentRepeated() {
+
+        final Set<Integer> ids = new HashSet<>();
+
         for (final IPartnership partnership : population.getPartnerships()) {
-            assertFalse(partnerships.contains(partnership.getId()));
-            partnerships.add(partnership.getId());
+            assertFalse(ids.contains(partnership.getId()));
+            ids.add(partnership.getId());
         }
-        assertEquals(population.getNumberOfPartnerships(), partnerships.size());
     }
 
     @Test
@@ -131,10 +152,11 @@ public abstract class PopulationStructureTest {
     public void partnershipsConsistent() {
 
         final List<IPartnership> partnerships = new ArrayList<>();
+        final List<IPerson> people = new ArrayList<>();
+
         for (final IPartnership partnership : population.getPartnerships())
             partnerships.add(partnership);
 
-        final List<IPerson> people = new ArrayList<>();
         for (final IPerson person : population.getPeople())
             people.add(person);
 
@@ -145,12 +167,11 @@ public abstract class PopulationStructureTest {
             assertTrue(partnership.getFemalePartner().getPartnerships().contains(partnership));
         }
 
-        for (final IPerson person : people) {
+        for (final IPerson person : people)
             for (final IPartnership partnership : person.getPartnerships()) {
                 assertTrue(partnerships.contains(partnership));
                 assertTrue(partnership.getMalePartner().equals(person) || partnership.getFemalePartner().equals(person));
             }
-        }
     }
 
     @Test
@@ -189,10 +210,10 @@ public abstract class PopulationStructureTest {
     }
 
     @Test
-    public void birthsBeforeMarriages() {
+    public void sensibleAgeAtMarriages() {
 
         for (final IPerson person : population.getPeople())
-            assertBirthBeforeMarriages(person);
+            assertSensibleAgeAtMarriages(person);
     }
 
     @Test
@@ -283,7 +304,7 @@ public abstract class PopulationStructureTest {
         final IPerson father = partnership.getMalePartner();
 
         for (final IPerson child : partnership.getChildren())
-            assertTrue(PopulationLogic.parentsHaveSensibleAgesAtChildBirth(father, mother, child));
+            assertParentsHaveSensibleAgesAtBirth(father, mother, child);
     }
 
     private static void assertParentNotPartnerOfChild(final IPartnership partnership) {
@@ -300,14 +321,12 @@ public abstract class PopulationStructureTest {
         // Include half-siblings.
         final Set<IPerson> siblings = new HashSet<>();
 
-        for (final IPartnership partnership : person.getPartnerships()) {
-
+        for (final IPartnership partnership : person.getPartnerships())
             for (final IPerson child : partnership.getChildren()) {
 
                 assertNotPartnerOfAny(child, siblings);
                 siblings.add(child);
             }
-        }
     }
 
     private static void assertDeathInfoConsistent(final IPerson person) {
@@ -348,18 +367,15 @@ public abstract class PopulationStructureTest {
 
     private static void assertNotPartnerOfAny(final IPerson person, final Set<IPerson> people) {
 
-        for (final IPerson another_person : people) {
+        for (final IPerson another_person : people)
             assertFalse(isPartnerOf(person, another_person));
-        }
     }
 
     private static boolean isPartnerOf(final IPerson p1, final IPerson p2) {
 
-        for (final IPartnership partnership : p1.getPartnerships()) {
-
+        for (final IPartnership partnership : p1.getPartnerships())
             if (partnership.getPartnerOf(p1).equals(p2))
                 return true;
-        }
 
         return false;
     }
@@ -368,7 +384,7 @@ public abstract class PopulationStructureTest {
 
         if (person.getSex() == SexOption.MALE) {
 
-            for (final IPartnership partnership : person.getPartnerships()) {
+            for (final IPartnership partnership : person.getPartnerships())
                 for (final IPerson child : partnership.getChildren()) {
 
                     assertEquals(person.getSurname(), child.getSurname());
@@ -376,7 +392,6 @@ public abstract class PopulationStructureTest {
                     if (child.getSex() == SexOption.MALE)
                         assertSurnameInheritedOnMaleLine(child);
                 }
-            }
         }
     }
 
@@ -384,26 +399,27 @@ public abstract class PopulationStructureTest {
 
         if (person.getDeathDate() != null) {
 
-            final LocalDate death_date = person.getDeathDate();
-            final LocalDate birth_date = person.getBirthDate();
+            final LocalDate deathDate = person.getDeathDate();
+            final LocalDate birthDate = person.getBirthDate();
 
-            assertFalse(birth_date.isAfter(death_date));
+            assertFalse(birthDate.isAfter(deathDate));
         }
     }
 
-    private static void assertBirthBeforeMarriages(final IPerson person) {
+    private static void assertSensibleAgeAtMarriages(final IPerson person) {
 
         if (person.getBirthDate() != null) {
 
-            final LocalDate birth_date = person.getBirthDate();
+            final LocalDate birthDate = person.getBirthDate();
 
-            for (final IPartnership partnership : person.getPartnerships()) {
+            for (final IPartnership partnership : person.getPartnerships())
                 if (partnership.getMarriageDate() != null) {
 
-                    final LocalDate marriage_date = partnership.getMarriageDate();
-                    assertFalse(birth_date.isAfter(marriage_date));
+                    final LocalDate marriageDate = partnership.getMarriageDate();
+
+                    final int ageAtMarriage = differenceInYears(birthDate, marriageDate);
+                    assertTrue(ageAtMarriage >= MINIMUM_AGE_AT_MARRIAGE);
                 }
-            }
         }
     }
 
@@ -411,15 +427,14 @@ public abstract class PopulationStructureTest {
 
         if (person.getDeathDate() != null) {
 
-            final LocalDate death_date = person.getDeathDate();
+            final LocalDate deathDate = person.getDeathDate();
 
-            for (final IPartnership partnership : person.getPartnerships()) {
+            for (final IPartnership partnership : person.getPartnerships())
                 if (partnership.getMarriageDate() != null) {
 
-                    final LocalDate marriage_date = partnership.getMarriageDate();
-                    assertFalse(marriage_date.isAfter(death_date));
+                    final LocalDate marriageDate = partnership.getMarriageDate();
+                    assertFalse(marriageDate.isAfter(deathDate));
                 }
-            }
         }
     }
 
@@ -431,16 +446,36 @@ public abstract class PopulationStructureTest {
 
     private void assertCanBeFoundById(final IPartnership partnership) {
 
-        final int id = partnership.getId();
-        final IPartnership retrievedPartnership = population.findPartnership(id);
-
-        assertEquals(id, retrievedPartnership.getId());
+        final IPartnership retrievedPartnership = population.findPartnership(partnership.getId());
+        assertEquals(partnership, retrievedPartnership);
     }
 
     private static void doTooManyIterations(final Iterator<?> iterator, final int number_available) {
 
-        for (int i = 0; i < number_available + 1; i++) {
+        for (int i = 0; i < number_available + 1; i++)
             iterator.next();
-        }
+    }
+
+    private static void assertParentsHaveSensibleAgesAtBirth(final IPerson father, final IPerson mother, final IPerson child) {
+
+        final LocalDate motherBirthDate = mother.getBirthDate();
+        final LocalDate motherDeathDate = mother.getDeathDate();
+
+        final LocalDate fatherBirthDate = father.getBirthDate();
+        final LocalDate fatherDeathDate = father.getDeathDate();
+
+        final LocalDate childBirthDate = child.getBirthDate();
+
+        assertTrue(motherDeathDate == null || !childBirthDate.isAfter(motherDeathDate));
+        assertTrue(fatherDeathDate == null || !childBirthDate.isAfter(fatherDeathDate.plusDays(MAX_GESTATION_IN_DAYS)));
+
+        assertTrue(differenceInYears(motherBirthDate, childBirthDate) >= MINIMUM_MOTHER_AGE_AT_CHILDBIRTH);
+        assertTrue(differenceInYears(motherBirthDate, childBirthDate) <= MAXIMUM_MOTHER_AGE_AT_CHILDBIRTH);
+        assertTrue(differenceInYears(fatherBirthDate, childBirthDate) >= MINIMUM_FATHER_AGE_AT_CHILDBIRTH);
+    }
+
+    private static int differenceInYears(final LocalDate parent_birth_date, final LocalDate child_birth_date) {
+
+        return Period.between(parent_birth_date, child_birth_date).getYears();
     }
 }
