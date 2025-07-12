@@ -43,7 +43,6 @@ public abstract class GraphvizTest extends PopulationExportTest {
     public void setup() throws IOException {
 
         generated_output_file1 = Files.createTempFile(temp_dir, null, INTENDED_SUFFIX);
-//        generated_output_file1 = Files.createTempFile(Path.of("/Users/gnck/Desktop/"), null, INTENDED_SUFFIX);
         expected_output_file = Paths.get(TEST_DIRECTORY_PATH_STRING, "graphviz", file_name_root + INTENDED_SUFFIX);
     }
 
