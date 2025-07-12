@@ -88,9 +88,9 @@ public class GEDCOMPartnership implements IPartnership {
 
         this.adapter = adapter;
 
-        id = getId(family.xref);
-        male_id = getId(family.husband.xref);
-        female_id = getId(family.wife.xref);
+        id = getId(family.getXref());
+        male_id = getId(family.getHusband().getXref());
+        female_id = getId(family.getWife().getXref());
 
         setMarriage(family);
         setChildren(family);
@@ -103,22 +103,22 @@ public class GEDCOMPartnership implements IPartnership {
 
     private void setMarriage(final Family family) {
 
-        for (final FamilyEvent event : family.events) {
+        final List<FamilyEvent> events = family.getEvents();
 
-            if (event.type == FamilyEventType.MARRIAGE) {
-                marriage_date = LocalDate.parse(event.date.toString(), GEDCOMPopulationWriter.FORMAT);
-                if (event.place != null) {
-                    marriage_place = event.place.placeName;
+        if (events != null)
+            for (final FamilyEvent event : events)
+                if (event.getType() == FamilyEventType.MARRIAGE) {
+
+                    marriage_date = LocalDate.parse(event.getDate().toString(), GEDCOMPopulationWriter.FORMAT);
+                    if (event.getPlace() != null) marriage_place = event.getPlace().getPlaceName();
                 }
-            }
-        }
     }
 
     private void setChildren(final Family family) {
 
         child_ids = new ArrayList<>();
-        for (final Individual child : family.children) {
-            child_ids.add(GEDCOMPopulationWriter.idToInt(child.xref));
+        for (final Individual child : family.getChildren()) {
+            child_ids.add(GEDCOMPopulationWriter.idToInt(child.getXref()));
         }
     }
 
@@ -133,15 +133,15 @@ public class GEDCOMPartnership implements IPartnership {
     }
 
     @Override
-    public IPerson getPartnerOf(IPerson person) {
+    public IPerson getPartnerOf(final IPerson person) {
         return adapter.findPerson(person.getSex() == SexOption.MALE ? female_id : male_id);
     }
 
     @Override
     public List<IPerson> getChildren() {
 
-        List<IPerson> children = new ArrayList<>();
-        for (int child_id : child_ids) {
+        final List<IPerson> children = new ArrayList<>();
+        for (final int child_id : child_ids) {
             children.add(adapter.findPerson(child_id));
         }
         return children;

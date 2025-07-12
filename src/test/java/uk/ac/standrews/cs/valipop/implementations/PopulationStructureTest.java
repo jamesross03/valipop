@@ -40,6 +40,7 @@ import static uk.ac.standrews.cs.valipop.config.TestCases.getTestConfigurations;
  */
 public abstract class PopulationStructureTest {
 
+    // TODO check birth before marriage & death, after parents' birth.
     public static final List<Integer> FAST_TEST_CASE_INITIAL_POPULATION_SIZES = List.of(200, 300);
     public static final List<Integer> SLOW_TEST_CASE_INITIAL_POPULATION_SIZES = List.of(1000, 10000);
 
@@ -150,10 +151,6 @@ public abstract class PopulationStructureTest {
                 assertTrue(partnership.getMalePartner().equals(person) || partnership.getFemalePartner().equals(person));
             }
         }
-    }
-
-    private static void assertLinksBetweenPeopleAndPartnershipsAreConsistent(final IPartnership partnership) {
-
     }
 
     @Test

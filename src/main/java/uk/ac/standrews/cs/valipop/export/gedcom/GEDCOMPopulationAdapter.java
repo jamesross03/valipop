@@ -63,7 +63,7 @@ public class GEDCOMPopulationAdapter implements IPersonCollection {
 
         List<IPerson> people = new ArrayList<>();
 
-        for (Individual individual : parser.gedcom.individuals.values()) {
+        for (Individual individual : parser.getGedcom().getIndividuals().values()) {
             people.add(new GEDCOMPerson(individual, this));
         }
 
@@ -77,7 +77,7 @@ public class GEDCOMPopulationAdapter implements IPersonCollection {
 
         List<IPartnership> partnerships = new ArrayList<>();
 
-        for (Family family : parser.gedcom.families.values()) {
+        for (Family family : parser.getGedcom().getFamilies().values()) {
             partnerships.add(new GEDCOMPartnership(family, this));
         }
 
@@ -113,13 +113,13 @@ public class GEDCOMPopulationAdapter implements IPersonCollection {
     @Override
     public int getNumberOfPeople() {
 
-        return parser.gedcom.individuals.values().size();
+        return parser.getGedcom().getIndividuals().values().size();
     }
 
     @Override
     public int getNumberOfPartnerships() {
 
-        return parser.gedcom.families.values().size();
+        return parser.getGedcom().getFamilies().values().size();
     }
 
     @Override

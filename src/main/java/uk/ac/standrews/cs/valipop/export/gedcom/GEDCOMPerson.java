@@ -93,7 +93,7 @@ public class GEDCOMPerson implements IPerson {
     }
 
     @Override
-    public String getOccupation(LocalDate date) {
+    public String getOccupation(final LocalDate date) {
         return occupation;
     }
 
@@ -116,7 +116,7 @@ public class GEDCOMPerson implements IPerson {
 
     private static final String MALE_STRING = SexOption.MALE.toString();
 
-    GEDCOMPerson(final Individual individual, GEDCOMPopulationAdapter adapter) {
+    GEDCOMPerson(final Individual individual, final GEDCOMPopulationAdapter adapter) {
 
         this.adapter = adapter;
 
@@ -131,17 +131,17 @@ public class GEDCOMPerson implements IPerson {
 
     private void setId(final Individual individual) {
 
-        id = GEDCOMPopulationWriter.idToInt(individual.xref);
+        id = GEDCOMPopulationWriter.idToInt(individual.getXref());
     }
 
     private void setSex(final Individual individual) {
 
-        sex = individual.sex.toString().equals(MALE_STRING) ? SexOption.MALE : SexOption.FEMALE;
+        sex = individual.getSex().toString().equals(MALE_STRING) ? SexOption.MALE : SexOption.FEMALE;
     }
 
     private void setNames(final Individual individual) {
 
-        final List<PersonalName> names = individual.names;
+        final List<PersonalName> names = individual.getNames();
 
         first_name = findFirstNames(names);
         surname = findSurname(names);
@@ -149,42 +149,42 @@ public class GEDCOMPerson implements IPerson {
 
     private void setParents(final Individual individual) {
 
-        final List<FamilyChild> families = individual.familiesWhereChild;
-        parent_id = !families.isEmpty() ? GEDCOMPopulationWriter.idToInt(families.get(0).family.xref) : -1;
+        final List<FamilyChild> families = individual.getFamiliesWhereChild();
+        parent_id = families != null && !families.isEmpty() ? GEDCOMPopulationWriter.idToInt(families.getFirst().getFamily().getXref()) : -1;
     }
 
     private void setPartnerships(final Individual individual) {
 
         partnership_ids = new ArrayList<>();
 
-        List<FamilySpouse> familiesWhereSpouse = individual.familiesWhereSpouse;
+        final List<FamilySpouse> familiesWhereSpouse = individual.getFamiliesWhereSpouse();
 
-        for (FamilySpouse family : familiesWhereSpouse) {
-            partnership_ids.add(GEDCOMPopulationWriter.idToInt(family.family.xref));
-        }
+        if (familiesWhereSpouse != null)
+            for (final FamilySpouse family : familiesWhereSpouse)
+                partnership_ids.add(GEDCOMPopulationWriter.idToInt(family.getFamily().getXref()));
     }
 
     private void setEvents(final Individual individual) {
 
-        for (final IndividualEvent event : individual.events) {
+        individual.getEvents(true);
+        for (final IndividualEvent event : individual.getEvents()) {
 
-            switch (event.type) {
+            switch (event.getType()) {
 
                 case BIRTH:
-                    birth_date = LocalDate.parse(event.date.toString(), GEDCOMPopulationWriter.FORMAT);
-                    if (event.place != null) {
-                        birth_place = event.place.placeName;
-                    }
+                    birth_date = LocalDate.parse(event.getDate().toString(), GEDCOMPopulationWriter.FORMAT);
+                    if (event.getPlace() != null)
+                        birth_place = event.getPlace().getPlaceName();
                     break;
 
                 case DEATH:
-                    death_date = LocalDate.parse(event.date.toString(), GEDCOMPopulationWriter.FORMAT);
-                    if (event.place != null) {
-                        death_place = event.place.placeName;
-                    }
-                    if (event.cause != null) {
-                        death_cause = event.cause.toString();
-                    }
+                    death_date = LocalDate.parse(event.getDate().toString(), GEDCOMPopulationWriter.FORMAT);
+                    if (event.getPlace() != null)
+                        death_place = event.getPlace().getPlaceName();
+
+                    if (event.getCause() != null)
+                        death_cause = event.getCause().toString();
+
                     break;
 
                 default:
@@ -195,9 +195,12 @@ public class GEDCOMPerson implements IPerson {
 
     private void setOccupation(final Individual individual) {
 
+        // Necessary to force initialisation of attributes list.
+        individual.getAttributes(true);
+
         final List<IndividualAttribute> occupation_attributes = individual.getAttributesOfType(IndividualAttributeType.OCCUPATION);
         if (!occupation_attributes.isEmpty()) {
-            occupation = occupation_attributes.get(0).description.toString();
+            occupation = occupation_attributes.getFirst().getDescription().toString();
         }
     }
 
@@ -223,7 +226,7 @@ public class GEDCOMPerson implements IPerson {
 
         for (final PersonalName gedcom_name : names) {
 
-            if (builder.length() > 0) {
+            if (!builder.isEmpty()) {
                 builder.append(' ');
             }
 
@@ -258,9 +261,9 @@ public class GEDCOMPerson implements IPerson {
     @Override
     public List<IPartnership> getPartnerships() {
 
-        List<IPartnership> partnerships = new ArrayList<>();
-        for (int id : partnership_ids) {
-            IPartnership partnership = adapter.findPartnership(id);
+        final List<IPartnership> partnerships = new ArrayList<>();
+        for (final int id : partnership_ids) {
+            final IPartnership partnership = adapter.findPartnership(id);
             if (partnership != null)
                 partnerships.add(partnership);
         }
@@ -273,7 +276,7 @@ public class GEDCOMPerson implements IPerson {
     }
 
     @Override
-    public void setParents(IPartnership parents) {
+    public void setParents(final IPartnership parents) {
         parent_id = parents.getId();
     }
 
@@ -283,17 +286,17 @@ public class GEDCOMPerson implements IPerson {
     }
 
     @Override
-    public void recordPartnership(IPartnership partnership) {
+    public void recordPartnership(final IPartnership partnership) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Address getAddress(LocalDate onDate) {
+    public Address getAddress(final LocalDate onDate) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void setAddress(LocalDate onDate, Address address) {
+    public void setAddress(final LocalDate onDate, final Address address) {
         throw new UnsupportedOperationException();
     }
 
@@ -303,7 +306,7 @@ public class GEDCOMPerson implements IPerson {
     }
 
     @Override
-    public void setEmigrationDate(LocalDate leavingDate) {
+    public void setEmigrationDate(final LocalDate leavingDate) {
 
     }
 
@@ -313,7 +316,7 @@ public class GEDCOMPerson implements IPerson {
     }
 
     @Override
-    public void setImmigrationDate(LocalDate arrivalDate) {
+    public void setImmigrationDate(final LocalDate arrivalDate) {
 
     }
 
@@ -328,12 +331,12 @@ public class GEDCOMPerson implements IPerson {
     }
 
     @Override
-    public void rollbackLastMove(Geography geography) {
+    public void rollbackLastMove(final Geography geography) {
 
     }
 
     @Override
-    public LocalDate cancelLastMove(Geography geography) {
+    public LocalDate cancelLastMove(final Geography geography) {
         return null;
     }
 
@@ -353,24 +356,24 @@ public class GEDCOMPerson implements IPerson {
     }
 
     @Override
-    public void setOccupation(LocalDate onDate, String occupation) {
+    public void setOccupation(final LocalDate onDate, final String occupation) {
         this.occupation = occupation;
     }
 
     @Override
     public TreeMap<LocalDate, Address> getAddressHistory() {
-        TreeMap<LocalDate, Address> tm = new TreeMap<>();
+        final TreeMap<LocalDate, Address> tm = new TreeMap<>();
         tm.put(birth_date, getAddress(birth_date));
         return tm;
     }
 
     @Override
-    public void setAdulterousBirth(boolean adulterousBirth) {
+    public void setAdulterousBirth(final boolean adulterousBirth) {
 
     }
 
     @Override
-    public void setPhantom(boolean isPhantom) {
+    public void setPhantom(final boolean isPhantom) {
 
     }
 
@@ -380,7 +383,7 @@ public class GEDCOMPerson implements IPerson {
     }
 
     @Override
-    public int compareTo(IPerson o) {
+    public int compareTo(final IPerson o) {
         return Integer.compare(id, o.getId());
     }
 }
