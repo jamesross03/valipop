@@ -20,8 +20,9 @@ package uk.ac.standrews.cs.valipop.export.gedcom;
 import org.apache.commons.math3.random.RandomGenerator;
 import org.gedcom4j.model.Family;
 import org.gedcom4j.model.FamilyEvent;
-import org.gedcom4j.model.FamilyEventType;
 import org.gedcom4j.model.Individual;
+import org.gedcom4j.model.IndividualReference;
+import org.gedcom4j.model.enumerations.FamilyEventType;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPartnership;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPerson;
 import uk.ac.standrews.cs.valipop.statistics.analysis.validation.contingencyTables.TreeStructure.SexOption;
@@ -84,13 +85,13 @@ public class GEDCOMPartnership implements IPartnership {
         return id;
     }
 
-    GEDCOMPartnership(final Family family, GEDCOMPopulationAdapter adapter) {
+    GEDCOMPartnership(final Family family, final GEDCOMPopulationAdapter adapter) {
 
         this.adapter = adapter;
 
         id = getId(family.getXref());
-        male_id = getId(family.getHusband().getXref());
-        female_id = getId(family.getWife().getXref());
+        male_id = getId(family.getHusband().getIndividual().getXref());
+        female_id = getId(family.getWife().getIndividual().getXref());
 
         setMarriage(family);
         setChildren(family);
@@ -117,8 +118,8 @@ public class GEDCOMPartnership implements IPartnership {
     private void setChildren(final Family family) {
 
         child_ids = new ArrayList<>();
-        for (final Individual child : family.getChildren()) {
-            child_ids.add(GEDCOMPopulationWriter.idToInt(child.getXref()));
+        for (final IndividualReference child : family.getChildren()) {
+            child_ids.add(GEDCOMPopulationWriter.idToInt(child.getIndividual().getXref()));
         }
     }
 

@@ -18,6 +18,7 @@
 package uk.ac.standrews.cs.valipop.export.gedcom;
 
 import org.gedcom4j.model.*;
+import org.gedcom4j.model.enumerations.IndividualAttributeType;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPartnership;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPerson;
 import uk.ac.standrews.cs.valipop.simulationEntities.Surname;
@@ -209,12 +210,12 @@ public class GEDCOMPerson implements IPerson {
         for (final PersonalName gedcom_name : names) {
 
             final String name = gedcom_name.toString();
+
             if (name.contains("/")) { // Slashes denote surname
                 final int start = name.indexOf('/');
                 final int end = name.lastIndexOf('/');
-                if (end > start) {
+                if (end > start)
                     return new Surname(name.substring(start + 1, end));
-                }
             }
         }
         return null;
@@ -226,9 +227,9 @@ public class GEDCOMPerson implements IPerson {
 
         for (final PersonalName gedcom_name : names) {
 
-            if (!builder.isEmpty()) {
+            if (!builder.isEmpty())
                 builder.append(' ');
-            }
+
 
             String name = gedcom_name.toString();
             if (name.contains("/")) { // Slashes denote surname

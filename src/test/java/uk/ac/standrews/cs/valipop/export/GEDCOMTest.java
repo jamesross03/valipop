@@ -19,6 +19,11 @@ package uk.ac.standrews.cs.valipop.export;
 
 import gedinline.main.GedInlineValidator;
 
+import org.gedcom4j.io.reader.GedcomFileReader;
+import org.gedcom4j.model.Gedcom;
+import org.gedcom4j.parser.GedcomParser;
+import org.gedcom4j.validate.ValidationResults;
+import org.gedcom4j.validate.Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -28,9 +33,7 @@ import uk.ac.standrews.cs.valipop.simulationEntities.IPartnership;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPerson;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPersonCollection;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
