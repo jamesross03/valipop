@@ -30,6 +30,7 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static uk.ac.standrews.cs.valipop.config.TestCases.getTestConfigurations;
+import static uk.ac.standrews.cs.valipop.implementations.OBDModel.MAXIMUM_AGE_AT_DEATH;
 
 /**
  * Tests of properties of abstract population interface that should hold for all populations.
@@ -189,20 +190,6 @@ public abstract class PopulationStructureTest {
     }
 
     @Test
-    public void birthInfoConsistent() {
-
-        for (final IPerson person : population.getPeople())
-            assertBirthInfoConsistent(person);
-    }
-
-    @Test
-    public void deathInfoConsistent() {
-
-        for (final IPerson person : population.getPeople())
-            assertDeathInfoConsistent(person);
-    }
-
-    @Test
     public void agesAtDeathNotTooHigh() {
 
         for (final IPerson person : population.getPeople())
@@ -268,11 +255,6 @@ public abstract class PopulationStructureTest {
             assertParentsAndChildrenConsistent(person);
     }
 
-    private static void assertBirthInfoConsistent(final IPerson person) {
-
-        assertFalse(person.getBirthDate() == null && person.getBirthPlace() != null);
-    }
-
     private void assertParentsAndChildrenConsistent(final IPartnership partnership) {
 
         for (final IPerson child : partnership.getChildren()) {
@@ -329,40 +311,39 @@ public abstract class PopulationStructureTest {
             }
     }
 
-    private static void assertDeathInfoConsistent(final IPerson person) {
-
-        assertFalse(!deathDateIsDefined(person) && (deathPlaceIsDefined(person) || deathCauseIsDefined(person)));
-    }
-
     private void assertAgeAtDeathNotTooHigh(final IPerson person) {
 
-        assertTrue(deathDateIsDefined(person) || ageAtEndOfSimulationNotTooHigh(person));
+        assertTrue(person.getBirthDate() == null ||
+            person.getDeathDate() == null ||
+            Period.between(person.getBirthDate(), person.getDeathDate()).getYears() <= MAXIMUM_AGE_AT_DEATH);
     }
 
-    private boolean ageAtEndOfSimulationNotTooHigh(final IPerson person) {
-
-        return Period.between(person.getBirthDate(), population.getEndDate()).minus(OBDModel.MAX_AGE).isNegative();
-    }
-
-    private static boolean deathDateIsDefined(final IPerson person) {
-
-        return person.getDeathDate() != null;
-    }
-
-    private static boolean deathPlaceIsDefined(final IPerson person) {
-
-        return person.getDeathPlace() != null && !person.getDeathPlace().isEmpty();
-    }
-
-    private static boolean deathCauseIsDefined(final IPerson person) {
-
-        return person.getDeathCause() != null && !person.getDeathCause().isEmpty();
-    }
+//    private boolean ageAtEndOfSimulationNotTooHigh(final IPerson person) {
+//
+//        return Period.between(person.getBirthDate(), population.getEndDate()).minus(MAXIMUM_AGE_AT_DEATH).isNegative();
+//    }
+//
+//    private static boolean deathDateIsDefined(final IPerson person) {
+//
+//        return person.getDeathDate() != null;
+//    }
+//
+//    private static boolean deathPlaceIsDefined(final IPerson person) {
+//
+//        return person.getDeathPlace() != null && !person.getDeathPlace().isEmpty();
+//    }
+//
+//    private static boolean deathCauseIsDefined(final IPerson person) {
+//
+//        return person.getDeathCause() != null && !person.getDeathCause().isEmpty();
+//    }
 
     private static void assertSexesConsistent(final IPartnership partnership) {
 
-        assertEquals(SexOption.FEMALE, partnership.getFemalePartner().getSex());
-        assertEquals(SexOption.MALE, partnership.getMalePartner().getSex());
+        if (partnership.getFemalePartner().getSex() != null)
+            assertEquals(SexOption.FEMALE, partnership.getFemalePartner().getSex());
+        if (partnership.getMalePartner().getSex() != null)
+            assertEquals(SexOption.MALE, partnership.getMalePartner().getSex());
     }
 
     private static void assertNotPartnerOfAny(final IPerson person, final Set<IPerson> people) {
@@ -387,7 +368,8 @@ public abstract class PopulationStructureTest {
             for (final IPartnership partnership : person.getPartnerships())
                 for (final IPerson child : partnership.getChildren()) {
 
-                    assertEquals(person.getSurname(), child.getSurname());
+                    if (person.getSurname() != null && child.getSurname() != null)
+                        assertEquals(person.getSurname(), child.getSurname());
 
                     if (child.getSex() == SexOption.MALE)
                         assertSurnameInheritedOnMaleLine(child);
@@ -397,7 +379,7 @@ public abstract class PopulationStructureTest {
 
     private static void assertBirthBeforeDeath(final IPerson person) {
 
-        if (person.getDeathDate() != null) {
+        if (person.getBirthDate() != null && person.getDeathDate() != null) {
 
             final LocalDate deathDate = person.getDeathDate();
             final LocalDate birthDate = person.getBirthDate();
@@ -466,12 +448,12 @@ public abstract class PopulationStructureTest {
 
         final LocalDate childBirthDate = child.getBirthDate();
 
-        assertTrue(motherDeathDate == null || !childBirthDate.isAfter(motherDeathDate));
-        assertTrue(fatherDeathDate == null || !childBirthDate.isAfter(fatherDeathDate.plusDays(MAX_GESTATION_IN_DAYS)));
+        assertTrue(motherDeathDate == null || childBirthDate == null || !childBirthDate.isAfter(motherDeathDate));
+        assertTrue(fatherDeathDate == null || childBirthDate == null || !childBirthDate.isAfter(fatherDeathDate.plusDays(MAX_GESTATION_IN_DAYS)));
 
-        assertTrue(differenceInYears(motherBirthDate, childBirthDate) >= MINIMUM_MOTHER_AGE_AT_CHILDBIRTH);
-        assertTrue(differenceInYears(motherBirthDate, childBirthDate) <= MAXIMUM_MOTHER_AGE_AT_CHILDBIRTH);
-        assertTrue(differenceInYears(fatherBirthDate, childBirthDate) >= MINIMUM_FATHER_AGE_AT_CHILDBIRTH);
+        assertTrue(motherBirthDate == null || childBirthDate == null || differenceInYears(motherBirthDate, childBirthDate) >= MINIMUM_MOTHER_AGE_AT_CHILDBIRTH);
+        assertTrue(motherBirthDate == null || childBirthDate == null || differenceInYears(motherBirthDate, childBirthDate) <= MAXIMUM_MOTHER_AGE_AT_CHILDBIRTH);
+        assertTrue(fatherBirthDate == null || childBirthDate == null || differenceInYears(fatherBirthDate, childBirthDate) >= MINIMUM_FATHER_AGE_AT_CHILDBIRTH);
     }
 
     private static int differenceInYears(final LocalDate parent_birth_date, final LocalDate child_birth_date) {

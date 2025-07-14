@@ -19,14 +19,15 @@ package uk.ac.standrews.cs.valipop.export.gedcom;
 
 import org.gedcom4j.model.*;
 import org.gedcom4j.model.enumerations.IndividualAttributeType;
+import org.gedcom4j.model.enumerations.IndividualEventType;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPartnership;
 import uk.ac.standrews.cs.valipop.simulationEntities.IPerson;
-import uk.ac.standrews.cs.valipop.simulationEntities.Surname;
 import uk.ac.standrews.cs.valipop.statistics.analysis.validation.contingencyTables.TreeStructure.SexOption;
 import uk.ac.standrews.cs.valipop.utils.addressLookup.Address;
 import uk.ac.standrews.cs.valipop.utils.addressLookup.Geography;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -41,16 +42,16 @@ public class GEDCOMPerson implements IPerson {
 
     private final GEDCOMPopulationAdapter adapter;
     protected int id;
-    private String first_name;
-    protected Surname surname;
+    private String firstName;
+    protected String surname;
     protected SexOption sex;
-    private LocalDate birth_date;
-    private String birth_place = "";
-    private LocalDate death_date;
-    private String death_place = "";
-    protected String death_cause = "";
+    private LocalDate birthDate;
+    private String birthPlace = "";
+    private LocalDate deathDate;
+    private String deathPlace = "";
+    protected String deathCause = "";
     protected String occupation = "";
-    private List<Integer> partnership_ids;
+    private List<Integer> partnershipIds;
     private int parent_id;
 
     @Override
@@ -60,12 +61,12 @@ public class GEDCOMPerson implements IPerson {
 
     @Override
     public String getFirstName() {
-        return first_name;
+        return firstName;
     }
 
     @Override
     public String getSurname() {
-        return surname.getName();
+        return surname;
     }
 
     @Override
@@ -75,17 +76,17 @@ public class GEDCOMPerson implements IPerson {
 
     @Override
     public String getBirthPlace() {
-        return birth_place;
+        return birthPlace;
     }
 
     @Override
     public String getDeathPlace() {
-        return death_place;
+        return deathPlace;
     }
 
     @Override
     public String getDeathCause() {
-        return death_cause;
+        return deathCause;
     }
 
     @Override
@@ -137,14 +138,17 @@ public class GEDCOMPerson implements IPerson {
 
     private void setSex(final Individual individual) {
 
-        sex = individual.getSex().toString().equals(MALE_STRING) ? SexOption.MALE : SexOption.FEMALE;
+        if (individual.getSex() != null) {
+            String string = individual.getSex().toString();
+            sex = string.equals(MALE_STRING) ? SexOption.MALE : SexOption.FEMALE;
+        }
     }
 
     private void setNames(final Individual individual) {
 
         final List<PersonalName> names = individual.getNames();
 
-        first_name = findFirstNames(names);
+        firstName = findFirstNames(names);
         surname = findSurname(names);
     }
 
@@ -156,13 +160,13 @@ public class GEDCOMPerson implements IPerson {
 
     private void setPartnerships(final Individual individual) {
 
-        partnership_ids = new ArrayList<>();
+        partnershipIds = new ArrayList<>();
 
         final List<FamilySpouse> familiesWhereSpouse = individual.getFamiliesWhereSpouse();
 
         if (familiesWhereSpouse != null)
             for (final FamilySpouse family : familiesWhereSpouse)
-                partnership_ids.add(GEDCOMPopulationWriter.idToInt(family.getFamily().getXref()));
+                partnershipIds.add(GEDCOMPopulationWriter.idToInt(family.getFamily().getXref()));
     }
 
     private void setEvents(final Individual individual) {
@@ -170,26 +174,36 @@ public class GEDCOMPerson implements IPerson {
         individual.getEvents(true);
         for (final IndividualEvent event : individual.getEvents()) {
 
-            switch (event.getType()) {
+            final LocalDate eventDate = event.getDate() != null ? parseDate(event.getDate().toString()) : null;
 
-                case BIRTH:
-                    birth_date = LocalDate.parse(event.getDate().toString(), GEDCOMPopulationWriter.FORMAT);
-                    if (event.getPlace() != null)
-                        birth_place = event.getPlace().getPlaceName();
-                    break;
+            if (event.getType() == IndividualEventType.BIRTH) {
 
-                case DEATH:
-                    death_date = LocalDate.parse(event.getDate().toString(), GEDCOMPopulationWriter.FORMAT);
-                    if (event.getPlace() != null)
-                        death_place = event.getPlace().getPlaceName();
+                if (eventDate != null) birthDate = eventDate;
+                if (event.getPlace() != null) birthPlace = event.getPlace().getPlaceName();
+            }
 
-                    if (event.getCause() != null)
-                        death_cause = event.getCause().toString();
+            if (event.getType() == IndividualEventType.DEATH) {
 
-                    break;
+                if (eventDate != null) deathDate = eventDate;
+                if (event.getPlace() != null) deathPlace = event.getPlace().getPlaceName();
+                if (event.getCause() != null) deathCause = event.getCause().toString();
+            }
+        }
+    }
 
-                default:
-                    break;
+    private static LocalDate parseDate(final String date) {
+
+        try {
+            return LocalDate.parse(date, GEDCOMPopulationWriter.FORMAT);
+        }
+        catch (final DateTimeParseException ignore) {
+
+            // Deal with the case where the date string contains only a year.
+            try {
+                return LocalDate.parse("1 JUL " + date, GEDCOMPopulationWriter.FORMAT);
+            }
+            catch (final DateTimeParseException ignore2) {
+                return null;
             }
         }
     }
@@ -205,7 +219,7 @@ public class GEDCOMPerson implements IPerson {
         }
     }
 
-    private static Surname findSurname(final List<PersonalName> names) {
+    private static String findSurname(final List<PersonalName> names) {
 
         for (final PersonalName gedcom_name : names) {
 
@@ -215,7 +229,7 @@ public class GEDCOMPerson implements IPerson {
                 final int start = name.indexOf('/');
                 final int end = name.lastIndexOf('/');
                 if (end > start)
-                    return new Surname(name.substring(start + 1, end));
+                    return name.substring(start + 1, end);
             }
         }
         return null;
@@ -246,12 +260,12 @@ public class GEDCOMPerson implements IPerson {
 
     @Override
     public LocalDate getBirthDate() {
-        return birth_date;
+        return birthDate;
     }
 
     @Override
     public LocalDate getDeathDate() {
-        return death_date;
+        return deathDate;
     }
 
     @Override
@@ -263,7 +277,7 @@ public class GEDCOMPerson implements IPerson {
     public List<IPartnership> getPartnerships() {
 
         final List<IPartnership> partnerships = new ArrayList<>();
-        for (final int id : partnership_ids) {
+        for (final int id : partnershipIds) {
             final IPartnership partnership = adapter.findPartnership(id);
             if (partnership != null)
                 partnerships.add(partnership);
@@ -364,7 +378,7 @@ public class GEDCOMPerson implements IPerson {
     @Override
     public TreeMap<LocalDate, Address> getAddressHistory() {
         final TreeMap<LocalDate, Address> tm = new TreeMap<>();
-        tm.put(birth_date, getAddress(birth_date));
+        tm.put(birthDate, getAddress(birthDate));
         return tm;
     }
 

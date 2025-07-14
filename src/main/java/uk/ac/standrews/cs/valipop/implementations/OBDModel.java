@@ -76,7 +76,7 @@ public class OBDModel {
     private static final int MINIMUM_POPULATION_SIZE = 100;
     private static final int EARLIEST_AGE_OF_MARRIAGE = 16;
     private static final int MAX_ATTEMPTS = 1;
-    public static final Period MAX_AGE = Period.ofYears(110);
+    public static final int MAXIMUM_AGE_AT_DEATH = 110;
 
     public static Logger log;
 
@@ -204,7 +204,7 @@ public class OBDModel {
                 outputToGraph(config.getOutputGraphFormat(), population.getPeople(), config.getGraphsDirPath());
 
             summary.setRecordsRunTime(recordTimer.getRunTimeSeconds());
-            AnalyticsRunner.runAnalytics(population.getPeople(config.getT0(), config.getTE(), MAX_AGE), resultsOutput);
+            AnalyticsRunner.runAnalytics(population.getPeople(config.getT0(), config.getTE(), Period.ofYears(MAXIMUM_AGE_AT_DEATH)), resultsOutput);
 
         } catch (final Exception e) {
             throw new RuntimeException(e);
@@ -1392,7 +1392,7 @@ public class OBDModel {
         summary.setPeakPop(population.getPopulationCounts().getPeakPopulationSize());
         summary.setEligibilityChecks(population.getPopulationCounts().getEligibilityChecks());
         summary.setFailedEligibilityChecks(population.getPopulationCounts().getFailedEligibilityChecks());
-        summary.setTotalPop(population.getPeople(config.getT0(), config.getTE(), MAX_AGE).getNumberOfPeople());
+        summary.setTotalPop(population.getPeople(config.getT0(), config.getTE(), Period.ofYears(MAXIMUM_AGE_AT_DEATH)).getNumberOfPeople());
         summary.setSimRunTime(simTimer.getRunTimeSeconds());
         summary.setMaxMemoryUsage(MemoryUsageAnalysis.getMaxSimUsage());
         MemoryUsageAnalysis.reset();
@@ -1411,7 +1411,7 @@ public class OBDModel {
 
         MemoryUsageAnalysis.log();
 
-        summary.setTotalPop(population.getPeople(config.getT0(), config.getTE(), MAX_AGE).getNumberOfPeople());
+        summary.setTotalPop(population.getPeople(config.getT0(), config.getTE(), Period.ofYears(MAXIMUM_AGE_AT_DEATH)).getNumberOfPeople());
         summary.setSimRunTime(simTimer.getRunTimeSeconds());
     }
 

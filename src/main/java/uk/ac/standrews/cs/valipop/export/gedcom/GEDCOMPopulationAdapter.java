@@ -78,7 +78,10 @@ public class GEDCOMPopulationAdapter implements IPersonCollection {
         List<IPartnership> partnerships = new ArrayList<>();
 
         for (Family family : parser.getGedcom().getFamilies().values()) {
-            partnerships.add(new GEDCOMPartnership(family, this));
+
+            // Ignore incomplete families, which may occur in real-life files.
+            if (family.getHusband() != null && family.getWife() != null)
+                partnerships.add(new GEDCOMPartnership(family, this));
         }
 
         Collections.sort(partnerships);

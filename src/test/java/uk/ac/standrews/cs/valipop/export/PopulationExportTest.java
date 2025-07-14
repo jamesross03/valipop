@@ -43,7 +43,7 @@ public abstract class PopulationExportTest {
     // Eventual population sizes, used in names of expected files: 19065, 86033.
     public static final List<Integer> SLOW_TEST_CASE_INITIAL_POPULATION_SIZES = List.of(1000, 5000);
 
-    static final String TEST_DIRECTORY_PATH_STRING = "src/test/resources/valipop/";
+    public static final String TEST_DIRECTORY_PATH_STRING = "src/test/resources/valipop/";
 
     protected final IPersonCollection population;
     final String file_name_root;
