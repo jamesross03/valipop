@@ -34,13 +34,13 @@ public class SourceNodeInt extends IntNode<SourceType, Year> {
     @SuppressWarnings("rawtypes")
     private Node parent;
 
-    public SourceNodeInt(SourceType option, CTtree parent) {
+    public SourceNodeInt(final SourceType option, final CTtree parent) {
         super(option, parent);
         this.parent = parent;
     }
 
     @SuppressWarnings("rawtypes")
-    public Node getAncestor(Node nodeType) {
+    public Node getAncestor(final Node nodeType) {
 
         if (nodeType.getClass().isInstance(this)) {
             return this;
@@ -52,38 +52,39 @@ public class SourceNodeInt extends IntNode<SourceType, Year> {
     }
 
     @Override
-    public Node<Year, ?, Integer, ?> makeChildInstance(Year childOption, Integer initCount) {
+    public Node<Year, ?, Integer, ?> makeChildInstance(final Year childOption, final Integer initCount) {
         return new YOBNodeInt(childOption, this, initCount);
     }
 
-    public void addDelayedTask(RunnableNode node) {
+    public void addDelayedTask(final RunnableNode node) {
         parent.addDelayedTask(node);
     }
 
-    public void processPerson(IPerson person, LocalDate currentDate) {
+    public void processPerson(final IPerson person, final LocalDate currentDate) {
 
         // increase own count
         incCountByOne();
 
         // pass person to appropriate child node
-        Year yob = Year.of(person.getBirthDate().getYear()+1);
+        final Year yearAfterBirth = Year.of(person.getBirthDate().getYear() + 1);
 
         try {
-            getChild(yob).processPerson(person, currentDate);
-        } catch (ChildNotFoundException e) {
-            addChild(yob).processPerson(person, currentDate);
+            getChild(yearAfterBirth).processPerson(person, currentDate);
+        }
+        catch (final ChildNotFoundException e) {
+            addChild(yearAfterBirth).processPerson(person, currentDate);
         }
     }
 
     public ArrayList<String> toStringAL() {
-        ArrayList<String> s = new ArrayList<>();
+        final ArrayList<String> s = new ArrayList<>();
         s.add(getOption().toString());
         return s;
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public CTRow<Integer> toCTRow() {
-        CTRow r = new CTRowInt();
+        final CTRow r = new CTRowInt();
         r.setVariable(getVariableName(), getOption().toString());
         return r;
     }
@@ -94,7 +95,7 @@ public class SourceNodeInt extends IntNode<SourceType, Year> {
     }
 
     public ArrayList<String> getVariableNamesAL() {
-        ArrayList<String> s = new ArrayList<>();
+        final ArrayList<String> s = new ArrayList<>();
         s.add(getClass().getName());
         return s;
     }

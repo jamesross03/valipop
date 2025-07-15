@@ -30,6 +30,7 @@ import uk.ac.standrews.cs.valipop.utils.ProgramTimer;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.logging.Logger;
 
@@ -40,47 +41,47 @@ public class ContingencyTableFactory {
 
     public static final Logger log = Logger.getLogger(ContingencyTableFactory.class.getName());
 
-    public static void generateContingencyTables(Iterable<IPerson> population, PopulationStatistics desired,
-                                                 Config config, SummaryRow summary)  {
+    public static void generateContingencyTables(final Iterable<IPerson> population, final PopulationStatistics desired,
+                                                 final Config config, final SummaryRow summary)  {
 
-        ProgramTimer tableTimer = new ProgramTimer();
+        final ProgramTimer tableTimer = new ProgramTimer();
 
         // TODO revert back to T0?
-        CTtree fullTree = new CTtree(population, desired, config.getTS(), config.getT0(), config.getTE(), config.getCtTreeStepback(), config.getCtTreePrecision());
+        final CTtree fullTree = new CTtree(population, desired, config.getTS(), config.getT0(), config.getTE(), config.getCtTreeStepback(), config.getCtTreePrecision());
 
         MemoryUsageAnalysis.log();
 
         try {
             log.info("OBDModel --- Extracting and Outputting CTtables to files");
 
-            CTtableOB obTable = new CTtableOB(fullTree);
+            final CTtableOB obTable = new CTtableOB(fullTree);
             outputToFile(obTable, "ob-CT.csv", config);
 
-            CTtableMB mbTable = new CTtableMB(fullTree);
+            final CTtableMB mbTable = new CTtableMB(fullTree);
             outputToFile(mbTable, "mb-CT.csv", config);
 
-            CTtablePart partTable = new CTtablePart(fullTree);
+            final CTtablePart partTable = new CTtablePart(fullTree);
             outputToFile(partTable, "part-CT.csv", config);
 
-            CTtableSep sepTable = new CTtableSep(fullTree);
+            final CTtableSep sepTable = new CTtableSep(fullTree);
             outputToFile(sepTable, "sep-CT.csv", config);
 
-            CTtableDeath deathTable = new CTtableDeath(fullTree);
+            final CTtableDeath deathTable = new CTtableDeath(fullTree);
             outputToFile(deathTable, "death-CT.csv", config);
 
-        } catch (IOException | NoTableRowsException e) {
+        } catch (final IOException | NoTableRowsException e) {
             throw new RuntimeException(e);
         }
 
         summary.setCTRunTime(tableTimer.getRunTimeSeconds());
     }
 
-    private static void outputToFile(CTtable table, String fileName, Config config) throws IOException, NoTableRowsException {
+    private static void outputToFile(final CTtable table, final String fileName, final Config config) throws IOException, NoTableRowsException {
 
         MemoryUsageAnalysis.log();
-        Path path = config.getContingencyTablesPath().resolve( fileName);
+        final Path path = config.getContingencyTablesPath().resolve( fileName);
         Config.mkBlankFile(path);
-        PrintStream ps = new PrintStream(path.toFile(), "UTF-8");
+        final PrintStream ps = new PrintStream(path.toFile(), StandardCharsets.UTF_8);
         table.outputToFile(ps);
         MemoryUsageAnalysis.log();
     }

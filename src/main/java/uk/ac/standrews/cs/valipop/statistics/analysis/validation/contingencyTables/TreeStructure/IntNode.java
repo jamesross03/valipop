@@ -24,7 +24,7 @@ package uk.ac.standrews.cs.valipop.statistics.analysis.validation.contingencyTab
 public abstract class IntNode<Op extends Comparable<Op>, cOp extends Comparable<cOp>> extends Node<Op, cOp, Integer, Integer> {
 
     @SuppressWarnings("unchecked")
-    public IntNode(Op option, @SuppressWarnings("rawtypes") Node parentNode, int initCount) {
+    public IntNode(final Op option, @SuppressWarnings("rawtypes") final Node parentNode, final int initCount) {
         super(option, parentNode, initCount);
     }
 
@@ -33,12 +33,12 @@ public abstract class IntNode<Op extends Comparable<Op>, cOp extends Comparable<
     }
 
     @SuppressWarnings("unchecked")
-    public IntNode(Op option, @SuppressWarnings("rawtypes") Node parentNode) {
+    public IntNode(final Op option, @SuppressWarnings("rawtypes") final Node parentNode) {
         super(option, parentNode, 0);
     }
 
     @Override
-    public void incCount(Integer byCount) {
+    public void incCount(final Integer byCount) {
         setCount(getCount() + byCount);
     }
 
@@ -49,14 +49,15 @@ public abstract class IntNode<Op extends Comparable<Op>, cOp extends Comparable<
 
     @SuppressWarnings("Duplicates")
     @Override
-    public Node<cOp, ?, Integer, ?> addChild(cOp childOption, Integer initCount) {
+    public Node<cOp, ?, Integer, ?> addChild(final cOp childOption, final Integer initCount) {
 
         Node<cOp, ?, Integer, ?> child;
 
         try {
             child = getChild(childOption);
             child.incCount(initCount);
-        } catch (ChildNotFoundException e)  {
+        }
+        catch (final ChildNotFoundException e)  {
             child = makeChildInstance(childOption, initCount);
             super.addChild(child);
         }
@@ -65,7 +66,7 @@ public abstract class IntNode<Op extends Comparable<Op>, cOp extends Comparable<
     }
 
     @Override
-    public Node<cOp, ?, Integer, ?> addChild(cOp childOption) {
+    public Node<cOp, ?, Integer, ?> addChild(final cOp childOption) {
         return addChild(childOption, 0);
     }
 

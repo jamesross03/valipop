@@ -82,7 +82,7 @@ public class RecordGenerationFactory {
         final List<IPerson> result = new ArrayList<>();
 
         for (final IPerson person : people) {
-            if (person.getDeathDate() != null && PopulationNavigation.presentOnDate(person, person.getDeathDate()) && person.getDeathDate() != null && startDate.isBefore( person.getDeathDate()))
+            if (person.getDeathDate() != null && PopulationNavigation.inCountryOnDate(person, person.getDeathDate()) && person.getDeathDate() != null && startDate.isBefore( person.getDeathDate()))
                 result.add(person);
         }
 
@@ -94,7 +94,7 @@ public class RecordGenerationFactory {
         final List<IPartnership> result = new ArrayList<>();
 
         for (final IPartnership partnership : partneships) {
-            if (partnership.getMarriageDate() != null && PopulationNavigation.presentOnDate(partnership.getMalePartner(), partnership.getMarriageDate()) && PopulationNavigation.presentOnDate(partnership.getFemalePartner(), partnership.getMarriageDate()) && startDate.isBefore( partnership.getMarriageDate()))
+            if (partnership.getMarriageDate() != null && PopulationNavigation.inCountryOnDate(partnership.getMalePartner(), partnership.getMarriageDate()) && PopulationNavigation.inCountryOnDate(partnership.getFemalePartner(), partnership.getMarriageDate()) && startDate.isBefore( partnership.getMarriageDate()))
                 result.add(partnership);
         }
 

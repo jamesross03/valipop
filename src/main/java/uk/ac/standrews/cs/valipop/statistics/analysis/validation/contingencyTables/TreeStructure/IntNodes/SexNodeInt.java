@@ -33,28 +33,28 @@ import static uk.ac.standrews.cs.valipop.simulationEntities.PopulationNavigation
  */
 public class SexNodeInt extends IntNode<SexOption, IntegerRange> {
 
-    public SexNodeInt(SexOption option, YOBNodeInt parentNode, int initCount) {
+    public SexNodeInt(final SexOption option, final YOBNodeInt parentNode, final int initCount) {
         super(option, parentNode, initCount);
     }
 
     @Override
-    public Node<IntegerRange, ?, Integer, ?> makeChildInstance(IntegerRange childOption, Integer initCount) {
+    public Node<IntegerRange, ?, Integer, ?> makeChildInstance(final IntegerRange childOption, final Integer initCount) {
         return new AgeNodeInt(childOption, this, initCount);
     }
 
 
     @Override
-    public void processPerson(IPerson person, LocalDate currentDate) {
+    public void processPerson(final IPerson person, final LocalDate currentDate) {
 
         incCountByOne();
 
-        int age = ageOnDate(person, currentDate);
+        final int age = ageOnDate(person, currentDate);
 
         try {
             resolveChildNodeForAge(age).processPerson(person, currentDate);
-        } catch (ChildNotFoundException e) {
+        }
+        catch (final ChildNotFoundException e) {
             addChild(new IntegerRange(age)).processPerson(person, currentDate);
-
         }
     }
 
@@ -63,13 +63,11 @@ public class SexNodeInt extends IntNode<SexOption, IntegerRange> {
         return "Sex";
     }
 
-    private Node<IntegerRange, ?, ?, ?> resolveChildNodeForAge(int age) throws ChildNotFoundException {
+    private Node<IntegerRange, ?, ?, ?> resolveChildNodeForAge(final int age) throws ChildNotFoundException {
 
-        for(Node<IntegerRange, ?, ?, ?> aN : getChildren()) {
-            if(aN.getOption().contains(age)) {
-                return aN;
-            }
-        }
+        for (final Node<IntegerRange, ?, ?, ?> node : getChildren())
+            if (node.getOption().contains(age))
+                return node;
 
         throw new ChildNotFoundException();
     }

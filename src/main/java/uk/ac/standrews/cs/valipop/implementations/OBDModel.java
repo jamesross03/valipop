@@ -76,6 +76,8 @@ public class OBDModel {
     private static final int MINIMUM_POPULATION_SIZE = 100;
     private static final int EARLIEST_AGE_OF_MARRIAGE = 16;
     private static final int MAX_ATTEMPTS = 1;
+
+    // TODO enforce maximum age.
     public static final int MAXIMUM_AGE_AT_DEATH = 110;
 
     public static Logger log;

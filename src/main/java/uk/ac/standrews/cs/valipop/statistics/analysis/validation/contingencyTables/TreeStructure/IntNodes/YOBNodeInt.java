@@ -36,23 +36,24 @@ public class YOBNodeInt extends IntNode<Year, SexOption> {
         super();
     }
 
-    public YOBNodeInt(Year option, SourceNodeInt parentNode, Integer initCount) {
+    public YOBNodeInt(final Year option, final SourceNodeInt parentNode, final Integer initCount) {
         super(option, parentNode, initCount);
     }
 
     @Override
-    public Node<SexOption, ?, Integer, ?> makeChildInstance(SexOption childOption, Integer initCount) {
+    public Node<SexOption, ?, Integer, ?> makeChildInstance(final SexOption childOption, final Integer initCount) {
         return new SexNodeInt(childOption, this, initCount);
     }
 
     @Override
-    public void processPerson(IPerson person, LocalDate currentDate) {
+    public void processPerson(final IPerson person, final LocalDate currentDate) {
 
         incCountByOne();
 
         try {
             getChild(person.getSex()).processPerson(person, currentDate);
-        } catch (ChildNotFoundException e) {
+        }
+        catch (final ChildNotFoundException e) {
             addChild(person.getSex()).processPerson(person, currentDate);
         }
     }
@@ -64,8 +65,9 @@ public class YOBNodeInt extends IntNode<Year, SexOption> {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public CTRow<Integer> toCTRow() {
-        CTRow r = getParent().toCTRow();
-        r.setVariable(getVariableName(), Integer.toString(getOption().getValue()));
+
+        final CTRow r = getParent().toCTRow();
+        r.setVariable(getVariableName(), String.valueOf(getOption().getValue()));
         return r;
     }
 }

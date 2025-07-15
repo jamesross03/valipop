@@ -346,7 +346,7 @@ public class PopulationNavigation {
         return partnership;
     }
 
-    public static Integer numberOfChildrenBirthedBeforeDate(final IPerson person, final LocalDate y) {
+    public static int numberOfChildrenBirthedBeforeDate(final IPerson person, final LocalDate y) {
 
         int count = 0;
 
@@ -369,60 +369,33 @@ public class PopulationNavigation {
             LocalDate date = partnership.getPartnershipDate();
             if (separationDate.isBefore(date)) {
 
-                if (earliestDate == null || date.isBefore(earliestDate)) {
+                if (earliestDate == null || date.isBefore(earliestDate))
                     earliestDate = date;
-                }
             }
 
             date = partnership.getMarriageDate();
 
-            if (date != null) {
-                if (separationDate.isBefore(date)) {
-
-                    if (earliestDate == null || date.isBefore(earliestDate)) {
-                        earliestDate = date;
-                    }
-                }
-            }
+            if (date != null && separationDate.isBefore(date) && (earliestDate == null || date.isBefore(earliestDate)))
+                earliestDate = date;
         }
 
-        if (earliestDate == null) {
+        if (earliestDate == null)
             earliestDate = person.getDeathDate();
-        }
 
         return earliestDate;
     }
 
     // Ensures a person is present in country at the given date
-    public static boolean presentOnDate(final IPerson person, final LocalDate date) {
+    public static boolean inCountryOnDate(final IPerson person, final LocalDate date) {
 
         final LocalDate immigrationDate = person.getImmigrationDate();
         final LocalDate emigrationDate = person.getEmigrationDate();
 
-        if(immigrationDate != null && immigrationDate.isAfter(date)) {
-            // date is before person arrived in country
-            return false;
-        } else {
-            // not immigrant or already arrived
-            if(emigrationDate != null && emigrationDate.isBefore(date)) {
-                // date is after person leaves country
-                // therefore not present on date
-                return false;
-            } else {
-                // never emigrates or not yet left
-                // therefore present on date
-                return true;
-            }
-        }
+        return (immigrationDate == null || !immigrationDate.isAfter(date)) && (emigrationDate == null || !emigrationDate.isBefore(date));
     }
 
     public static boolean childOf(final IPerson parent, final IPerson person) {
 
-        if(person.getParents() == null) return false;
-        if(person.getParents().getMalePartner() == parent) return true;
-        if(person.getParents().getFemalePartner() == parent) return true;
-
-        return false;
-
+        return person.getParents() != null && (person.getParents().getMalePartner() == parent || person.getParents().getFemalePartner() == parent);
     }
 }

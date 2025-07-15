@@ -36,7 +36,7 @@ import static uk.ac.standrews.cs.valipop.simulationEntities.PopulationNavigation
  */
 public class PreviousNumberOfChildrenInPartnershipNodeInt extends IntNode<IntegerRange, IntegerRange> {
 
-    public PreviousNumberOfChildrenInPartnershipNodeInt(IntegerRange option, DiedNodeInt parentNode, Integer initCount) {
+    public PreviousNumberOfChildrenInPartnershipNodeInt(final IntegerRange option, final DiedNodeInt parentNode, final Integer initCount) {
         super(option, parentNode, initCount);
     }
 
@@ -45,15 +45,15 @@ public class PreviousNumberOfChildrenInPartnershipNodeInt extends IntNode<Intege
     }
 
     @Override
-    public void processPerson(IPerson person, LocalDate currentDate) {
+    public void processPerson(final IPerson person, final LocalDate currentDate) {
 
         incCountByOne();
 
-        IntegerRange range = resolveToChildRange(numberOfChildrenBirthedBeforeDate(person, currentDate));
+        final IntegerRange range = resolveToChildRange(numberOfChildrenBirthedBeforeDate(person, currentDate));
+
         try {
             getChild(range).processPerson(person, currentDate);
-
-        } catch (ChildNotFoundException e) {
+        } catch (final ChildNotFoundException e) {
             addChild(range).processPerson(person, currentDate);
         }
     }
@@ -64,36 +64,32 @@ public class PreviousNumberOfChildrenInPartnershipNodeInt extends IntNode<Intege
     }
 
     @Override
-    public Node<IntegerRange, ?, Integer, ?> makeChildInstance(IntegerRange childOption, Integer initCount) {
+    public Node<IntegerRange, ?, Integer, ?> makeChildInstance(final IntegerRange childOption, final Integer initCount) {
         return new NumberOfPreviousChildrenInAnyPartnershipNodeInt(childOption, this, initCount);
     }
 
-    private IntegerRange resolveToChildRange(Integer npciap) {
+    private IntegerRange resolveToChildRange(final int numberOfChildren) {
 
-        for (Node<IntegerRange, ?, ?, ?> aN : getChildren()) {
-            if (aN.getOption().contains(npciap)) {
-                return aN.getOption();
-            }
-        }
+        for (final Node<IntegerRange, ?, ?, ?> node : getChildren())
+            if (node.getOption().contains(numberOfChildren))
+                return node.getOption();
 
-        Year yob = ((YOBNodeInt) getAncestor(new YOBNodeInt())).getOption();
-        int age = ((AgeNodeInt) getAncestor(new AgeNodeInt())).getOption().getValue();
-
-        Year currentDate = getYearAtAge(yob, age);
+        final int age = ((AgeNodeInt) getAncestor(new AgeNodeInt())).getOption().getValue();
+        final Year yearOfBirth = ((YOBNodeInt) getAncestor(new YOBNodeInt())).getOption();
+        final Year currentDate = getYearAtAge(yearOfBirth, age);
 
         Collection<IntegerRange> birthOrders;
         try {
             birthOrders = getInputStats().getOrderedBirthRates(currentDate).getData(age).getLabels();
-        } catch (InvalidRangeException e) {
-            SelfCorrectingTwoDimensionDataDistribution data = getInputStats().getOrderedBirthRates(currentDate);
+        }
+        catch (final InvalidRangeException e) {
+            final SelfCorrectingTwoDimensionDataDistribution data = getInputStats().getOrderedBirthRates(currentDate);
             birthOrders = data.getData(data.getSmallestLabel().getValue()).getLabels();
         }
 
-        for (IntegerRange o : birthOrders) {
-            if (o.contains(npciap)) {
-                return o;
-            }
-        }
+        for (final IntegerRange range : birthOrders)
+            if (range.contains(numberOfChildren))
+                return range;
 
         throw new Error("Did not resolve any permissible ranges");
     }

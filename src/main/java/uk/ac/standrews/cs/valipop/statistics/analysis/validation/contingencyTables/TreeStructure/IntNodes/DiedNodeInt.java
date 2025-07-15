@@ -49,20 +49,14 @@ public class DiedNodeInt extends IntNode<Boolean, IntegerRange> {
 
         if (person.getSex() == SexOption.FEMALE) {
 
-            IPartnership partnership = PersonCharacteristicsIdentifier.getActivePartnership(person, currentDate);
-            int numberOfChildren;
+            final IPartnership partnership = PersonCharacteristicsIdentifier.getActivePartnership(person, currentDate);
+            final int numberOfChildren = partnership != null ? PersonCharacteristicsIdentifier.getChildrenBirthedBeforeDate(partnership, currentDate) : 0;
 
-            if (partnership == null) {
-                numberOfChildren = 0;
-            } else {
-                numberOfChildren = PersonCharacteristicsIdentifier.getChildrenBirthedBeforeDate(partnership, currentDate);
-            }
-
-            IntegerRange range = resolveToChildRange(numberOfChildren);
+            final IntegerRange range = resolveToChildRange(numberOfChildren);
 
             try {
                 getChild(range).processPerson(person, currentDate);
-            } catch (ChildNotFoundException e) {
+            } catch (final ChildNotFoundException e) {
                 addChild(range).processPerson(person, currentDate);
             }
         }
@@ -74,37 +68,29 @@ public class DiedNodeInt extends IntNode<Boolean, IntegerRange> {
         return new PreviousNumberOfChildrenInPartnershipNodeInt(childOption, this, initCount);
     }
 
-    private IntegerRange resolveToChildRange(final int pncip) {
+    private IntegerRange resolveToChildRange(final int numberOfChildren) {
 
-        for (Node<IntegerRange, ?, ?, ?> aN : getChildren()) {
-            if (aN.getOption().contains(pncip)) {
-                return aN.getOption();
-            }
-        }
+        for (final Node<IntegerRange, ?, ?, ?> node : getChildren())
+            if (node.getOption().contains(numberOfChildren))
+                return node.getOption();
 
-        Year yob = ((YOBNodeInt) getAncestor(new YOBNodeInt())).getOption();
-        int age = ((AgeNodeInt) getAncestor(new AgeNodeInt())).getOption().getValue();
+        final Year yob = ((YOBNodeInt) getAncestor(new YOBNodeInt())).getOption();
+        final int age = ((AgeNodeInt) getAncestor(new AgeNodeInt())).getOption().getValue();
 
-        Year currentDate = Year.of(yob.getValue() + age);
+        final Year currentDate = Year.of(yob.getValue() + age);
 
-        Collection<IntegerRange> sepRanges = getInputStats().getSeparationByChildCountRates(currentDate).getColumnLabels();
+        for (final IntegerRange range : getInputStats().getSeparationByChildCountRates(currentDate).getColumnLabels())
+            if (range.contains(numberOfChildren))
+                return range;
 
-        for (IntegerRange o : sepRanges) {
-            if (o.contains(pncip)) {
-                return o;
-            }
-        }
-
-        if (pncip == 0) {
-            return new IntegerRange(0);
-        }
+        if (numberOfChildren == 0) return new IntegerRange(0);
 
         throw new Error("Did not resolve any permissible ranges");
     }
 
     public List<String> toStringAL() {
 
-        List<String> s = getParent().toStringAL();
+        final List<String> s = getParent().toStringAL();
         s.add(getOption().toString());
         s.add(getCount().toString());
         return s;
@@ -113,7 +99,7 @@ public class DiedNodeInt extends IntNode<Boolean, IntegerRange> {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public CTRow<Integer> toCTRow() {
 
-        CTRow r = getParent().toCTRow();
+        final CTRow r = getParent().toCTRow();
         r.setVariable(getVariableName(), getOption().toString());
         r.setCount(getCount());
         return r;

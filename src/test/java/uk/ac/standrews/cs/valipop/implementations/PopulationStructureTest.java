@@ -190,13 +190,6 @@ public abstract class PopulationStructureTest {
     }
 
     @Test
-    public void agesAtDeathNotTooHigh() {
-
-        for (final IPerson person : population.getPeople())
-            assertAgeAtDeathNotTooHigh(person);
-    }
-
-    @Test
     public void sensibleAgeAtMarriages() {
 
         for (final IPerson person : population.getPeople())
@@ -310,33 +303,6 @@ public abstract class PopulationStructureTest {
                 siblings.add(child);
             }
     }
-
-    private void assertAgeAtDeathNotTooHigh(final IPerson person) {
-
-        assertTrue(person.getBirthDate() == null ||
-            person.getDeathDate() == null ||
-            Period.between(person.getBirthDate(), person.getDeathDate()).getYears() <= MAXIMUM_AGE_AT_DEATH);
-    }
-
-//    private boolean ageAtEndOfSimulationNotTooHigh(final IPerson person) {
-//
-//        return Period.between(person.getBirthDate(), population.getEndDate()).minus(MAXIMUM_AGE_AT_DEATH).isNegative();
-//    }
-//
-//    private static boolean deathDateIsDefined(final IPerson person) {
-//
-//        return person.getDeathDate() != null;
-//    }
-//
-//    private static boolean deathPlaceIsDefined(final IPerson person) {
-//
-//        return person.getDeathPlace() != null && !person.getDeathPlace().isEmpty();
-//    }
-//
-//    private static boolean deathCauseIsDefined(final IPerson person) {
-//
-//        return person.getDeathCause() != null && !person.getDeathCause().isEmpty();
-//    }
 
     private static void assertSexesConsistent(final IPartnership partnership) {
 

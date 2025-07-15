@@ -34,21 +34,22 @@ import java.time.Year;
  */
 public class NumberOfChildrenInPartnershipNodeInt extends IntNode<IntegerRange, SeparationOption> {
 
-    public NumberOfChildrenInPartnershipNodeInt(IntegerRange option, NumberOfChildrenInYearNodeInt parentNode, Integer initCount) {
+    public NumberOfChildrenInPartnershipNodeInt(final IntegerRange option, final NumberOfChildrenInYearNodeInt parentNode, final Integer initCount) {
         super(option, parentNode, initCount);
     }
 
     @Override
-    public void processPerson(IPerson person, LocalDate currentDate) {
+    public void processPerson(final IPerson person, final LocalDate currentDate) {
+
         incCountByOne();
 
-        IPartnership activePartnership = PersonCharacteristicsIdentifier.getActivePartnership(person, currentDate);
+        final IPartnership activePartnership = PersonCharacteristicsIdentifier.getActivePartnership(person, currentDate);
 
-        SeparationOption option = PersonCharacteristicsIdentifier.toSeparate(activePartnership, Year.of(currentDate.getYear()));
+        final SeparationOption option = PersonCharacteristicsIdentifier.toSeparate(activePartnership, Year.of(currentDate.getYear()));
 
         try {
             getChild(option).processPerson(person, currentDate);
-        } catch (ChildNotFoundException e) {
+        } catch (final ChildNotFoundException e) {
             addChild(option).processPerson(person, currentDate);
         }
     }
@@ -59,7 +60,7 @@ public class NumberOfChildrenInPartnershipNodeInt extends IntNode<IntegerRange, 
     }
 
     @Override
-    public Node<SeparationOption, ?, Integer, ?> makeChildInstance(SeparationOption childOption, Integer initCount) {
+    public Node<SeparationOption, ?, Integer, ?> makeChildInstance(final SeparationOption childOption, final Integer initCount) {
         return new SeparationNodeInt(childOption, this, initCount);
     }
 }

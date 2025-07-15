@@ -33,7 +33,7 @@ import static uk.ac.standrews.cs.valipop.simulationEntities.PopulationNavigation
  */
 public class AgeNodeInt extends IntNode<IntegerRange, Boolean> {
 
-    AgeNodeInt(IntegerRange option, SexNodeInt parentNode, Integer initCount) {
+    AgeNodeInt(final IntegerRange option, final SexNodeInt parentNode, final Integer initCount) {
         super(option, parentNode, initCount);
     }
 
@@ -42,17 +42,17 @@ public class AgeNodeInt extends IntNode<IntegerRange, Boolean> {
     }
 
     @Override
-    public void processPerson(IPerson person, LocalDate currentDate) {
+    public void processPerson(final IPerson person, final LocalDate currentDate) {
 
         incCountByOne();
 
-        boolean option = diedInYear(person, Year.of(currentDate.getYear()));
+        final boolean died = diedInYear(person, Year.of(currentDate.getYear()));
 
         try {
-            getChild(option).processPerson(person, currentDate);
+            getChild(died).processPerson(person, currentDate);
 
-        } catch (ChildNotFoundException e) {
-            addChild(option).processPerson(person, currentDate);
+        } catch (final ChildNotFoundException e) {
+            addChild(died).processPerson(person, currentDate);
         }
     }
 
@@ -62,7 +62,7 @@ public class AgeNodeInt extends IntNode<IntegerRange, Boolean> {
     }
 
     @Override
-    public Node<Boolean, ?, Integer, ?> makeChildInstance(Boolean childOption, Integer initCount) {
+    public Node<Boolean, ?, Integer, ?> makeChildInstance(final Boolean childOption, final Integer initCount) {
         return new DiedNodeInt(childOption, this, initCount);
     }
 }

@@ -24,7 +24,6 @@ import uk.ac.standrews.cs.valipop.statistics.analysis.validation.contingencyTabl
 import uk.ac.standrews.cs.valipop.statistics.populationStatistics.PopulationStatistics;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -37,11 +36,11 @@ public class CTtree extends Node<String, SourceType, Number, Number> {
 
     public static final Logger log = Logger.getLogger(CTtree.class.getName());
 
-    private LinkedList<RunnableNode> deathTasks = new LinkedList<>();
-    private LinkedList<RunnableNode> ageTasks = new LinkedList<>();
-    private LinkedList<RunnableNode> nciyTasks = new LinkedList<>();
-    private LinkedList<RunnableNode> nciapTasks = new LinkedList<>();
-    private LinkedList<RunnableNode> sepTasks = new LinkedList<>();
+    private final LinkedList<RunnableNode> deathTasks = new LinkedList<>();
+    private final LinkedList<RunnableNode> ageTasks = new LinkedList<>();
+    private final LinkedList<RunnableNode> nciyTasks = new LinkedList<>();
+    private final LinkedList<RunnableNode> nciapTasks = new LinkedList<>();
+    private final LinkedList<RunnableNode> sepTasks = new LinkedList<>();
 
     public static double NODE_MIN_COUNT = 1E-66;
 
@@ -53,33 +52,30 @@ public class CTtree extends Node<String, SourceType, Number, Number> {
     private SourceNodeInt simNode;
     private SourceNodeDouble statNode = null;
 
-    public CTtree(Iterable<IPerson> population, PopulationStatistics expected, LocalDate startDate, LocalDate zeroDate, LocalDate endDate, int startStepBack, double precision) {
+    public CTtree(final Iterable<IPerson> population, final PopulationStatistics expected, final LocalDate startDate, final LocalDate zeroDate, final LocalDate endDate, final int startStepBack, final double precision) {
 
         CTtree.NODE_MIN_COUNT = precision;
+
         this.expected = expected;
         this.startDate = startDate;
-        this.endDate = endDate.minus(1, ChronoUnit.YEARS);
-
-        LocalDate prevY = zeroDate.minus(startStepBack, ChronoUnit.YEARS);
+        this.endDate = endDate.minusYears(1);
 
         log.info("CTree --- Populating tree with observed population");
 
-        for (LocalDate y = startDate; y.isBefore(endDate.minus(1, ChronoUnit.YEARS)); y = y.plus(1, ChronoUnit.YEARS)) {
+        for (LocalDate year = startDate; year.isBefore(endDate.minusYears(1)); year = year.plusYears(1)) {
 
-            LocalDate prevDay = LocalDate.of(y.getYear() - 1, 12, 31);
+            final LocalDate firstYearToProcess = zeroDate.minusYears(startStepBack);
+            final LocalDate lastDayOfPreviousYear = LocalDate.of(year.getYear() - 1, 12, 31);
 
-            // for every person in population
-            for (IPerson person : population) {
+            for (final IPerson person : population) {
 
-                if (prevY.getYear() == y.getYear() && PopulationNavigation.aliveOnDate(person, prevDay) && PopulationNavigation.presentOnDate(person, prevDay)) {
+                if (PopulationNavigation.aliveOnDate(person, lastDayOfPreviousYear) && PopulationNavigation.inCountryOnDate(person, lastDayOfPreviousYear)) {
 
-                    processPerson(person, y, SourceType.STAT);
-                    processPerson(person, y, SourceType.SIM);
-                }
+                    if (year.getYear() == firstYearToProcess.getYear())
+                        processPerson(person, year, SourceType.STAT);
 
-                if (prevY.getYear() < y.getYear() && PopulationNavigation.aliveOnDate(person, prevDay) && PopulationNavigation.presentOnDate(person, prevDay)) {
-
-                    processPerson(person, y, SourceType.SIM);
+                    if (year.getYear() >= firstYearToProcess.getYear())
+                        processPerson(person, year, SourceType.SIM);
                 }
             }
         }
@@ -95,7 +91,7 @@ public class CTtree extends Node<String, SourceType, Number, Number> {
     @SuppressWarnings("rawtypes")
     public Collection<Node> getLeafNodes() {
 
-        Collection<Node> childNodes = new ArrayList<>();
+        final Collection<Node> childNodes = new ArrayList<>();
 
         childNodes.addAll(simNode.getLeafNodes());
         childNodes.addAll(statNode.getLeafNodes());
@@ -121,7 +117,7 @@ public class CTtree extends Node<String, SourceType, Number, Number> {
     }
 
     @SuppressWarnings("rawtypes")
-    public Node addChildA(SourceType childOption) {
+    private Node addChildA(final SourceType childOption) {
 
         if (childOption == SourceType.SIM) {
             simNode = new SourceNodeInt(childOption, this);
@@ -133,26 +129,19 @@ public class CTtree extends Node<String, SourceType, Number, Number> {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public Node getChild(SourceType option) throws ChildNotFoundException {
+    public Node getChild(final SourceType option) throws ChildNotFoundException {
 
-        if (option == SourceType.SIM) {
-            if (simNode != null) {
-                return simNode;
-            } else {
-                throw new ChildNotFoundException();
-            }
+        if (option == SourceType.SIM)
+            if (simNode != null) return simNode;
+            else throw new ChildNotFoundException();
 
-        } else {
-            if (statNode != null) {
-                return statNode;
-            } else {
-                throw new ChildNotFoundException();
-            }
-        }
+        else
+            if (statNode != null) return statNode;
+            else throw new ChildNotFoundException();
     }
 
     @Override
-    public void addDelayedTask(RunnableNode node) {
+    public void addDelayedTask(final RunnableNode node) {
 
         if (node instanceof DiedNodeDouble) {
             deathTasks.add(node);
@@ -173,7 +162,7 @@ public class CTtree extends Node<String, SourceType, Number, Number> {
 
         while (!deathTasks.isEmpty()) {
 
-            RunnableNode n = deathTasks.removeFirst();
+            final RunnableNode n = deathTasks.removeFirst();
             n.run();
         }
 
@@ -183,57 +172,56 @@ public class CTtree extends Node<String, SourceType, Number, Number> {
 
                 while (!sepTasks.isEmpty()) {
 
-                    RunnableNode n = sepTasks.removeFirst();
+                    final RunnableNode n = sepTasks.removeFirst();
                     n.run();
                 }
 
                 while (!nciapTasks.isEmpty()) {
 
-                    RunnableNode n = nciapTasks.removeFirst();
+                    final RunnableNode n = nciapTasks.removeFirst();
                     n.run();
                 }
             }
 
             for (int i = 0; i < 2; i++) {
-                if (ageTasks.isEmpty()) {
-                    break;
-                }
+                if (ageTasks.isEmpty()) break;
 
-                RunnableNode n = ageTasks.removeFirst();
-                AgeNodeDouble a = (AgeNodeDouble) n;
-                YOBNodeDouble y = (YOBNodeDouble) a.getAncestor(new YOBNodeDouble());
+                final RunnableNode n = ageTasks.removeFirst();
+                final AgeNodeDouble a = (AgeNodeDouble) n;
+                final YOBNodeDouble y = (YOBNodeDouble) a.getAncestor(new YOBNodeDouble());
                 log.info("CTree --- Creating nodes for year: " + y.getOption().toString());
                 n.run();
             }
         }
     }
 
-    public void processPerson(IPerson person, LocalDate currentDate, SourceType source) {
+    public void processPerson(final IPerson person, final LocalDate currentDate, final SourceType source) {
 
         try {
             getChild(source).processPerson(person, currentDate);
-        } catch (ChildNotFoundException e) {
+        }
+        catch (final ChildNotFoundException e) {
             addChildA(source).processPerson(person, currentDate);
         }
     }
 
     @Override
-    public Node<SourceType, ?, Number, ?> addChild(SourceType childOption) {
+    public Node<SourceType, ?, Number, ?> addChild(final SourceType childOption) {
         return null;
     }
 
     @Override
-    public Node<SourceType, ?, Number, ?> addChild(SourceType childOption, Number initCount) {
+    public Node<SourceType, ?, Number, ?> addChild(final SourceType childOption, final Number initCount) {
         return null;
     }
 
     @Override
-    public void processPerson(IPerson person, LocalDate currentDate) {
+    public void processPerson(final IPerson person, final LocalDate currentDate) {
 
     }
 
     @Override
-    public void incCount(Number byCount) {
+    public void incCount(final Number byCount) {
 
     }
 
